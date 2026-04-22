@@ -19,29 +19,30 @@
     </header>
 
     <main>
-      <!-- Tab 0: Itinerary -->
       <section class="page" id="page-itinerary"></section>
-
-      <!-- Tab 1: Souvenirs -->
       <section class="page" id="page-souvenirs"></section>
-
-      <!-- Tab 2: Transport -->
       <section class="page" id="page-transport"></section>
-
-      <!-- Tab 3: Before Departure Checklist -->
       <section class="page" id="page-checklist"></section>
-
-      <!-- Tab 4: SOS -->
       <section class="page" id="page-sos"></section>
     </main>
 
     <nav id="bottom-nav"></nav>
+
+    <!-- Move-to-day bottom sheet -->
+    <div id="move-sheet-overlay" style="display:none">
+      <div id="move-sheet">
+        <div id="move-sheet-title" class="move-sheet-title">移到哪一天？</div>
+        <div id="move-day-list" class="move-day-list"></div>
+        <button id="move-sheet-cancel" class="move-sheet-cancel">取消</button>
+      </div>
+    </div>
   </div>
 
   <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/impact.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
