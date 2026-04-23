@@ -1,9 +1,9 @@
 // ============================================================
-// HOKKAIDO 2026 PWA — Main Application
+// HOKKAIDO 2026 PWA — Main Application  v2
 // ============================================================
 
 let lang = localStorage.getItem('hk_lang') || 'zh';
-let openDays = new Set(); // multiple days can be open
+let activeDayIdx = 0;
 let editMode = false;
 
 // ── Storage helpers ────────────────────────────────────────
@@ -35,7 +35,6 @@ function renderAll() {
   renderTransport();
   renderChecklist();
   renderSOS();
-  updateWeatherLabel();
 }
 
 // ── Tabs ───────────────────────────────────────────────────
@@ -59,16 +58,100 @@ function switchTab(i) {
   renderTabs();
 }
 
+// ── CATEGORY DETECTION ─────────────────────────────────────
+const CAT = {
+  transport: { icon: '🚆', zh: '交通', en: 'Transit', cls: 'cat-transport' },
+  hotel:     { icon: '🏨', zh: '住宿', en: 'Hotel',   cls: 'cat-hotel' },
+  food:      { icon: '🍽', zh: '餐廳', en: 'Dining',  cls: 'cat-food' },
+  shop:      { icon: '🛍', zh: '購物', en: 'Shop',    cls: 'cat-shop' },
+  sight:     { icon: '🗺', zh: '景點', en: 'Sights',  cls: 'cat-sight' },
+};
+
+function getCategory(item) {
+  const text = [
+    item.place?.zh || '', item.place?.en || '',
+    item.note?.zh  || '', item.note?.en  || ''
+  ].join(' ');
+  if (/機場|airport|搭機|搭飛機|ci1[23]\d|jr|特急|巴士|bus|shuttle|地下鉄|電車|train|抵達|出發|前往|IC卡|pasmo|suica/i.test(text))
+    return 'transport';
+  if (/飯店|hotel|resort|旅館|check.?in|check.?out|入住|退房|apa |dormy|威斯汀|洲際|hilton|solaria/i.test(text))
+    return 'hotel';
+  if (/[🍜🍣🦀🍱🍛🍲🥩🍤🍺🥐]|拉麵|壽司|螃蟹|餐廳|食堂|午餐|晚餐|早餐|dinner|lunch|breakfast|ramen|sushi|crab|bbq|restaurant|居酒屋|成吉思汗|海鮮丼|ジンギスカン/i.test(text))
+    return 'food';
+  if (/購物|shopping|百貨|伴手禮|土産|royce|六花亭|calbee|ishiya|letao|tsujiguchi|朝市|海鮮市場|市場|藥妝/i.test(text))
+    return 'shop';
+  return 'sight';
+}
+
 // ── ITINERARY ──────────────────────────────────────────────
 function renderItinerary() {
   const container = document.getElementById('page-itinerary');
   const state = getState();
-  const modified = isModified();
+  let html = renderWeatherCard(state);
+  html += renderDayStrip(state);
+  html += renderActiveDayView(state);
+  container.innerHTML = html;
 
-  // Top bar: weather + edit controls
-  let html = renderWeatherBar();
+  // Scroll active pill into view
+  setTimeout(() => {
+    const pill = document.querySelector('.day-pill.active');
+    if (pill) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, 60);
 
-  // Edit mode toolbar
+  // Fetch weather for active day
+  fetchWeather(state[activeDayIdx].weatherCity);
+}
+
+// ── Day Strip ──────────────────────────────────────────────
+function renderDayStrip(state) {
+  const pills = state.map((d, i) => {
+    const dateNum = d.date.zh.match(/\/(\d+)/)?.[1] || d.day;
+    const dow     = d.date.zh.match(/（(.)）/)?.[1]  || '';
+    const active  = i === activeDayIdx;
+    const hasMove = d.items.some(it => it.originalDay !== d.day);
+    const phCls   = `phase-pill-${d.phase}`;
+    return `
+      <button class="day-pill ${active ? 'active' : ''} ${phCls}" onclick="selectDay(${i})">
+        <span class="pill-num">${dateNum}</span>
+        <span class="pill-dow">${dow}</span>
+        ${hasMove ? '<span class="pill-dot"></span>' : ''}
+      </button>
+    `;
+  }).join('');
+  return `<div class="day-strip"><div class="day-strip-inner">${pills}</div></div>`;
+}
+
+function selectDay(idx) {
+  activeDayIdx = idx;
+  renderItinerary();
+  document.querySelector('main').scrollTop = 0;
+}
+
+// ── Active Day View ────────────────────────────────────────
+function renderActiveDayView(state) {
+  const dayState = state[activeDayIdx];
+  const impact   = calculateImpact(dayState);
+  const impBadges = renderImpactBadges(impact, lang);
+
+  let html = `<div class="day-view">`;
+
+  // Day header
+  html += `
+    <div class="day-view-header">
+      <div class="day-view-top">
+        <span class="day-view-badge phase-${dayState.phase}">${T[lang].day} ${dayState.day}${T[lang].dayUnit}</span>
+        <span class="day-view-phase">${T[lang].phase[dayState.phase]}</span>
+      </div>
+      <div class="day-view-title">${dayState.date[lang]} &nbsp;${dayState.title[lang]}</div>
+      ${impBadges ? `<div class="impact-row" style="margin-top:5px">${impBadges}</div>` : ''}
+    </div>
+  `;
+
+  // Flight card on Day 1 / last day
+  if (activeDayIdx === 0) html += renderFlightCard('outbound');
+  if (activeDayIdx === state.length - 1) html += renderFlightCard('return');
+
+  // Edit toolbar
   html += `
     <div class="edit-toolbar">
       <button class="edit-toggle-btn ${editMode ? 'active' : ''}" onclick="toggleEditMode()">
@@ -76,107 +159,118 @@ function renderItinerary() {
           ? (lang === 'zh' ? '✓ 完成編輯' : '✓ Done')
           : (lang === 'zh' ? '✏️ 編輯行程' : '✏️ Edit')}
       </button>
-      ${modified ? `<button class="reset-btn" onclick="confirmReset()">↺ ${lang === 'zh' ? '還原' : 'Reset'}</button>` : ''}
+      ${isModified()
+        ? `<button class="reset-btn" onclick="confirmReset()">↺ ${lang === 'zh' ? '還原' : 'Reset'}</button>`
+        : ''}
     </div>
   `;
 
-  let lastPhase = -1;
-  state.forEach((dayState, dayIdx) => {
-    if (dayState.phase !== lastPhase) {
-      html += `<div class="phase-header">${T[lang].phase[dayState.phase]}</div>`;
-      lastPhase = dayState.phase;
-    }
+  // Timeline
+  html += `<div class="timeline">${renderTimelineItems(dayState, impact)}</div>`;
 
-    const isOpen = openDays.has(dayState.day);
-    const impact = calculateImpact(dayState);
-    const impBadges = renderImpactBadges(impact, lang);
-    const phaseClass = `phase-${dayState.phase}`;
-
-    html += `
-      <div class="card ${isOpen ? 'open' : ''}" id="day-card-${dayState.day}">
-        <div class="card-header" onclick="toggleDay(${dayState.day}, ${dayIdx})">
-          <span class="day-badge ${phaseClass}">${T[lang].day} ${dayState.day}${T[lang].dayUnit}</span>
-          <div style="flex:1;min-width:0">
-            <div class="card-title">${dayState.date[lang]} ${dayState.title[lang]}</div>
-            <div class="impact-row">${impBadges || `<span class="card-meta">${T[lang].steps}: ~${dayState.steps.toLocaleString()} ${T[lang].stepsUnit}</span>`}</div>
-          </div>
-          <span class="chevron">▼</span>
-        </div>
-        <div class="card-body">
-          ${renderDayItems(dayState, dayIdx, impact)}
-          ${renderDayFooter(dayState, impact)}
-        </div>
-      </div>
-    `;
-  });
-
-  container.innerHTML = html;
-
-  // Fetch weather for any open day
-  if (openDays.size > 0) {
-    const firstOpen = state.find(d => openDays.has(d.day));
-    if (firstOpen) fetchWeather(firstOpen.weatherCity);
-  } else {
-    fetchWeather('Sapporo');
-  }
-}
-
-function renderDayItems(dayState, dayIdx, impact) {
-  const items = dayState.items;
-  const conflictIdxs = new Set(impact.conflicts.flatMap(c => [c.idxA, c.idxB]));
-
-  let html = '<div class="item-list">';
-  items.forEach((item, itemIdx) => {
-    const isConflict = conflictIdxs.has(itemIdx);
-    const isMoved = item.originalDay !== dayState.day;
-    const noteHTML = item.note ? formatNote(item.note[lang]) : '';
-    const mapHTML = item.maps
-      ? `<a href="${item.maps}" target="_blank" rel="noopener" class="map-btn">📍 ${T[lang].mapBtn}</a>`
-      : '';
-
-    html += `
-      <div class="item-row ${item.warn ? 'warn-row' : ''} ${isConflict ? 'conflict-row' : ''} ${isMoved ? 'moved-row' : ''}"
-           data-id="${item.id}" data-day-idx="${dayIdx}" data-item-idx="${itemIdx}">
-        ${editMode ? `
-          <div class="drag-controls">
-            <button class="ctrl-btn" onclick="moveUp(${dayIdx}, ${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
-            <button class="ctrl-btn" onclick="moveDown(${dayIdx}, ${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
-          </div>
-        ` : ''}
-        <div class="item-time">${item.time}</div>
-        <div class="item-body">
-          <div class="item-place">${item.place[lang]}</div>
-          ${item.duration && item.duration !== '—' ? `<div class="item-duration">${item.duration}</div>` : ''}
-          ${noteHTML ? `<div class="item-note">${noteHTML}</div>` : ''}
-          <div class="item-actions">
-            ${mapHTML}
-            ${editMode ? `<button class="move-day-btn" onclick="showMoveSheet('${item.id}', ${dayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
-            ${isMoved ? `<span class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay}` : `From Day ${item.originalDay}`}</span>` : ''}
-          </div>
-          ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible time conflict'}</div>` : ''}
-        </div>
-      </div>
-    `;
-  });
-  html += '</div>';
+  // Footer
+  html += renderDayFooter(dayState, impact);
+  html += `</div>`;
   return html;
 }
 
+// ── Flight Card ────────────────────────────────────────────
+function renderFlightCard(dir) {
+  const isOut = dir === 'outbound';
+  return `
+    <div class="flight-card-v2">
+      <div class="fc2-badge">${isOut
+        ? (lang === 'zh' ? '✈ 去程航班' : '✈ Outbound')
+        : (lang === 'zh' ? '✈ 回程航班' : '✈ Return')}</div>
+      <div class="fc2-row">
+        <div class="fc2-num">CI ${isOut ? '130' : '131'}</div>
+        <div class="fc2-detail">
+          <div class="fc2-route">${isOut
+            ? (lang === 'zh' ? '桃園 T2 → 新千歲 T-I' : 'TPE T2 → CTS T-I')
+            : (lang === 'zh' ? '新千歲 T-I → 桃園 T2' : 'CTS T-I → TPE T2')}</div>
+          <div class="fc2-times">
+            ${isOut ? '08:35' : '15:05'} <span class="fc-arrow">→</span> ${isOut ? '13:35' : '18:15'}
+          </div>
+        </div>
+        <div class="fc2-class">${lang === 'zh' ? '商務艙' : 'Business'}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Timeline Items ─────────────────────────────────────────
+function renderTimelineItems(dayState, impact) {
+  const items = dayState.items;
+  const conflictIdxs = new Set(impact.conflicts.flatMap(c => [c.idxA, c.idxB]));
+  let html = '';
+
+  items.forEach((item, itemIdx) => {
+    const cat     = getCategory(item);
+    const catInfo = CAT[cat];
+    const isConflict = conflictIdxs.has(itemIdx);
+    const isMoved    = item.originalDay !== dayState.day;
+    const isLast     = itemIdx === items.length - 1;
+    const noteHTML   = item.note ? formatNote(item.note[lang]) : '';
+    const mapHTML    = item.maps
+      ? `<a href="${item.maps}" target="_blank" rel="noopener" class="map-btn">📍 ${T[lang].mapBtn}</a>`
+      : '';
+
+    let rowCls = '';
+    if (isConflict) rowCls = 'tl-conflict';
+    else if (isMoved) rowCls = 'tl-moved';
+    else if (item.warn) rowCls = 'tl-warn';
+
+    html += `
+      <div class="tl-row ${rowCls}" data-id="${item.id}">
+        <div class="tl-time-col">${item.time !== '—' ? item.time : ''}</div>
+        <div class="tl-axis-col">
+          <div class="tl-dot ${catInfo.cls}"></div>
+          ${isLast ? '' : '<div class="tl-vline"></div>'}
+        </div>
+        <div class="tl-content">
+          <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''}">
+            <div class="tl-card-top">
+              <span class="cat-chip ${catInfo.cls}">${catInfo.icon} ${catInfo[lang]}</span>
+              ${editMode ? `
+                <div class="tl-edit-btns">
+                  <button class="ctrl-btn" onclick="moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
+                  <button class="ctrl-btn" onclick="moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
+                </div>
+              ` : ''}
+            </div>
+            <div class="tl-place">${item.place[lang]}</div>
+            ${item.duration && item.duration !== '—' ? `<div class="tl-duration">${item.duration}</div>` : ''}
+            ${noteHTML ? `<div class="tl-note">${noteHTML}</div>` : ''}
+            ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'}</div>` : ''}
+            ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
+            <div class="tl-actions">
+              ${mapHTML}
+              ${editMode ? `<button class="move-day-btn" onclick="showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  return html;
+}
+
+// ── Day Footer ─────────────────────────────────────────────
 function renderDayFooter(dayState, impact) {
   let html = '<div class="day-footer">';
 
-  // Impact summary when modified
   if (impact.moved > 0 || impact.conflicts.length > 0) {
     html += `<div class="footer-impact">`;
     if (impact.conflicts.length > 0) {
       const detail = impact.conflicts.map(c => {
-        const items = dayState.items;
-        return `${items[c.idxA]?.place[lang] || '?'} → ${items[c.idxB]?.place[lang] || '?'} (${c.overlapMin}${lang === 'zh' ? '分重疊' : 'min overlap'})`;
+        const it = dayState.items;
+        return `${it[c.idxA]?.place[lang] || '?'} → ${it[c.idxB]?.place[lang] || '?'} (${c.overlapMin}${lang === 'zh' ? '分重疊' : 'min overlap'})`;
       }).join('；');
       html += `<div class="impact-detail conflict-detail">⏱ ${detail}</div>`;
     }
     if (impact.budgetChanged) {
-      html += `<div class="impact-detail">💴 ${lang === 'zh' ? '預算估計已變動，請手動核對' : 'Budget may have changed — check manually'}</div>`;
+      html += `<div class="impact-detail">💴 ${lang === 'zh' ? '預算估計已變動，請手動核對' : 'Budget may have changed'}</div>`;
     }
     html += `</div>`;
   }
@@ -185,41 +279,42 @@ function renderDayFooter(dayState, impact) {
   if (dayState.shopping) {
     html += `<div class="footer-row"><span class="label">${T[lang].shoppingNote}：</span>${dayState.shopping[lang]}</div>`;
   }
+  html += `<div class="footer-row text-muted"><span class="label">${T[lang].steps}：</span>~${dayState.steps.toLocaleString()} ${T[lang].stepsUnit}</div>`;
   html += '</div>';
   return html;
 }
 
-// ── Edit mode actions ──────────────────────────────────────
+// ── Edit mode ──────────────────────────────────────────────
 function toggleEditMode() {
   editMode = !editMode;
   renderItinerary();
 }
 
-function moveUp(dayIdx, itemIdx) {
+function moveUp(itemIdx) {
   if (itemIdx === 0) return;
-  moveItemWithinDay(dayIdx, itemIdx, itemIdx - 1);
+  moveItemWithinDay(activeDayIdx, itemIdx, itemIdx - 1);
   renderItinerary();
 }
 
-function moveDown(dayIdx, itemIdx) {
+function moveDown(itemIdx) {
   const state = getState();
-  if (itemIdx >= state[dayIdx].items.length - 1) return;
-  moveItemWithinDay(dayIdx, itemIdx, itemIdx + 1);
+  if (itemIdx >= state[activeDayIdx].items.length - 1) return;
+  moveItemWithinDay(activeDayIdx, itemIdx, itemIdx + 1);
   renderItinerary();
 }
 
 function showMoveSheet(itemId, fromDayIdx) {
   const state = getState();
   const overlay = document.getElementById('move-sheet-overlay');
-  const sheet = document.getElementById('move-sheet');
-  const list = document.getElementById('move-day-list');
+  const list    = document.getElementById('move-day-list');
 
   list.innerHTML = state.map((d, i) => {
     if (i === fromDayIdx) return '';
+    const dateNum = d.date.zh.match(/\/(\d+)/)?.[1] || d.day;
     return `
       <button class="move-day-option" onclick="executeMove('${itemId}', ${fromDayIdx}, ${i})">
-        <span class="move-day-num">${T[lang].day} ${d.day}</span>
-        <span class="move-day-title">${d.date[lang]} ${d.title[lang]}</span>
+        <span class="move-day-num">${T[lang].day} ${d.day} · ${dateNum}</span>
+        <span class="move-day-title">${d.title[lang]}</span>
       </button>
     `;
   }).join('');
@@ -238,38 +333,17 @@ function closeSheet() {
 
 function executeMove(itemId, fromDayIdx, toDayIdx) {
   closeSheet();
-  const state = getState();
-  // Auto-open both days
-  openDays.add(state[fromDayIdx].day);
-  openDays.add(state[toDayIdx].day);
   moveItemToDay(itemId, fromDayIdx, toDayIdx);
+  activeDayIdx = toDayIdx;
   renderItinerary();
 }
 
 function confirmReset() {
-  const msg = lang === 'zh'
-    ? '確定要還原所有行程變更嗎？'
-    : 'Reset all itinerary changes?';
+  const msg = lang === 'zh' ? '確定要還原所有行程變更嗎？' : 'Reset all itinerary changes?';
   if (confirm(msg)) {
     resetState();
-    openDays.clear();
     renderItinerary();
   }
-}
-
-function toggleDay(dayNum, dayIdx) {
-  if (openDays.has(dayNum)) {
-    openDays.delete(dayNum);
-  } else {
-    openDays.add(dayNum);
-    const state = getState();
-    const day = state[dayIdx];
-    if (day) fetchWeather(day.weatherCity);
-    setTimeout(() => {
-      document.getElementById(`day-card-${dayNum}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  }
-  renderItinerary();
 }
 
 function formatNote(text) {
@@ -279,60 +353,88 @@ function formatNote(text) {
 
 // ── WEATHER ────────────────────────────────────────────────
 const weatherCache = {};
-let currentWeatherCity = 'Sapporo';
+const CITY_ZH = { Sapporo: '札幌', Hakodate: '函館', Toyako: '洞爺湖' };
 
-function renderWeatherBar() {
+function getWeatherEmoji(desc) {
+  const d = (desc || '').toLowerCase();
+  if (/snow|blizzard/.test(d)) return '❄️';
+  if (/thunder/.test(d)) return '⛈';
+  if (/rain|drizzle|shower/.test(d)) return '🌧';
+  if (/fog|mist/.test(d)) return '🌫';
+  if (/overcast/.test(d)) return '☁️';
+  if (/cloud/.test(d)) return '⛅';
+  return '☀️';
+}
+
+function getOutfitSuggestion(tempC) {
+  const t = parseInt(tempC);
+  if (lang === 'zh') {
+    if (t < 5)  return '穿搭建議：厚羽絨衣 + 毛帽手套';
+    if (t < 10) return '穿搭建議：羽絨衣 + 毛衣';
+    if (t < 15) return '穿搭建議：輕薄外套 + 長袖';
+    if (t < 20) return '穿搭建議：薄外套 / 長袖';
+    return '穿搭建議：短袖，薄外套備用';
+  } else {
+    if (t < 5)  return 'Outfit: Heavy down coat + gloves';
+    if (t < 10) return 'Outfit: Down jacket + sweater';
+    if (t < 15) return 'Outfit: Light jacket + long sleeve';
+    if (t < 20) return 'Outfit: Thin jacket / long sleeve';
+    return 'Outfit: T-shirt, thin jacket as backup';
+  }
+}
+
+function renderWeatherCard(state) {
+  const city = state?.[activeDayIdx]?.weatherCity || 'Sapporo';
+  const cityLabel = lang === 'zh' ? (CITY_ZH[city] || city) : city;
   return `
-    <div id="weather-bar">
-      <div id="weather-info">
-        <div id="weather-city-label">${T[lang].weatherTitle}</div>
-        <div id="weather-desc">—</div>
-        <div id="weather-temp"></div>
+    <div class="weather-card-v2">
+      <div class="wc2-left">
+        <div class="wc2-city" id="wc-city">${cityLabel}</div>
+        <div class="wc2-temp" id="wc-temp">—°</div>
+        <div class="wc2-feels" id="wc-feels"></div>
+        <div class="wc2-outfit" id="wc-outfit">${lang === 'zh' ? '天氣載入中...' : 'Loading weather...'}</div>
       </div>
-      <button id="weather-refresh" onclick="fetchWeather('${currentWeatherCity}')">${T[lang].weatherRefresh}</button>
+      <div class="wc2-right">
+        <div class="wc2-emoji" id="wc-emoji">🌤</div>
+        <div class="wc2-desc" id="wc-desc"></div>
+        <button class="wc2-refresh" onclick="fetchWeather('${city}')">↻</button>
+      </div>
     </div>
   `;
 }
 
-function updateWeatherLabel() {
-  const el = document.getElementById('weather-city-label');
-  if (el) el.textContent = T[lang].weatherTitle;
-  const btn = document.getElementById('weather-refresh');
-  if (btn) btn.textContent = T[lang].weatherRefresh;
-}
-
 async function fetchWeather(city) {
-  currentWeatherCity = city;
-  const descEl = document.getElementById('weather-desc');
-  const tempEl = document.getElementById('weather-temp');
-  if (!descEl) return;
   if (weatherCache[city]) { applyWeather(weatherCache[city]); return; }
-  descEl.textContent = '…';
-  tempEl.textContent = '';
   try {
     const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
     const data = await res.json();
     const cur = data.current_condition[0];
-    const result = { city, desc: cur.weatherDesc[0].value, temp_c: cur.temp_C, feels: cur.FeelsLikeC, humidity: cur.humidity };
+    const result = {
+      city,
+      desc: cur.weatherDesc[0].value,
+      temp_c: cur.temp_C,
+      feels: cur.FeelsLikeC,
+      humidity: cur.humidity
+    };
     weatherCache[city] = result;
     applyWeather(result);
   } catch {
-    if (descEl) descEl.textContent = lang === 'zh' ? '無法取得天氣' : 'Weather unavailable';
+    const el = document.getElementById('wc-outfit');
+    if (el) el.textContent = lang === 'zh' ? '無法取得天氣資料' : 'Weather unavailable';
   }
 }
 
 function applyWeather(w) {
-  const descEl = document.getElementById('weather-desc');
-  const tempEl = document.getElementById('weather-temp');
-  const cityEl = document.getElementById('weather-city-label');
-  if (!descEl) return;
-  const cityMap = { Sapporo: '札幌', Hakodate: '函館', Toyako: '洞爺湖' };
-  const cityLabel = lang === 'zh' ? (cityMap[w.city] || w.city) : w.city;
-  cityEl.textContent = `${T[lang].weatherTitle} — ${cityLabel}`;
-  descEl.textContent = w.desc;
-  tempEl.textContent = lang === 'zh'
-    ? `${w.temp_c}°C（體感 ${w.feels}°C）濕度 ${w.humidity}%`
-    : `${w.temp_c}°C (feels ${w.feels}°C) · Humidity ${w.humidity}%`;
+  const cityLabel = lang === 'zh' ? (CITY_ZH[w.city] || w.city) : w.city;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('wc-city',   cityLabel);
+  set('wc-emoji',  getWeatherEmoji(w.desc));
+  set('wc-temp',   `${w.temp_c}°C`);
+  set('wc-feels',  lang === 'zh'
+    ? `體感 ${w.feels}°C · 濕度 ${w.humidity}%`
+    : `Feels ${w.feels}°C · ${w.humidity}% humidity`);
+  set('wc-desc',   w.desc);
+  set('wc-outfit', getOutfitSuggestion(w.temp_c));
 }
 
 // ── SOUVENIRS ──────────────────────────────────────────────
@@ -433,8 +535,8 @@ function renderChecklist() {
 
   let html = `
     <div class="flight-bar">
-      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '去程' : 'Outbound'}</span><span class="flight-detail">CI130 · 5/14 08:35 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} → 13:35 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
-      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '返程' : 'Return'}</span><span class="flight-detail">CI131 · 5/22 15:05 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} → 18:15 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
+      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '去程' : 'Out'}</span><span class="flight-detail">CI130 · 5/14 08:35 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} → 13:35 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
+      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '返程' : 'Ret'}</span><span class="flight-detail">CI131 · 5/22 15:05 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} → 18:15 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
     </div>
     <div class="progress-bar-wrap">
       <div class="progress-label">
@@ -508,5 +610,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.page')[0].classList.add('active');
   renderAll();
-  fetchWeather('Sapporo');
 });
