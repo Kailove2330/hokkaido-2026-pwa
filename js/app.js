@@ -5,6 +5,7 @@
 let lang = localStorage.getItem('hk_lang') || 'zh';
 let activeDayIdx = 0;
 let editMode = false;
+let souvenirFilter = 'all';
 
 // ── Storage helpers ────────────────────────────────────────
 function getChecked(key) {
@@ -233,6 +234,7 @@ function renderTimelineItems(dayState, impact) {
               <span class="cat-chip ${catInfo.cls}">${catInfo.icon} ${catInfo[lang]}</span>
               ${editMode ? `
                 <div class="tl-edit-btns">
+                  <button class="ctrl-btn ctrl-edit" onclick="editItem('${item.id}')">✎</button>
                   <button class="ctrl-btn" onclick="moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
                   <button class="ctrl-btn" onclick="moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
                 </div>
@@ -346,6 +348,76 @@ function confirmReset() {
   }
 }
 
+// ── ITEM EDIT MODAL ────────────────────────────────────────
+function editItem(itemId) {
+  const state = getState();
+  let found = null;
+  for (const d of state) {
+    const it = d.items.find(it => it.id === itemId);
+    if (it) { found = it; break; }
+  }
+  if (!found) return;
+
+  const isZh = lang === 'zh';
+  document.getElementById('edit-item-id').value = itemId;
+  document.getElementById('edit-time').value     = found.time !== '—' ? found.time : '';
+  document.getElementById('edit-duration').value = found.duration && found.duration !== '—' ? found.duration : '';
+  document.getElementById('edit-note').value     = found.note?.[lang] || '';
+  document.getElementById('edit-sheet-title').textContent = isZh ? '編輯行程項目' : 'Edit Item';
+  document.getElementById('lbl-time').textContent  = isZh ? '時間' : 'Time (HH:MM)';
+  document.getElementById('lbl-dur').textContent   = isZh ? '停留時間' : 'Duration';
+  document.getElementById('lbl-note').textContent  = isZh ? '備注（目前語言）' : 'Note (current lang)';
+  document.getElementById('edit-note').placeholder = isZh ? '備注說明...' : 'Add a note...';
+  document.getElementById('edit-sheet-overlay').style.display = 'flex';
+}
+
+function closeEditSheet() {
+  document.getElementById('edit-sheet-overlay').style.display = 'none';
+}
+
+function saveItemEdit() {
+  const itemId = document.getElementById('edit-item-id').value;
+  const time     = document.getElementById('edit-time').value.trim()     || '—';
+  const duration = document.getElementById('edit-duration').value.trim() || '—';
+  const noteText = document.getElementById('edit-note').value.trim();
+
+  const state = getState();
+  let existing = null;
+  for (const d of state) {
+    const it = d.items.find(it => it.id === itemId);
+    if (it) { existing = it; break; }
+  }
+  const currentNote = existing?.note || null;
+  const newNote = currentNote
+    ? { ...currentNote, [lang]: noteText }
+    : { zh: noteText, en: noteText };
+
+  updateItem(itemId, { time, duration, note: newNote });
+  closeEditSheet();
+  renderItinerary();
+}
+
+// ── SOUVENIR OWNERS ────────────────────────────────────────
+function getSouvenirOwners() {
+  try { return JSON.parse(localStorage.getItem('hk_souvenir_owners') || '{}'); }
+  catch { return {}; }
+}
+
+function cycleSouvenirOwner(id) {
+  const owners = getSouvenirOwners();
+  const cycle  = { undefined: 'A', A: 'B', B: 'both', both: null };
+  const next   = cycle[String(owners[id])];
+  if (next === null || next === undefined) delete owners[id];
+  else owners[id] = next;
+  localStorage.setItem('hk_souvenir_owners', JSON.stringify(owners));
+  renderSouvenirs();
+}
+
+function setSouvenirFilter(f) {
+  souvenirFilter = f;
+  renderSouvenirs();
+}
+
 function formatNote(text) {
   if (!text) return '';
   return text.replace(/(⚡[^；。<\n]*)/g, '<span class="warn-text">$1</span>');
@@ -440,10 +512,24 @@ function applyWeather(w) {
 // ── SOUVENIRS ──────────────────────────────────────────────
 function renderSouvenirs() {
   const container = document.getElementById('page-souvenirs');
+  const owners = getSouvenirOwners();
   const total = SOUVENIRS.reduce((s, c) => s + c.items.length, 0);
   const done  = SOUVENIRS.reduce((s, c) => s + c.items.filter(i => checkedSouvenirs.has(i.id)).length, 0);
 
+  const fLabels = lang === 'zh'
+    ? ['全部', 'A 負責', 'B 負責', '共同']
+    : ['All', 'A only', 'B only', 'Both'];
+  const fKeys = ['all', 'A', 'B', 'both'];
+
   let html = `
+    <div class="owner-filter-bar">
+      ${fKeys.map((k, i) => `
+        <button class="owner-filter-btn ${souvenirFilter === k ? 'active' : ''}" onclick="setSouvenirFilter('${k}')">
+          ${fLabels[i]}
+        </button>
+      `).join('')}
+    </div>
+    <div class="owner-hint">${lang === 'zh' ? '點右側圓圈指定負責人 → A → B → 共同 → 清除' : 'Tap circle to assign: A → B → Both → Clear'}</div>
     <div class="progress-bar-wrap">
       <div class="progress-label">
         <span>${lang === 'zh' ? '採購進度' : 'Shopping progress'}</span>
@@ -453,24 +539,45 @@ function renderSouvenirs() {
     </div>
   `;
 
+  const OWNER_TEXT = { A: 'A', B: 'B', both: lang === 'zh' ? '共' : '共', null: '＋' };
+  const OWNER_CLS  = { A: 'owner-a', B: 'owner-b', both: 'owner-both', null: 'owner-none' };
+
   SOUVENIRS.forEach(cat => {
+    const visible = cat.items.filter(item => {
+      if (souvenirFilter === 'all') return true;
+      const o = owners[item.id] || null;
+      if (souvenirFilter === 'A')    return o === 'A'    || o === 'both';
+      if (souvenirFilter === 'B')    return o === 'B'    || o === 'both';
+      if (souvenirFilter === 'both') return o === 'both';
+      return true;
+    });
+    if (visible.length === 0) return;
+
     html += `<div class="souvenir-section"><div class="souvenir-cat">${cat.category[lang]}</div>`;
-    cat.items.forEach(item => {
-      const checked = checkedSouvenirs.has(item.id);
+    visible.forEach(item => {
+      const checked  = checkedSouvenirs.has(item.id);
+      const owner    = owners[item.id] || null;
       const noteHtml = item.note ? `<div class="souvenir-note">${item.note[lang]}</div>` : '';
-      const badges = [
+      const badges   = [
         item.cold    ? `<span class="badge badge-cold">❄ ${T[lang].cold}</span>` : '',
         item.airport ? `<span class="badge badge-airport">✈ ${T[lang].limitedAirport}</span>` : '',
       ].filter(Boolean).join('');
+
       html += `
-        <div class="souvenir-item ${checked ? 'checked' : ''}" onclick="toggleSouvenir('${item.id}')">
-          <div class="souvenir-checkbox">${checked ? '✓' : ''}</div>
-          <div class="souvenir-info">
-            <div class="souvenir-name">${item.name[lang]}</div>
-            ${item.price ? `<div class="souvenir-price">${item.price}</div>` : ''}
-            ${badges ? `<div class="badge-row">${badges}</div>` : ''}
-            ${noteHtml}
+        <div class="souvenir-item ${checked ? 'checked' : ''}">
+          <div class="souvenir-main" onclick="toggleSouvenir('${item.id}')">
+            <div class="souvenir-checkbox">${checked ? '✓' : ''}</div>
+            <div class="souvenir-info">
+              <div class="souvenir-name">${item.name[lang]}</div>
+              ${item.price ? `<div class="souvenir-price">${item.price}</div>` : ''}
+              ${badges ? `<div class="badge-row">${badges}</div>` : ''}
+              ${noteHtml}
+            </div>
           </div>
+          <button class="owner-badge ${OWNER_CLS[String(owner)]}"
+                  onclick="cycleSouvenirOwner('${item.id}')">
+            ${OWNER_TEXT[String(owner)]}
+          </button>
         </div>
       `;
     });
@@ -606,6 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('move-sheet-cancel').addEventListener('click', closeSheet);
   document.getElementById('move-sheet-overlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeSheet();
+  });
+  document.getElementById('edit-sheet-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeEditSheet();
   });
 
   document.querySelectorAll('.page')[0].classList.add('active');

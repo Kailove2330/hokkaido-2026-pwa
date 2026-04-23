@@ -29,6 +29,30 @@
 
     <nav id="bottom-nav"></nav>
 
+    <!-- Item Edit Sheet -->
+    <div id="edit-sheet-overlay" style="display:none">
+      <div id="edit-sheet">
+        <div class="edit-sheet-title" id="edit-sheet-title">編輯行程項目</div>
+        <div class="edit-field">
+          <label class="edit-label" id="lbl-time">時間</label>
+          <input id="edit-time" type="text" placeholder="HH:MM" maxlength="5" class="edit-input">
+        </div>
+        <div class="edit-field">
+          <label class="edit-label" id="lbl-dur">停留時間</label>
+          <input id="edit-duration" type="text" placeholder="60min" class="edit-input">
+        </div>
+        <div class="edit-field">
+          <label class="edit-label" id="lbl-note">備注</label>
+          <textarea id="edit-note" rows="3" class="edit-textarea"></textarea>
+        </div>
+        <input type="hidden" id="edit-item-id">
+        <div class="edit-sheet-btns">
+          <button class="edit-save-btn" onclick="saveItemEdit()">儲存</button>
+          <button class="edit-cancel-btn" onclick="closeEditSheet()">取消</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Move-to-day bottom sheet -->
     <div id="move-sheet-overlay" style="display:none">
       <div id="move-sheet">

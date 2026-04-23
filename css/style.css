@@ -973,3 +973,189 @@ nav#bottom-nav {
   margin-top: 7px;
   align-items: center;
 }
+
+/* ── CTRL-EDIT BUTTON ─────────────────────────────────── */
+.ctrl-btn.ctrl-edit {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 13px;
+}
+.ctrl-btn.ctrl-edit:active { background: var(--gold); color: #fff; }
+
+/* ── ITEM EDIT SHEET ──────────────────────────────────── */
+#edit-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 110;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#edit-sheet {
+  background: var(--card);
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px calc(24px + var(--safe-bottom));
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+
+.edit-sheet-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.edit-field { margin-bottom: 14px; }
+
+.edit-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+
+.edit-input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .15s;
+  font-family: inherit;
+}
+.edit-input:focus { border-color: var(--teal); }
+
+.edit-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.edit-textarea:focus { border-color: var(--teal); }
+
+.edit-sheet-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.edit-save-btn {
+  flex: 1;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.edit-save-btn:active { opacity: .85; }
+
+.edit-cancel-btn {
+  flex: 1;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* ── SOUVENIR OWNER SYSTEM ────────────────────────────── */
+.souvenir-item {
+  background: var(--card);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  transition: opacity .15s;
+}
+.souvenir-item.checked { opacity: .4; }
+
+.souvenir-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.owner-badge {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .1s;
+  letter-spacing: 0;
+}
+.owner-badge:active { transform: scale(.88); }
+.owner-none { background: var(--border); color: var(--muted); }
+.owner-a    { background: #dbeafe; color: #1d4ed8; }
+.owner-b    { background: #ede9fe; color: #6d28d9; }
+.owner-both { background: #dcfce7; color: #15803d; }
+
+.owner-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.owner-filter-btn {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .15s;
+}
+.owner-filter-btn.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.owner-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding-left: 2px;
+}

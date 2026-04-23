@@ -60,6 +60,15 @@ function moveItemWithinDay(dayIdx, fromIdx, toIdx) {
   _save();
 }
 
+// Update fields of a single item (time, duration, note, etc.)
+function updateItem(itemId, changes) {
+  _state = _state.map(d => ({
+    ...d,
+    items: d.items.map(it => it.id === itemId ? { ...it, ...changes } : it),
+  }));
+  _save();
+}
+
 // Move item to another day (append to end of target day)
 function moveItemToDay(itemId, fromDayIdx, toDayIdx) {
   let moved = null;
