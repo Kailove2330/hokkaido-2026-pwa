@@ -569,6 +569,11 @@ async function fetchWeather(city) {
 }
 
 function applyWeather(w) {
+  // Guard against stale responses: discard if city no longer matches active day
+  const currentState = getState();
+  const expectedCity = currentState[activeDayIdx]?.weatherCity;
+  if (w.city !== expectedCity) return;
+
   const cityLabel = lang === 'zh' ? (CITY_ZH[w.city] || w.city) : w.city;
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   set('wc-city',   cityLabel);
