@@ -57,7 +57,7 @@ const DAYS = [
     phase: 0,
     weatherCity: 'Sapporo',
     items: [
-      { time: '08:35', place: { zh: '桃園 T2 出發', en: 'Taoyuan T2 Depart' }, duration: '—', note: { zh: 'CI130 商務艙', en: 'CI130 Business' }, maps: null, warn: false },
+      { time: '08:35', place: { zh: '桃園 T2 出發', en: 'Taoyuan T2 Depart' }, duration: '—', note: null, maps: null, warn: false },
       { time: '13:35', place: { zh: '新千歲機場 第 I 航廈', en: 'New Chitose Airport T-I' }, duration: '60min', note: { zh: '⚡ 出關後立刻 JR 窗口劃位：5/18 北斗號 D 席（右側海景）', en: '⚡ Right after customs: reserve Hokuto D-seat for 5/18 (sea view)' }, maps: 'https://maps.google.com/?q=New+Chitose+Airport', warn: true },
       { time: '14:40', place: { zh: 'IC 卡 + JR 快速機場線', en: 'IC Card + JR Airport Express' }, duration: '40min', note: { zh: 'PASMO/Suica 購入；車資約 1,150円', en: 'Buy PASMO/Suica; ~¥1,150' }, maps: null, warn: false },
       { time: '15:30', place: { zh: '索拉瑞亞西鐵酒店 Check-in', en: 'Solaria Nishitetsu Check-in' }, duration: '30min', note: { zh: '行李寄放換輕裝', en: 'Drop luggage, change to light wear' }, maps: 'https://maps.google.com/?q=Solaria+Nishitetsu+Hotel+Sapporo', warn: false },

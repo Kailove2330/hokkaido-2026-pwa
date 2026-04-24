@@ -202,7 +202,6 @@ function renderFlightCard(dir) {
             ${isOut ? '08:35' : '15:05'} <span class="fc-arrow">→</span> ${isOut ? '13:35' : '18:15'}
           </div>
         </div>
-        <div class="fc2-class">${lang === 'zh' ? '商務艙' : 'Business'}</div>
       </div>
     </div>
   `;
@@ -715,8 +714,8 @@ function renderChecklist() {
 
   let html = `
     <div class="flight-bar">
-      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '去程' : 'Out'}</span><span class="flight-detail">CI130 · 5/14 08:35 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} → 13:35 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
-      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '返程' : 'Ret'}</span><span class="flight-detail">CI131 · 5/22 15:05 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} → 18:15 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} · ${lang === 'zh' ? '商務艙' : 'Business'}</span></div>
+      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '去程' : 'Out'}</span><span class="flight-detail">CI130 · 5/14 08:35 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} → 13:35 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'}</span></div>
+      <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '返程' : 'Ret'}</span><span class="flight-detail">CI131 · 5/22 15:05 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} → 18:15 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'}</span></div>
     </div>
     <div class="progress-bar-wrap">
       <div class="progress-label">
