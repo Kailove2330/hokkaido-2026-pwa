@@ -69,6 +69,24 @@ function updateItem(itemId, changes) {
   _save();
 }
 
+// Add a new item to a day (append to end)
+function addItem(dayIdx, newItem) {
+  _state = _state.map((d, i) => {
+    if (i !== dayIdx) return d;
+    return { ...d, items: [...d.items, newItem] };
+  });
+  _save();
+}
+
+// Remove an item by ID
+function deleteItem(itemId) {
+  _state = _state.map(d => ({
+    ...d,
+    items: d.items.filter(it => it.id !== itemId),
+  }));
+  _save();
+}
+
 // Move item to another day (append to end of target day)
 function moveItemToDay(itemId, fromDayIdx, toDayIdx) {
   let moved = null;

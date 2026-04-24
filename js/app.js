@@ -169,6 +169,15 @@ function renderActiveDayView(state) {
   // Timeline
   html += `<div class="timeline">${renderTimelineItems(dayState, impact)}</div>`;
 
+  // Add item button (edit mode only)
+  if (editMode) {
+    html += `
+      <button class="add-item-btn" onclick="openAddItem()">
+        ＋ ${lang === 'zh' ? '新增行程' : 'Add Stop'}
+      </button>
+    `;
+  }
+
   // Footer
   html += renderDayFooter(dayState, impact);
   html += `</div>`;
@@ -237,6 +246,7 @@ function renderTimelineItems(dayState, impact) {
                   <button class="ctrl-btn ctrl-edit" onclick="editItem('${item.id}')">✎</button>
                   <button class="ctrl-btn" onclick="moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
                   <button class="ctrl-btn" onclick="moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="ctrl-btn ctrl-del" onclick="confirmDeleteItem('${item.id}')">✕</button>
                 </div>
               ` : ''}
             </div>
@@ -359,16 +369,46 @@ function editItem(itemId) {
   if (!found) return;
 
   const isZh = lang === 'zh';
-  document.getElementById('edit-item-id').value = itemId;
-  document.getElementById('edit-time').value     = found.time !== '—' ? found.time : '';
-  document.getElementById('edit-duration').value = found.duration && found.duration !== '—' ? found.duration : '';
-  document.getElementById('edit-note').value     = found.note?.[lang] || '';
+  document.getElementById('edit-item-id').value   = itemId;
+  document.getElementById('edit-place').value     = found.place?.[lang] || '';
+  document.getElementById('edit-time').value      = found.time !== '—' ? found.time : '';
+  document.getElementById('edit-duration').value  = found.duration && found.duration !== '—' ? found.duration : '';
+  document.getElementById('edit-note').value      = found.note?.[lang] || '';
   document.getElementById('edit-sheet-title').textContent = isZh ? '編輯行程項目' : 'Edit Item';
+  document.getElementById('lbl-place').textContent = isZh ? '地點名稱' : 'Place Name';
   document.getElementById('lbl-time').textContent  = isZh ? '時間' : 'Time (HH:MM)';
   document.getElementById('lbl-dur').textContent   = isZh ? '停留時間' : 'Duration';
   document.getElementById('lbl-note').textContent  = isZh ? '備注（目前語言）' : 'Note (current lang)';
   document.getElementById('edit-note').placeholder = isZh ? '備注說明...' : 'Add a note...';
+  const saveBtn = document.querySelector('.edit-save-btn');
+  if (saveBtn) saveBtn.textContent = isZh ? '儲存' : 'Save';
   document.getElementById('edit-sheet-overlay').style.display = 'flex';
+}
+
+function openAddItem() {
+  const isZh = lang === 'zh';
+  document.getElementById('edit-item-id').value   = '__new__';
+  document.getElementById('edit-place').value     = '';
+  document.getElementById('edit-time').value      = '';
+  document.getElementById('edit-duration').value  = '';
+  document.getElementById('edit-note').value      = '';
+  document.getElementById('edit-sheet-title').textContent  = isZh ? '新增行程項目' : 'Add New Stop';
+  document.getElementById('lbl-place').textContent = isZh ? '地點名稱' : 'Place Name';
+  document.getElementById('lbl-time').textContent  = isZh ? '時間' : 'Time (HH:MM)';
+  document.getElementById('lbl-dur').textContent   = isZh ? '停留時間' : 'Duration';
+  document.getElementById('lbl-note').textContent  = isZh ? '備注' : 'Note';
+  document.getElementById('edit-note').placeholder = isZh ? '備注說明...' : 'Add a note...';
+  const saveBtn = document.querySelector('.edit-save-btn');
+  if (saveBtn) saveBtn.textContent = isZh ? '新增' : 'Add';
+  document.getElementById('edit-sheet-overlay').style.display = 'flex';
+}
+
+function confirmDeleteItem(itemId) {
+  const msg = lang === 'zh' ? '確定要刪除這個行程項目嗎？' : 'Delete this item?';
+  if (confirm(msg)) {
+    deleteItem(itemId);
+    renderItinerary();
+  }
 }
 
 function closeEditSheet() {
@@ -376,23 +416,56 @@ function closeEditSheet() {
 }
 
 function saveItemEdit() {
-  const itemId = document.getElementById('edit-item-id').value;
+  const itemId   = document.getElementById('edit-item-id').value;
+  const placeName = document.getElementById('edit-place').value.trim();
   const time     = document.getElementById('edit-time').value.trim()     || '—';
   const duration = document.getElementById('edit-duration').value.trim() || '—';
   const noteText = document.getElementById('edit-note').value.trim();
 
-  const state = getState();
-  let existing = null;
-  for (const d of state) {
-    const it = d.items.find(it => it.id === itemId);
-    if (it) { existing = it; break; }
-  }
-  const currentNote = existing?.note || null;
-  const newNote = currentNote
-    ? { ...currentNote, [lang]: noteText }
-    : { zh: noteText, en: noteText };
+  // Reset save button text
+  const saveBtn = document.querySelector('.edit-save-btn');
+  if (saveBtn) saveBtn.textContent = lang === 'zh' ? '儲存' : 'Save';
 
-  updateItem(itemId, { time, duration, note: newNote });
+  if (itemId === '__new__') {
+    // ── ADD MODE ──
+    const state  = getState();
+    const dayNum = state[activeDayIdx].day;
+    const id     = `d${dayNum}_u${Date.now()}`;
+    const name   = placeName || (lang === 'zh' ? '新行程' : 'New Stop');
+    addItem(activeDayIdx, {
+      id,
+      originalDay: dayNum,
+      time,
+      place:    { zh: name, en: name },
+      duration,
+      note:     noteText ? { zh: noteText, en: noteText } : null,
+      maps:     null,
+      warn:     false,
+    });
+  } else {
+    // ── EDIT MODE ──
+    const state = getState();
+    let existing = null;
+    for (const d of state) {
+      const it = d.items.find(it => it.id === itemId);
+      if (it) { existing = it; break; }
+    }
+    const changes = { time, duration };
+
+    // Update place in current language (keep other lang unchanged)
+    if (placeName) {
+      changes.place = { ...(existing?.place || { zh: '', en: '' }), [lang]: placeName };
+    }
+
+    // Update note in current language
+    const currentNote = existing?.note || null;
+    changes.note = currentNote
+      ? { ...currentNote, [lang]: noteText }
+      : { zh: noteText, en: noteText };
+
+    updateItem(itemId, changes);
+  }
+
   closeEditSheet();
   renderItinerary();
 }
