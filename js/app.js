@@ -140,7 +140,7 @@ function openMapModal(dayIdx) {
   const dayState = state[dayIdx];
 
   const stops = dayState.items
-    .filter(item => PLACE_COORDS[item.place.zh])
+    .filter(item => PLACE_COORDS[item.place.zh] && getCategory(item) !== 'transport')
     .map(item => ({ ...item, coords: PLACE_COORDS[item.place.zh] }));
 
   if (stops.length === 0) {
