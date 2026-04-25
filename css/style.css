@@ -1734,6 +1734,7 @@ nav#bottom-nav {
   background: #f4f6f9; border-radius: 6px;
 }
 .warn-text { color: var(--warn); font-weight: 600; }
+.rating-stars { color: var(--gold); letter-spacing: 1px; }
 .detail-link {
   display: inline-block; margin-top: 4px;
   font-size: 13px; color: var(--teal);

@@ -1104,6 +1104,18 @@ function openDetailSheet(key) {
       </div>
     `;
   }
+  if (d && d.rating) {
+    const stars = '★'.repeat(d.rating.stars) + '☆'.repeat(5 - d.rating.stars);
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">🌟</div>
+        <div>
+          <div class="detail-label">${isZh ? '旅客評分' : 'Guest Rating'}</div>
+          <div class="detail-val"><span class="rating-stars">${stars}</span> <strong>${d.rating.score}</strong> · ${d.rating.source}</div>
+        </div>
+      </div>
+    `;
+  }
   if (d && d.hours) {
     html += `
       <div class="detail-row">

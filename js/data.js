@@ -800,4 +800,37 @@ const PLACE_DETAIL = {
     recommend: { zh: '濃郁蝦味噌拉麵 1,200円；旅程最後一餐；蝦湯濃縮精華', en: 'Rich shrimp miso ramen ¥1,200; perfect final meal; intensely flavored shrimp broth' },
     link: 'https://tabelog.com/hokkaido/A0107/A010701/1034338/',
   },
+  // ── Hotels ──
+  '索拉瑞亞西鐵酒店 Check-in': {
+    phone: '011-272-5005',
+    hours: { zh: '入住 15:00 起 / 退房 11:00', en: 'Check-in from 15:00 / Check-out by 11:00' },
+    address: { zh: '札幌市中央区南4条西3丁目1-1', en: '1-1 Minami 4-jo W3, Chuo-ku, Sapporo' },
+    rating: { score: '8.8/10', source: 'Booking.com', stars: 4 },
+    recommend: { zh: '早餐自助（另計）：北海道海鮮丼台、毛蟹、新鮮乳製品；08:00 人潮高峰，建議 07:30 入場或 09:00 後再去', en: 'Breakfast buffet (extra cost): Hokkaido kaisen-don station, crab, fresh dairy; peak rush 08:00 — arrive by 07:30 or after 09:00' },
+    link: 'https://www.nishitetsu.jp/hotel/sapporo/',
+  },
+  '京王 Prelia 辦入住': {
+    phone: '011-261-0311',
+    hours: { zh: '入住 15:00 起 / 退房 11:00', en: 'Check-in from 15:00 / Check-out by 11:00' },
+    address: { zh: '札幌市中央区北5条西2丁目', en: 'Kita 5-jo W2, Chuo-ku, Sapporo' },
+    rating: { score: '4.5/5', source: 'TripAdvisor', stars: 4 },
+    recommend: { zh: '早餐（另計）：道產有機蔬菜沙拉、現烤麵包、當季食材；質量勝於份量；評價：食材新鮮但種類偏少', en: 'Breakfast (extra cost): local organic salad, freshly baked bread, seasonal ingredients; quality over quantity — fresh but limited variety' },
+    link: 'https://www.keioprelia.com/sapporo/',
+  },
+  'Century Marina Hakodate Check-in': {
+    phone: '0138-23-2121',
+    hours: { zh: '入住 14:00 起 / 退房 11:00', en: 'Check-in from 14:00 / Check-out by 11:00' },
+    address: { zh: '函館市大手町22-10', en: '22-10 Otemachi, Hakodate' },
+    rating: { score: '8.9/10', source: 'Booking.com', stars: 5 },
+    recommend: { zh: '北海道最強早餐之一（含於住宿）：無限刺身台、海鮮丼自選站、函館新鮮漁獲；屋上溫泉可眺望函館港；強烈建議 07:30 入場', en: "One of Hokkaido's best hotel breakfasts (included): unlimited sashimi, DIY kaisen-don station, fresh Hakodate seafood; rooftop onsen with harbor view — arrive at 07:30 to beat the rush" },
+    link: 'https://www.centurymarina.com/',
+  },
+  '湖景 TOYA 乃之風渡假酒店 Check-in': {
+    phone: '0142-75-2111',
+    hours: { zh: '入住 14:00 起 / 退房 11:00', en: 'Check-in from 14:00 / Check-out by 11:00' },
+    address: { zh: '虻田郡洞爺湖町洞爺湖温泉29', en: '29 Toyako Onsen, Toyako-cho, Abuta-gun' },
+    rating: { score: '4.2/5', source: 'TripAdvisor', stars: 4 },
+    recommend: { zh: '晚餐＋早餐含於住宿；自助餐含螃蟹、成吉思汗羊肉、海鮮、道産乳製品；露天風呂正對洞爺湖；每晚 20:45 水上煙火（4/28–10/31）可從客房欣賞', en: 'Dinner + breakfast included in stay; buffet: crab, Jingisukan lamb, seafood, local dairy; rotenburo overlooking Toya Lake; nightly fireworks at 20:45 (Apr 28–Oct 31) visible from room' },
+    link: 'https://nonokaze-resort.com/',
+  },
 };
