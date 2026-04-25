@@ -424,6 +424,48 @@ const SOS = [
   { label: { zh: '新千歲機場詢問', en: 'New Chitose Airport Info' }, number: '0123-23-0111', action: 'call' },
 ];
 
+// ── JAPANESE PHRASES ──────────────────────────────────────
+const PHRASES = [
+  {
+    category: { zh: '🍽 餐廳', en: '🍽 Restaurant' },
+    items: [
+      { zh: '有位子嗎？', jp: '席はありますか？', romaji: 'Seki wa arimasu ka?' },
+      { zh: '我不吃生食', jp: '生ものは食べられません', romaji: 'Namamono wa taberaremasen' },
+      { zh: '這個是什麼？', jp: 'これは何ですか？', romaji: 'Kore wa nan desu ka?' },
+      { zh: '請給我帳單', jp: 'お会計をお願いします', romaji: 'Okaikei wo onegaishimasu' },
+      { zh: '好吃！', jp: '美味しいです！', romaji: 'Oishii desu!' },
+    ]
+  },
+  {
+    category: { zh: '🚃 交通', en: '🚃 Transport' },
+    items: [
+      { zh: '到○○怎麼去？', jp: '○○までどうやって行きますか？', romaji: '○○ made dō yatte ikimasu ka?' },
+      { zh: '請停在這裡（計程車）', jp: 'ここで止めてください', romaji: 'Koko de tomete kudasai' },
+      { zh: '這班車到○○嗎？', jp: 'この電車は○○まで行きますか？', romaji: 'Kono densha wa ○○ made ikimasu ka?' },
+      { zh: '我迷路了', jp: '道に迷いました', romaji: 'Michi ni mayoimashita' },
+    ]
+  },
+  {
+    category: { zh: '🛒 購物', en: '🛒 Shopping' },
+    items: [
+      { zh: '這個多少錢？', jp: 'これはいくらですか？', romaji: 'Kore wa ikura desu ka?' },
+      { zh: '可以刷卡嗎？', jp: 'カードで払えますか？', romaji: 'Kādo de haraemasu ka?' },
+      { zh: '請幫我包裝好一點', jp: 'しっかり包んでください', romaji: 'Shikkari tsutsunde kudasai' },
+      { zh: '我只是看看', jp: '見ているだけです', romaji: 'Mite iru dake desu' },
+    ]
+  },
+  {
+    category: { zh: '🆘 緊急', en: '🆘 Emergency' },
+    items: [
+      { zh: '救命！', jp: '助けてください！', romaji: 'Tasukete kudasai!' },
+      { zh: '請叫救護車', jp: '救急車を呼んでください', romaji: 'Kyūkyūsha wo yonde kudasai' },
+      { zh: '我有過敏：＿＿', jp: '＿＿アレルギーがあります', romaji: '__ Arerugi ga arimasu' },
+      { zh: '護照不見了', jp: 'パスポートを無くしました', romaji: 'Pasupōto wo nakushimashita' },
+      { zh: '我需要幫助', jp: '助けが必要です', romaji: 'Tasuke ga hitsuyō desu' },
+    ]
+  },
+];
+
 // ── PLACE COORDINATES (for Leaflet map) ───────────────────
 // Keys match item.place.zh exactly
 const PLACE_COORDS = {

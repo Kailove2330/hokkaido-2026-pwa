@@ -9,6 +9,7 @@ let souvenirTab = 0;
 let svSubTab = 0;
 let svOpenId = null;
 let transportTab = 0;
+let sosTab = 0;
 
 // ── Storage helpers ────────────────────────────────────────
 function getChecked(key) {
@@ -692,9 +693,18 @@ function getOutfitSuggestion(tempC) {
   }
 }
 
+function getSegmentIcon(t) {
+  if (t === null || t === undefined) return '—';
+  if (t >= 22) return '👕';
+  if (t >= 15) return '🧥';
+  if (t >= 10) return '🧤';
+  return '🥶';
+}
+
 function renderWeatherCard(state) {
   const city = state?.[activeDayIdx]?.weatherCity || 'Sapporo';
   const cityLabel = lang === 'zh' ? (CITY_ZH[city] || city) : city;
+  const segLabels = lang === 'zh' ? ['早', '午', '晚'] : ['AM', 'Noon', 'PM'];
   return `
     <div class="weather-card-v2">
       <div class="wc2-left">
@@ -709,6 +719,16 @@ function renderWeatherCard(state) {
         <button class="wc2-refresh" onclick="fetchWeather('${city}')">↻</button>
       </div>
     </div>
+    <div class="wc2-segments" id="wc-segments" style="display:none">
+      ${['morning','afternoon','evening'].map((k, i) => `
+        <div class="wc2-seg">
+          <div class="wc2-seg-label">${segLabels[i]}</div>
+          <div class="wc2-seg-temp" id="wc-seg-${k}">—°</div>
+          <div class="wc2-seg-icon" id="wc-seg-${k}-icon">—</div>
+        </div>
+        ${i < 2 ? '<div class="wc2-seg-div"></div>' : ''}
+      `).join('')}
+    </div>
   `;
 }
 
@@ -718,12 +738,22 @@ async function fetchWeather(city) {
     const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
     const data = await res.json();
     const cur = data.current_condition[0];
+    const hourly = data.weather?.[0]?.hourly || [];
+    const getHourTemp = time => {
+      const h = hourly.find(h => h.time === String(time));
+      return h ? parseInt(h.tempC) : null;
+    };
     const result = {
       city,
       desc: cur.weatherDesc[0].value,
       temp_c: cur.temp_C,
       feels: cur.FeelsLikeC,
-      humidity: cur.humidity
+      humidity: cur.humidity,
+      hourly: {
+        morning:   getHourTemp(600),
+        afternoon: getHourTemp(1200),
+        evening:   getHourTemp(1800),
+      }
     };
     weatherCache[city] = result;
     applyWeather(result);
@@ -749,6 +779,16 @@ function applyWeather(w) {
     : `Feels ${w.feels}°C · ${w.humidity}% humidity`);
   set('wc-desc',   w.desc);
   set('wc-outfit', getOutfitSuggestion(w.temp_c));
+
+  if (w.hourly) {
+    const seg = document.getElementById('wc-segments');
+    if (seg) seg.style.display = 'flex';
+    ['morning', 'afternoon', 'evening'].forEach(k => {
+      const t = w.hourly[k];
+      set(`wc-seg-${k}`,      t !== null ? `${t}°` : '—');
+      set(`wc-seg-${k}-icon`, getSegmentIcon(t));
+    });
+  }
 }
 
 // ── SOUVENIRS ──────────────────────────────────────────────
@@ -986,29 +1026,56 @@ function toggleCheckItem(id) {
 }
 
 // ── SOS ────────────────────────────────────────────────────
+function setSosTab(t) { sosTab = t; renderSOS(); }
+
 function renderSOS() {
   const container = document.getElementById('page-sos');
-  let html = `<div class="section-title">🆘 ${T[lang].sosTitle}</div>`;
-  SOS.forEach(s => {
-    html += `
-      <div class="sos-card">
-        <div>
-          <div class="sos-label">${s.label[lang]}</div>
-          <div class="sos-number">${s.number}</div>
-        </div>
-        <a href="tel:${s.number}" class="sos-call-btn">📞 ${lang === 'zh' ? '撥打' : 'Call'}</a>
-      </div>
-    `;
-  });
-  html += `
-    <div class="section-title mt-8">💊 ${lang === 'zh' ? '醫療快速指引' : 'Medical Quick Tips'}</div>
-    <div class="card"><table class="transport-table"><tbody>
-      <tr><td>${lang === 'zh' ? '過敏反應' : 'Allergic reaction'}</td><td>${lang === 'zh' ? '說「アレルギー反応です」→ 119' : 'Say "Arerugi hanno desu" → 119'}</td></tr>
-      <tr><td>${lang === 'zh' ? '迷路 / 遺失物' : 'Lost / Missing'}</td><td>${lang === 'zh' ? '最近派出所或 JR 站務員' : 'Nearest Koban or JR staff'}</td></tr>
-      <tr><td>${lang === 'zh' ? '護照遺失' : 'Lost passport'}</td><td>${lang === 'zh' ? '報警 → 台灣駐大阪辦事處' : 'Police report → TECRO Osaka'}</td></tr>
-      <tr><td>${lang === 'zh' ? '班機延誤' : 'Flight delay'}</td><td>${lang === 'zh' ? '聯絡中華航空日本線' : 'Contact China Airlines Japan'}</td></tr>
-    </tbody></table></div>
+  const tab0 = lang === 'zh' ? '🆘 緊急' : '🆘 Emergency';
+  const tab1 = lang === 'zh' ? '🗣 日文' : '🗣 Phrases';
+
+  let html = `
+    <div class="sv-tab-bar">
+      <button class="sv-tab ${sosTab === 0 ? 'active' : ''}" onclick="setSosTab(0)">${tab0}</button>
+      <button class="sv-tab ${sosTab === 1 ? 'active' : ''}" onclick="setSosTab(1)">${tab1}</button>
+    </div>
   `;
+
+  if (sosTab === 0) {
+    SOS.forEach(s => {
+      html += `
+        <div class="sos-card">
+          <div>
+            <div class="sos-label">${s.label[lang]}</div>
+            <div class="sos-number">${s.number}</div>
+          </div>
+          <a href="tel:${s.number}" class="sos-call-btn">📞 ${lang === 'zh' ? '撥打' : 'Call'}</a>
+        </div>
+      `;
+    });
+    html += `
+      <div class="section-title mt-8">💊 ${lang === 'zh' ? '緊急狀況處理' : 'Emergency Guide'}</div>
+      <div class="card"><table class="transport-table"><tbody>
+        <tr><td>${lang === 'zh' ? '過敏反應' : 'Allergic reaction'}</td><td>${lang === 'zh' ? '說「アレルギーです」→ 119' : 'Say "Arerugi desu" → 119'}</td></tr>
+        <tr><td>${lang === 'zh' ? '迷路 / 遺失物' : 'Lost / Missing'}</td><td>${lang === 'zh' ? '最近派出所或 JR 站務員' : 'Nearest Koban or JR staff'}</td></tr>
+        <tr><td>${lang === 'zh' ? '護照遺失' : 'Lost passport'}</td><td>${lang === 'zh' ? '報警 → 台灣駐大阪辦事處' : 'Police → TECRO Osaka'}</td></tr>
+        <tr><td>${lang === 'zh' ? '班機延誤' : 'Flight delay'}</td><td>${lang === 'zh' ? '聯絡中華航空日本線' : 'Contact China Airlines Japan'}</td></tr>
+      </tbody></table></div>
+    `;
+  } else {
+    PHRASES.forEach(group => {
+      html += `<div class="section-title">${group.category[lang]}</div>`;
+      group.items.forEach(p => {
+        html += `
+          <div class="phrase-card">
+            <div class="phrase-zh">${p.zh}</div>
+            <div class="phrase-jp">${p.jp}</div>
+            <div class="phrase-romaji">${p.romaji}</div>
+          </div>
+        `;
+      });
+    });
+  }
+
   container.innerHTML = html;
 }
 
