@@ -275,6 +275,63 @@ const SOUVENIRS = [
   },
 ];
 
+// ── DRUGSTORE ─────────────────────────────────────────────
+const DRUGSTORE = [
+  {
+    category: { zh: '💊 腸胃系列', en: '💊 Digestive' },
+    items: [
+      { id: 'd1', name: { zh: '太田胃散', en: 'Ota Isan' }, price: '~800円', note: { zh: '胃痛、消化不良、飯後不適', en: 'Stomach pain, indigestion, post-meal discomfort' } },
+      { id: 'd2', name: { zh: 'ビオフェルミン（整腸錠）', en: 'Biofermin (probiotic tablets)' }, price: '~600円', note: { zh: '整腸菌，飲食不規律時服用', en: 'Probiotic for digestive balance' } },
+      { id: 'd3', name: { zh: 'ストッパ（止瀉藥）', en: 'Stoppa (anti-diarrhea)' }, price: '~700円', note: { zh: '快速止瀉，外出必備', en: 'Fast-acting, essential for travel' } },
+    ]
+  },
+  {
+    category: { zh: '🦴 痠痛消炎', en: '🦴 Pain Relief' },
+    items: [
+      { id: 'd4', name: { zh: 'ロイヒつぼ膏（貼布）', en: 'Ruhycream (plasters)' }, price: '~500円', note: { zh: '黑色圓形熱感貼布，激走路神器', en: 'Black round heat pads — perfect for long walking days' } },
+      { id: 'd5', name: { zh: 'バンテリン（凝膠）', en: 'Vantelin (gel)' }, price: '~1,200円', note: { zh: '深層肌肉消炎，腰腿腫脹適用', en: 'Deep muscle anti-inflammation, great for sore legs' } },
+      { id: 'd6', name: { zh: 'アンメルツ（液狀按摩液）', en: 'Ammeltz (roll-on)' }, price: '~700円', note: { zh: '肩頸痠痛滾珠，方便攜帶', en: 'Roll-on for shoulder/neck pain — travel-friendly' } },
+    ]
+  },
+  {
+    category: { zh: '🤧 感冒 / 喉嚨', en: '🤧 Cold / Throat' },
+    items: [
+      { id: 'd7', name: { zh: 'パブロン（感冒藥）', en: 'Pabron (cold remedy)' }, price: '~800円', note: { zh: '綜合感冒症狀；有糖衣錠和粉末兩種', en: 'All-in-one cold relief; coated tablets or powder' } },
+      { id: 'd8', name: { zh: '龍角散（喉糖）', en: 'Ryukakusan (throat drops)' }, price: '~400円', note: { zh: '喉嚨不適、咳嗽；草本成分', en: 'Throat discomfort, cough; herbal formula' } },
+    ]
+  },
+  {
+    category: { zh: '👁 眼部護理', en: '👁 Eye Care' },
+    items: [
+      { id: 'd9', name: { zh: 'サンテFX Neo（眼藥水）', en: 'Sante FX Neo (eye drops)' }, price: '~600円', note: { zh: '清涼型，緩解眼睛疲勞', en: 'Cooling formula, relieves eye fatigue' } },
+      { id: 'd10', name: { zh: 'ロートリセ（少女眼藥水）', en: 'Rohto Lycée (eye drops)' }, price: '~600円', note: { zh: '粉紅瓶，保濕溫和', en: 'Pink bottle, moisturizing and gentle' } },
+    ]
+  },
+  {
+    category: { zh: '✨ 護膚美容', en: '✨ Skincare' },
+    items: [
+      { id: 'd11', name: { zh: '肌研 極潤保濕乳液', en: 'Hada Labo Gokujun Lotion' }, price: '~700円', note: { zh: '玻尿酸保濕；日本最暢銷保濕品牌', en: "Japan's best-selling hyaluronic acid moisturizer" } },
+      { id: 'd12', name: { zh: 'MINON 胺基酸保濕面膜', en: 'MINON Amino Mask' }, price: '~1,500円', note: { zh: '敏感肌適用，5 片裝', en: 'Sensitive skin formula, 5-pack' } },
+      { id: 'd13', name: { zh: 'Curel 潤浸保濕乳霜', en: 'Curel Intensive Moisture Cream' }, price: '~900円', note: { zh: '乾燥肌首選，CP 值高', en: 'Top pick for dry skin, great value' } },
+    ]
+  },
+  {
+    category: { zh: '☀️ 防曬', en: '☀️ Sunscreen' },
+    items: [
+      { id: 'd14', name: { zh: 'ANESSA 金瓶防曬乳（SPF50+）', en: 'ANESSA Gold Sunscreen (SPF50+)' }, price: '~1,500円', note: { zh: '資生堂旗艦防曬；防水耐汗', en: 'Shiseido flagship sunscreen; waterproof & sweat-proof' } },
+      { id: 'd15', name: { zh: 'ビオレUV 水感防曬噴霧', en: 'Biore UV Watery Spray' }, price: '~800円', note: { zh: '補擦方便，戶外活動必備', en: 'Easy re-application spray for outdoor activities' } },
+    ]
+  },
+  {
+    category: { zh: '🧴 其他實用', en: '🧴 Other Essentials' },
+    items: [
+      { id: 'd16', name: { zh: 'カイロ（暖暖包 10 入）', en: 'Kairo Hand Warmers (10-pack)' }, price: '~300円', note: { zh: '5 月北海道早晚仍涼，貼式最實用', en: 'May mornings/nights still cold; adhesive type most useful' } },
+      { id: 'd17', name: { zh: 'メンソレータム（萬能膏）', en: 'Mentholatum Ointment' }, price: '~400円', note: { zh: '乾裂嘴唇、皮膚乾燥急救', en: 'Lip and skin rescue for dry conditions' } },
+      { id: 'd18', name: { zh: 'ニベア 藍罐乳霜', en: 'NIVEA Creme (blue tin)' }, price: '~300円', note: { zh: '全身保濕，台灣找不到大罐裝', en: 'Full-body moisturizer; larger cans only in Japan' } },
+    ]
+  },
+];
+
 // ── TRANSPORT ──────────────────────────────────────────────
 const TRANSPORT = {
   jr: [

@@ -5,7 +5,8 @@
 let lang = localStorage.getItem('hk_lang') || 'zh';
 let activeDayIdx = 0;
 let editMode = false;
-let souvenirFilter = 'all';
+let souvenirTab = 0;
+let svOpenId = null;
 
 // ── Storage helpers ────────────────────────────────────────
 function getChecked(key) {
@@ -16,8 +17,7 @@ function saveChecked(key, set) {
   localStorage.setItem(key, JSON.stringify([...set]));
 }
 
-const checkedSouvenirs = getChecked('hk_souvenirs');
-const checkedItems     = getChecked('hk_checklist');
+const checkedItems = getChecked('hk_checklist');
 
 // ── Language toggle ────────────────────────────────────────
 function setLang(l) {
@@ -603,24 +603,46 @@ function saveItemEdit() {
   renderItinerary();
 }
 
-// ── SOUVENIR OWNERS ────────────────────────────────────────
-function getSouvenirOwners() {
-  try { return JSON.parse(localStorage.getItem('hk_souvenir_owners') || '{}'); }
+// ── SOUVENIR PURCHASES ─────────────────────────────────────
+function getSvPurchases() {
+  try { return JSON.parse(localStorage.getItem('hk_sv_purchases') || '{}'); }
   catch { return {}; }
 }
 
-function cycleSouvenirOwner(id) {
-  const owners = getSouvenirOwners();
-  const cycle  = { undefined: 'A', A: 'B', B: 'both', both: null };
-  const next   = cycle[String(owners[id])];
-  if (next === null || next === undefined) delete owners[id];
-  else owners[id] = next;
-  localStorage.setItem('hk_souvenir_owners', JSON.stringify(owners));
+function setSvTab(t) {
+  souvenirTab = t;
+  svOpenId = null;
   renderSouvenirs();
 }
 
-function setSouvenirFilter(f) {
-  souvenirFilter = f;
+function openSvCard(id) {
+  svOpenId = svOpenId === id ? null : id;
+  renderSouvenirs();
+}
+
+function closeSvCard(e) {
+  if (e) e.stopPropagation();
+  svOpenId = null;
+  renderSouvenirs();
+}
+
+function saveSvPurchase(id) {
+  const qtyEl  = document.getElementById('sv-qty-'  + id);
+  const paidEl = document.getElementById('sv-paid-' + id);
+  const qty  = parseInt(qtyEl?.value)  || 1;
+  const paid = parseInt(paidEl?.value) || 0;
+  const purchases = getSvPurchases();
+  purchases[id] = { qty, paid };
+  localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
+  svOpenId = null;
+  renderSouvenirs();
+}
+
+function clearSvPurchase(id) {
+  const purchases = getSvPurchases();
+  delete purchases[id];
+  localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
+  svOpenId = null;
   renderSouvenirs();
 }
 
@@ -723,86 +745,94 @@ function applyWeather(w) {
 // ── SOUVENIRS ──────────────────────────────────────────────
 function renderSouvenirs() {
   const container = document.getElementById('page-souvenirs');
-  const owners = getSouvenirOwners();
-  const total = SOUVENIRS.reduce((s, c) => s + c.items.length, 0);
-  const done  = SOUVENIRS.reduce((s, c) => s + c.items.filter(i => checkedSouvenirs.has(i.id)).length, 0);
+  const purchases = getSvPurchases();
 
-  const fLabels = lang === 'zh'
-    ? ['全部', 'A 負責', 'B 負責', '共同']
-    : ['All', 'A only', 'B only', 'Both'];
-  const fKeys = ['all', 'A', 'B', 'both'];
+  // Totals across both tabs
+  const allItems = [
+    ...SOUVENIRS.flatMap(g => g.items),
+    ...DRUGSTORE.flatMap(g => g.items),
+  ];
+  const totalBought = allItems.filter(i => purchases[i.id]).length;
+  const totalSpent  = allItems.reduce((s, i) => s + (purchases[i.id]?.paid || 0), 0);
+
+  const dataset   = souvenirTab === 0 ? SOUVENIRS : DRUGSTORE;
+  const tab0Label = lang === 'zh' ? '伴手禮' : 'Souvenirs';
+  const tab1Label = lang === 'zh' ? '藥妝' : 'Drugstore';
+  const summaryTxt = lang === 'zh'
+    ? `已購 ${totalBought} 件｜花費 ${totalSpent.toLocaleString()} 円`
+    : `${totalBought} bought | ¥${totalSpent.toLocaleString()} spent`;
 
   let html = `
-    <div class="owner-filter-bar">
-      ${fKeys.map((k, i) => `
-        <button class="owner-filter-btn ${souvenirFilter === k ? 'active' : ''}" onclick="setSouvenirFilter('${k}')">
-          ${fLabels[i]}
-        </button>
-      `).join('')}
+    <div class="sv-tab-bar">
+      <button class="sv-tab ${souvenirTab === 0 ? 'active' : ''}" onclick="setSvTab(0)">${tab0Label}</button>
+      <button class="sv-tab ${souvenirTab === 1 ? 'active' : ''}" onclick="setSvTab(1)">${tab1Label}</button>
     </div>
-    <div class="owner-hint">${lang === 'zh' ? '點右側圓圈指定負責人 → A → B → 共同 → 清除' : 'Tap circle to assign: A → B → Both → Clear'}</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-label">
-        <span>${lang === 'zh' ? '採購進度' : 'Shopping progress'}</span>
-        <span>${done} / ${total}</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${total ? Math.round(done/total*100) : 0}%"></div></div>
-    </div>
+    <div class="sv-summary">${summaryTxt}</div>
   `;
 
-  const OWNER_TEXT = { A: 'A', B: 'B', both: lang === 'zh' ? '共' : '共', null: '＋' };
-  const OWNER_CLS  = { A: 'owner-a', B: 'owner-b', both: 'owner-both', null: 'owner-none' };
+  dataset.forEach(group => {
+    html += `<div class="sv-group"><div class="sv-group-title">${group.category[lang]}</div>`;
 
-  SOUVENIRS.forEach(cat => {
-    const visible = cat.items.filter(item => {
-      if (souvenirFilter === 'all') return true;
-      const o = owners[item.id] || null;
-      if (souvenirFilter === 'A')    return o === 'A'    || o === 'both';
-      if (souvenirFilter === 'B')    return o === 'B'    || o === 'both';
-      if (souvenirFilter === 'both') return o === 'both';
-      return true;
-    });
-    if (visible.length === 0) return;
+    group.items.forEach(item => {
+      const p       = purchases[item.id];
+      const isOpen  = svOpenId === item.id;
+      const isBought = !!p;
 
-    html += `<div class="souvenir-section"><div class="souvenir-cat">${cat.category[lang]}</div>`;
-    visible.forEach(item => {
-      const checked  = checkedSouvenirs.has(item.id);
-      const owner    = owners[item.id] || null;
-      const noteHtml = item.note ? `<div class="souvenir-note">${item.note[lang]}</div>` : '';
-      const badges   = [
+      const badges = [
         item.cold    ? `<span class="badge badge-cold">❄ ${T[lang].cold}</span>` : '',
         item.airport ? `<span class="badge badge-airport">✈ ${T[lang].limitedAirport}</span>` : '',
       ].filter(Boolean).join('');
+      const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
+
+      const statusHtml = isBought
+        ? `<div class="sv-status-bought">✓<br>${p.qty}件${p.paid ? '<br>' + p.paid.toLocaleString() + '円' : ''}</div>`
+        : `<div class="sv-status-add">＋</div>`;
+
+      const formHtml = isOpen ? `
+        <div class="sv-form" onclick="event.stopPropagation()">
+          <div class="sv-form-row">
+            <label class="sv-form-label">${lang === 'zh' ? '數量' : 'Qty'}</label>
+            <input class="sv-form-input" id="sv-qty-${item.id}" type="number" min="1" value="${p?.qty || 1}">
+          </div>
+          <div class="sv-form-row">
+            <label class="sv-form-label">${lang === 'zh' ? '花費（円）' : 'Paid (¥)'}</label>
+            <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" value="${p?.paid || ''}">
+          </div>
+          <div class="sv-form-btns">
+            <button class="sv-btn-save" onclick="saveSvPurchase('${item.id}')">
+              ${lang === 'zh' ? '記錄' : 'Save'}
+            </button>
+            <button class="sv-btn-cancel" onclick="closeSvCard(event)">
+              ${lang === 'zh' ? '取消' : 'Cancel'}
+            </button>
+            ${isBought ? `<button class="sv-btn-clear" onclick="clearSvPurchase('${item.id}')">
+              ${lang === 'zh' ? '清除' : 'Clear'}
+            </button>` : ''}
+          </div>
+        </div>
+      ` : '';
 
       html += `
-        <div class="souvenir-item ${checked ? 'checked' : ''}">
-          <div class="souvenir-main" onclick="toggleSouvenir('${item.id}')">
-            <div class="souvenir-checkbox">${checked ? '✓' : ''}</div>
-            <div class="souvenir-info">
-              <div class="souvenir-name">${item.name[lang]}</div>
-              ${item.price ? `<div class="souvenir-price">${item.price}</div>` : ''}
+        <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
+             onclick="openSvCard('${item.id}')">
+          <div class="sv-card-body">
+            <div class="sv-card-left">
+              <div class="sv-card-name">${item.name[lang]}</div>
+              ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
               ${badges ? `<div class="badge-row">${badges}</div>` : ''}
               ${noteHtml}
             </div>
+            <div class="sv-card-right">${statusHtml}</div>
           </div>
-          <button class="owner-badge ${OWNER_CLS[String(owner)]}"
-                  onclick="cycleSouvenirOwner('${item.id}')">
-            ${OWNER_TEXT[String(owner)]}
-          </button>
+          ${formHtml}
         </div>
       `;
     });
+
     html += '</div>';
   });
 
   container.innerHTML = html;
-}
-
-function toggleSouvenir(id) {
-  if (checkedSouvenirs.has(id)) checkedSouvenirs.delete(id);
-  else checkedSouvenirs.add(id);
-  saveChecked('hk_souvenirs', checkedSouvenirs);
-  renderSouvenirs();
 }
 
 // ── TRANSPORT ──────────────────────────────────────────────
