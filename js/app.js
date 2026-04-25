@@ -128,7 +128,73 @@ function selectDay(idx) {
   document.querySelector('main').scrollTop = 0;
 }
 
-// ── Day Map ────────────────────────────────────────────────
+// ── Leaflet Map Modal ──────────────────────────────────────
+let leafletMap = null;
+
+function openMapModal(dayIdx) {
+  if (typeof L === 'undefined') {
+    alert(lang === 'zh' ? '地圖需要網路連線' : 'Map requires internet connection');
+    return;
+  }
+  const state = getState();
+  const dayState = state[dayIdx];
+
+  const stops = dayState.items
+    .filter(item => PLACE_COORDS[item.place.zh])
+    .map(item => ({ ...item, coords: PLACE_COORDS[item.place.zh] }));
+
+  if (stops.length === 0) {
+    alert(lang === 'zh' ? '此天無地圖資料' : 'No map data for this day');
+    return;
+  }
+
+  document.getElementById('map-modal-title').textContent =
+    `Day ${dayState.day} · ${cleanPlaceName(dayState.title[lang])}`;
+  document.getElementById('map-modal').style.display = 'flex';
+
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+
+  requestAnimationFrame(() => {
+    leafletMap = L.map('map-leaflet', { zoomControl: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 18,
+    }).addTo(leafletMap);
+
+    const markers = stops.map((item, i) => {
+      const icon = L.divIcon({
+        className: 'map-pin-wrap',
+        html: `<div class="map-pin">${i + 1}</div>`,
+        iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18],
+      });
+      const name = cleanPlaceName(item.place[lang]) || item.place[lang];
+      const mapsUrl = item.maps ||
+        `https://www.google.com/maps/search/${encodeURIComponent(item.place.zh + ' 北海道')}`;
+      return L.marker(item.coords, { icon }).addTo(leafletMap).bindPopup(`
+        <div class="map-popup">
+          <div class="mp-num">${item.time && item.time !== '—' ? item.time : ''}</div>
+          <div class="mp-name">${name}</div>
+          <a href="${mapsUrl}" target="_blank" rel="noopener" class="mp-nav">
+            📍 ${lang === 'zh' ? '導航到這裡' : 'Navigate here'}
+          </a>
+        </div>`, { maxWidth: 200 });
+    });
+
+    if (stops.length > 1) {
+      L.polyline(stops.map(s => s.coords), {
+        color: '#1a2744', weight: 2.5, opacity: 0.6, dashArray: '6, 9',
+      }).addTo(leafletMap);
+    }
+
+    leafletMap.fitBounds(L.featureGroup(markers).getBounds().pad(0.25));
+  });
+}
+
+function closeMapModal() {
+  document.getElementById('map-modal').style.display = 'none';
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+}
+
+// ── Day Map (legacy helper, kept for fallback) ─────────────
 function cleanPlaceName(name) {
   return name
     .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]+\s*/gu, '') // strip emoji
@@ -196,9 +262,9 @@ function renderDaySummaryCard(dayState) {
         <span>💴 ${dayState.mealBudget[lang]}</span>
       </div>
       ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
-      <a class="sum-map-btn" href="${buildDayMapUrl(activeDayIdx) || '#'}" target="_blank" rel="noopener">
+      <button class="sum-map-btn" onclick="openMapModal(${activeDayIdx})">
         <span style="font-size:15px;line-height:1">📍</span>${lang === 'zh' ? '今日地圖' : "Today's Map"}
-      </a>
+      </button>
     </div>
   `;
 }
