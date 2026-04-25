@@ -128,6 +128,45 @@ function selectDay(idx) {
   document.querySelector('main').scrollTop = 0;
 }
 
+// ── Day Summary Card ───────────────────────────────────────
+function renderDaySummaryCard(dayState) {
+  const meals = { breakfast: null, lunch: null, dinner: null };
+  dayState.items.forEach(item => {
+    if (getCategory(item) !== 'food') return;
+    const t = item.time;
+    if (!t || t === '—') return;
+    const h = parseInt(t.split(':')[0], 10);
+    if (h < 11 && !meals.breakfast)           meals.breakfast = item.place[lang];
+    else if (h >= 11 && h < 15 && !meals.lunch) meals.lunch  = item.place[lang];
+    else if (h >= 15 && !meals.dinner)         meals.dinner   = item.place[lang];
+  });
+
+  const rows = [
+    { icon: '☀️', label: lang === 'zh' ? '早餐' : 'Breakfast', val: meals.breakfast },
+    { icon: '🌤',  label: lang === 'zh' ? '午餐' : 'Lunch',     val: meals.lunch },
+    { icon: '🌙', label: lang === 'zh' ? '晚餐' : 'Dinner',    val: meals.dinner },
+  ];
+
+  const mealHtml = rows.map(r => `
+    <div class="sum-meal${r.val ? '' : ' sum-meal-missing'}">
+      <span class="sum-meal-icon">${r.icon}</span>
+      <span class="sum-meal-label">${r.label}</span>
+      <span class="sum-meal-val">${r.val || (lang === 'zh' ? '未安排' : 'TBD')}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="day-summary-card">
+      <div class="sum-meals">${mealHtml}</div>
+      <div class="sum-footer">
+        <span>👟 ~${dayState.steps.toLocaleString()} ${lang === 'zh' ? '步' : 'steps'}</span>
+        <span>💴 ${dayState.mealBudget[lang]}</span>
+      </div>
+      ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
+    </div>
+  `;
+}
+
 // ── Active Day View ────────────────────────────────────────
 function renderActiveDayView(state) {
   const dayState = state[activeDayIdx];
@@ -147,6 +186,9 @@ function renderActiveDayView(state) {
       ${impBadges ? `<div class="impact-row" style="margin-top:5px">${impBadges}</div>` : ''}
     </div>
   `;
+
+  // Day summary (meals / steps / budget)
+  html += renderDaySummaryCard(dayState);
 
   // Flight card on Day 1 / last day
   if (activeDayIdx === 0) html += renderFlightCard('outbound');
@@ -269,28 +311,18 @@ function renderTimelineItems(dayState, impact) {
 
 // ── Day Footer ─────────────────────────────────────────────
 function renderDayFooter(dayState, impact) {
+  if (impact.conflicts.length === 0 && !impact.budgetChanged) return '';
   let html = '<div class="day-footer">';
-
-  if (impact.moved > 0 || impact.conflicts.length > 0) {
-    html += `<div class="footer-impact">`;
-    if (impact.conflicts.length > 0) {
-      const detail = impact.conflicts.map(c => {
-        const it = dayState.items;
-        return `${it[c.idxA]?.place[lang] || '?'} → ${it[c.idxB]?.place[lang] || '?'} (${c.overlapMin}${lang === 'zh' ? '分重疊' : 'min overlap'})`;
-      }).join('；');
-      html += `<div class="impact-detail conflict-detail">⏱ ${detail}</div>`;
-    }
-    if (impact.budgetChanged) {
-      html += `<div class="impact-detail">💴 ${lang === 'zh' ? '預算估計已變動，請手動核對' : 'Budget may have changed'}</div>`;
-    }
-    html += `</div>`;
+  if (impact.conflicts.length > 0) {
+    const detail = impact.conflicts.map(c => {
+      const it = dayState.items;
+      return `${it[c.idxA]?.place[lang] || '?'} → ${it[c.idxB]?.place[lang] || '?'} (${c.overlapMin}${lang === 'zh' ? '分重疊' : 'min overlap'})`;
+    }).join('；');
+    html += `<div class="footer-impact"><div class="impact-detail conflict-detail">⏱ ${detail}</div></div>`;
   }
-
-  html += `<div class="footer-row"><span class="label">${T[lang].mealBudget}：</span>${dayState.mealBudget[lang]}</div>`;
-  if (dayState.shopping) {
-    html += `<div class="footer-row"><span class="label">${T[lang].shoppingNote}：</span>${dayState.shopping[lang]}</div>`;
+  if (impact.budgetChanged) {
+    html += `<div class="footer-row"><span class="label">💴</span>${lang === 'zh' ? '預算估計已變動，請手動核對' : 'Budget may have changed'}</div>`;
   }
-  html += `<div class="footer-row text-muted"><span class="label">${T[lang].steps}：</span>~${dayState.steps.toLocaleString()} ${T[lang].stepsUnit}</div>`;
   html += '</div>';
   return html;
 }
