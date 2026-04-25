@@ -561,6 +561,7 @@ const PLACE_DETAIL = {
     phone: '011-521-4804',
     hours: { zh: '每日 17:00–翌03:00', en: 'Daily 17:00–03:00+' },
     address: { zh: '札幌市中央区南5条西4丁目', en: 'Minami 5-jo W4, Chuo-ku, Sapporo' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '成吉思汗羊肉 · 生ラム（新鮮生羔羊）', en: 'Jingisukan lamb · Fresh raw lamb (nama-ramu)' },
     link: 'https://tabelog.com/hokkaido/A0101/A010103/1057043/',
   },
@@ -568,6 +569,7 @@ const PLACE_DETAIL = {
     phone: '011-530-5505',
     hours: { zh: '週二–日 18:00–00:00（週一公休）', en: 'Tue–Sun 18:00–00:00, closed Mon' },
     address: { zh: '札幌市中央区南4条西4丁目', en: 'Minami 4-jo W4, Chuo-ku, Sapporo' },
+    rating: { score: '4.2/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '季節限定夜聖代（北海道牛奶底）', en: 'Seasonal night parfait (Hokkaido milk base)' },
     link: 'https://tabelog.com/hokkaido/A0101/A010103/1049420/',
   },
@@ -575,6 +577,7 @@ const PLACE_DETAIL = {
     phone: '0134-33-1993',
     hours: { zh: '每日 08:45–18:00', en: 'Daily 08:45–18:00' },
     address: { zh: '小樽市堺町7-26', en: '7-26 Sakaimachi, Otaru' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '煤油燈咖啡廳內用 · 手作玻璃杯（3,000円起）', en: 'Kerosene lamp café · Handmade glass from ¥3,000' },
     access: {
       zh: ['① 搭 JR 至小樽站', '② 沿堺町通り（南小樽方向）步行約 12 分至堺町7丁目（LeTAO 相距 50 公尺）'],
@@ -586,6 +589,7 @@ const PLACE_DETAIL = {
     phone: '0120-468-111',
     hours: { zh: '每日 09:00–18:00（季節調整）', en: 'Daily 09:00–18:00 (season varies)' },
     address: { zh: '小樽市堺町7-16', en: '7-16 Sakaimachi, Otaru' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '2F 現做雙層乳酪蛋糕 900円 · 飲料套餐 1,400円', en: '2F fresh Double Fromage ¥900 · drink set ¥1,400' },
     access: {
       zh: ['① 搭 JR 至小樽站', '② 沿堺町通り（南小樽方向）步行約 12 分至堺町7丁目（與北一硝子相距 50 公尺）'],
@@ -597,12 +601,14 @@ const PLACE_DETAIL = {
     phone: '011-551-4960',
     hours: { zh: '11:00–15:00，18:00–21:00（週三公休）', en: '11:00–15:00, 18:00–21:00, closed Wed' },
     address: { zh: '札幌市中央区南5条西5丁目（薄野店）', en: 'Susukino, Minami 5-jo W5, Chuo-ku' },
+    rating: { score: '4.0/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '味噌拉麵 · 奶油玉米味噌（コーンバターみそ）', en: 'Miso ramen · Rich butter corn miso' },
     link: 'http://www.sumireya.com/',
   },
   'Sato': {
     hours: { zh: '夜間限定（約 19:00–翌01:00）', en: 'Night only (approx 19:00–01:00+)' },
     address: { zh: '札幌市中央区南4条西4丁目周邊', en: 'Near Minami 4-jo W4, Chuo-ku, Sapporo' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '季節夜聖代（每週更換）', en: 'Seasonal night parfait (weekly rotation)' },
     link: 'https://tabelog.com/hokkaido/A0101/A010102/1077806/',
   },
@@ -610,6 +616,7 @@ const PLACE_DETAIL = {
     phone: '011-231-4059',
     hours: { zh: '週一–五 08:00–18:00，週末 08:00–17:00', en: 'Mon–Fri 08:00–18:00, weekends 08:00–17:00' },
     address: { zh: '札幌市中央区大通西1丁目', en: 'Odori W1, Chuo-ku, Sapporo' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '水份100% 吐司 · 蓬鬆舒芙蕾 · 玉米濃湯套餐', en: '100% moisture toast · soufflé pancake · corn soup set' },
     link: 'https://tabelog.com/grouplst/G04133/',
   },
@@ -617,6 +624,7 @@ const PLACE_DETAIL = {
     phone: '011-666-1481',
     hours: { zh: '09:00–18:00（依季節調整）', en: '09:00–18:00 (season varies)' },
     address: { zh: '札幌市西区宮の沢2条2丁目11-36', en: '2-2-11-36 Miyanosawa, Nishi-ku, Sapporo' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '工廠參觀票（預購 1,000円）· 舒芙蕾鬆餅 · 訂製磁鐵（1,500円起）', en: 'Factory tour (pre-book ¥1,000) · soufflé pancake · custom magnet (from ¥1,500)' },
     access: {
       zh: ['① 地下鐵東西線至終點「宮の沢」站', '② 步行約 7 分鐘直達（依指標走）'],
@@ -627,6 +635,7 @@ const PLACE_DETAIL = {
   '北海道神宮 / 圓山公園': {
     hours: { zh: '開放參拜 06:00–17:00', en: 'Worship hours 06:00–17:00' },
     address: { zh: '札幌市中央区宮ヶ丘474', en: '474 Miyagaoka, Chuo-ku, Sapporo' },
+    rating: { score: '4.5/5', source: 'Google Maps', stars: 5 },
     recommend: { zh: '判官さま現烤麻糬（限量 300円）· 福餅 · 圓山公園湖畔散步', en: 'Hangan grilled mochi (limited, ¥300) · Fuku-mochi · Maruyama Park stroll' },
     access: {
       zh: ['① 地下鐵東西線至「円山公園」站', '② 步行約 10 分鐘至神宮正門（沿指標走）'],
@@ -638,6 +647,7 @@ const PLACE_DETAIL = {
     phone: '011-233-5568',
     hours: { zh: '11:30–22:00（週三公休）', en: '11:30–22:00, closed Wed' },
     address: { zh: '札幌市中央区南2条西2丁目', en: 'Minami 2-jo W2, Chuo-ku, Sapporo' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '海老ベースのスープカレー · 辣度 0–40 可選', en: 'Shrimp broth soup curry · spice level 0–40' },
     link: 'https://s-garaku.com/',
   },
@@ -645,6 +655,7 @@ const PLACE_DETAIL = {
     phone: '011-231-3681',
     hours: { zh: '10:00–18:00（不定休）', en: '10:00–18:00 (irregular holidays)' },
     address: { zh: '札幌市中央区北4条西3丁目', en: 'Kita 4-jo W3, Chuo-ku, Sapporo' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: 'バリ銅鑼（巴里銅鑼）· 僅本店現場烤製', en: 'Bali Dorayaki · freshly baked in-store only' },
     link: 'https://senshuan.co.jp/',
   },
@@ -652,6 +663,7 @@ const PLACE_DETAIL = {
     phone: '011-222-0018',
     hours: { zh: '11:30–22:00（需提前預約）', en: '11:30–22:00 (reservations recommended)' },
     address: { zh: '札幌市中央区北4条西2丁目', en: 'Kita 4-jo W2, Chuo-ku, Sapporo' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '全熟螃蟹套餐（8,000–15,000円）· 指定包廂', en: 'Fully cooked crab course (¥8,000–15,000) · request private room' },
     link: 'https://tabelog.com/hokkaido/A0101/A010101/1000299/',
   },
@@ -659,6 +671,7 @@ const PLACE_DETAIL = {
     phone: '0138-26-2099',
     hours: { zh: '10:00–22:00（全年無休）', en: '10:00–22:00, open year-round' },
     address: { zh: '函館市末広町23-18', en: '23-18 Suehirocho, Hakodate' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '中華風炸雞漢堡（チャイニーズチキンバーガー）580円', en: 'Chinese Chicken Burger ¥580' },
     link: 'https://luckypierrot.jp/',
   },
@@ -666,6 +679,7 @@ const PLACE_DETAIL = {
     phone: '0138-22-6086',
     hours: { zh: '09:00–18:00（週三・週四公休）', en: '09:00–18:00, closed Wed & Thu' },
     address: { zh: '函館市大手町22-1', en: '22-1 Otemachi, Hakodate' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '焗烤海膽（ウニグラタン）· 炙烤海膽（炙りウニ）· 避開生食', en: 'Uni gratin · grilled uni · skip raw uni' },
     link: 'https://tabelog.com/hokkaido/A0105/A010501/1000136/',
   },
@@ -673,6 +687,7 @@ const PLACE_DETAIL = {
     phone: '0138-83-5007',
     hours: { zh: '11:30–21:00（週一・週二公休）', en: '11:30–21:00, closed Mon & Tue' },
     address: { zh: '函館市本町6-9', en: '6-9 Honcho, Hakodate' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '海老スープカレー（蝦湯咖哩）辣度 1–30', en: 'Shrimp broth soup curry, spice level 1–30' },
     link: 'https://tabelog.com/hokkaido/A0105/A010501/1042739/',
   },
@@ -680,6 +695,7 @@ const PLACE_DETAIL = {
     phone: '0142-75-2041',
     hours: { zh: '10:00–17:00（不定休）', en: '10:00–17:00 (irregular)' },
     address: { zh: '洞爺湖町洞爺湖温泉50', en: '50 Toyako Onsen, Toyako-cho' },
+    rating: { score: '3.9/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '白汁粉（白玉白湯圓紅豆湯）600–900円', en: 'White mochi sweet soup ¥600–900' },
     link: 'https://tabelog.com/hokkaido/A0108/A010801/1003343/',
   },
@@ -687,6 +703,7 @@ const PLACE_DETAIL = {
   'Cafe BAAL': {
     hours: { zh: '11:00–21:00（週三公休）', en: '11:00–21:00, closed Wed' },
     address: { zh: '小樽市稲穂2丁目（近小樽站）', en: 'Near Otaru Station, Inaho 2-chome' },
+    rating: { score: '4.0/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '洋食牛排飯 1,500–2,500円；份量紮實、保護腿力', en: 'Western-style steak rice ¥1,500–2,500; hearty portions, saves your legs' },
     link: 'https://tabelog.com/hokkaido/A0106/A010601/1052877/',
   },
@@ -694,6 +711,7 @@ const PLACE_DETAIL = {
   'とんかつ 檍': {
     hours: { zh: '11:30–22:00', en: '11:30–22:00' },
     address: { zh: '札幌市中央区南1条西5丁目', en: 'Minami 1-jo W5, Chuo-ku, Sapporo' },
+    rating: { score: '4.2/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '特上ロースかつ定食 2,500–4,000円；麥飯＋高麗菜無限續', en: 'Premium loin cutlet set ¥2,500–4,000; barley rice + cabbage unlimited refill' },
     link: 'https://tabelog.com/hokkaido/A0101/A010102/1063034/',
   },
@@ -701,6 +719,7 @@ const PLACE_DETAIL = {
     phone: '011-561-8177',
     hours: { zh: '纜車 10:30–22:00（最終上山 21:30）', en: 'Ropeway 10:30–22:00 (last ride up 21:30)' },
     address: { zh: '札幌市南区藻岩山', en: 'Moiwa-yama, Minami-ku, Sapporo' },
+    rating: { score: '4.5/5', source: 'Google Maps', stars: 5 },
     recommend: { zh: '纜車來回 2,100円；日本三大夜景；5月日落約18:30，帶防風外套', en: 'Ropeway ¥2,100 RT; Japan top-3 night view; sunset ~18:30 in May — bring windproof jacket' },
     access: {
       zh: [
@@ -721,6 +740,7 @@ const PLACE_DETAIL = {
   '牛しゃぶ 牛すき 禪': {
     hours: { zh: '18:00–23:00（需提前預約）', en: '18:00–23:00 (reservations required)' },
     address: { zh: '札幌市中央区（薄野周邊）', en: 'Near Susukino, Chuo-ku, Sapporo' },
+    rating: { score: '4.1/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '黑毛和牛壽喜燒；備注「不吃生食」請全熟處理；套餐 10,000–15,000円', en: 'Kuroge wagyu sukiyaki; note "fully cooked only" when booking; course ¥10,000–15,000' },
     link: 'https://tabelog.com/hokkaido/A0101/A010103/1003634/',
   },
@@ -728,6 +748,7 @@ const PLACE_DETAIL = {
   'DONGURI': {
     hours: { zh: '07:00–19:00（依店而異）', en: '07:00–19:00 (varies by branch)' },
     address: { zh: '札幌市各處（推薦大通附近店）', en: 'Multiple locations around Sapporo' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '牛角形クロワッサン・豆沙包；日日現烤；早開門是最大優勢', en: 'Horn croissant, red bean bun; baked fresh daily; early opening is the key advantage' },
     link: 'https://tabelog.com/hokkaido/A0101/A010102/1050116/',
   },
@@ -735,6 +756,7 @@ const PLACE_DETAIL = {
     phone: '0138-23-6288',
     hours: { zh: '纜車 10:00–22:00（10/16–4/24 至 21:00）；15m/s 強風停駛', en: 'Ropeway 10:00–22:00 (10/16–4/24 until 21:00); stops at 15m/s wind' },
     address: { zh: '函館市函館山', en: 'Hakodate-yama, Hakodate' },
+    rating: { score: '4.5/5', source: 'Google Maps', stars: 5 },
     recommend: { zh: '纜車來回 1,500円；日落後30分最美；山頂較市區冷5–8°C', en: 'Ropeway ¥1,500 RT; best 30 min after sunset; top is 5–8°C colder than city' },
     access: {
       zh: [
@@ -756,13 +778,16 @@ const PLACE_DETAIL = {
     phone: '0138-22-6751',
     hours: { zh: '11:00–20:00（週二公休）', en: '11:00–20:00, closed Tue' },
     address: { zh: '函館市本町16-13', en: '16-13 Honcho, Hakodate' },
+    rating: { score: '3.9/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '函館鹽拉麵老舖；透明清湯；あっさり鹽味 800–1,200円', en: 'Hakodate salt ramen institution; clear broth; light & savory ¥800–1,200' },
+    link: 'https://tabelog.com/hokkaido/A0105/A010501/1000199/',
   },
   // ── Day 6 ──
   '⭐ 五稜郭展望塔 / 公園': {
     phone: '0138-51-4785',
     hours: { zh: '09:00–18:00（4–10月至19:00）', en: '09:00–18:00 (Apr–Oct until 19:00)' },
     address: { zh: '函館市五稜郭町43-9', en: '43-9 Goryokaku-cho, Hakodate' },
+    rating: { score: '4.5/5', source: 'Google Maps', stars: 5 },
     recommend: { zh: '展望台 900円（★必上）；俯瞰五角星形堡壘；公園免費', en: 'Observation tower ¥900 (★must do); star-shaped fort from above; park is free' },
     access: {
       zh: ['① 市電至「五稜郭公園前」站', '② 步行約 15 分鐘至展望塔（沿五稜郭通直走）'],
@@ -773,6 +798,7 @@ const PLACE_DETAIL = {
   '⭐ 八幡坂 / 元町建築群': {
     hours: { zh: '舊函館区公会堂 09:00–17:00（週一公休）', en: 'Old Public Hall 09:00–17:00, closed Mon' },
     address: { zh: '函館市元町', en: 'Motomachi, Hakodate' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '八幡坂坡道海港透視日落最美；舊函館区公会堂 300円；周邊建築群免費', en: 'Hachiman-zaka sea view best at sunset; Old Public Hall ¥300; surrounding buildings free' },
     access: {
       zh: ['① 市電至「十字街」站（或「末広町」站）下車', '② 步行 5–10 分往山方向即進入元町歷史建築區', '③ 八幡坂・旧公会堂・カトリック元町教会皆在步行範圍內'],
@@ -785,6 +811,7 @@ const PLACE_DETAIL = {
     phone: '0143-84-3311',
     hours: { zh: '地獄谷・足湯全日免費開放', en: 'Hell Valley & footbath: free, open all day' },
     address: { zh: '登別市登別温泉町', en: 'Noboribetsu Onsen-cho, Noboribetsu' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '地獄谷免費；足湯免費（帶小毛巾）；現場可領防水坐墊；泉源公園間歇泉每整點噴發', en: 'Hell Valley free; footbath free (bring towel); waterproof mat at entrance; geyser erupts hourly' },
     access: {
       zh: ['① 搭 JR 特急 / 普通列車至登別站（洞爺出發約 20 分）', '② 登別站搭道南バス至登別溫泉巴士總站（約 10 分，票價 380円）', '⚡ 班次每小時 1–2 班，出發前確認時刻表'],
@@ -797,6 +824,7 @@ const PLACE_DETAIL = {
     phone: '011-213-2626',
     hours: { zh: '10:00–21:30（機場店）', en: '10:00–21:30 (airport branch)' },
     address: { zh: '新千歲機場 國內線 3F', en: 'New Chitose Airport Domestic Terminal 3F' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
     recommend: { zh: '濃郁蝦味噌拉麵 1,200円；旅程最後一餐；蝦湯濃縮精華', en: 'Rich shrimp miso ramen ¥1,200; perfect final meal; intensely flavored shrimp broth' },
     link: 'https://tabelog.com/hokkaido/A0107/A010701/1034338/',
   },
@@ -806,15 +834,15 @@ const PLACE_DETAIL = {
     hours: { zh: '入住 15:00 起 / 退房 11:00', en: 'Check-in from 15:00 / Check-out by 11:00' },
     address: { zh: '札幌市中央区南4条西3丁目1-1', en: '1-1 Minami 4-jo W3, Chuo-ku, Sapporo' },
     rating: { score: '8.8/10', source: 'Booking.com', stars: 4 },
-    recommend: { zh: '早餐自助（另計）：北海道海鮮丼台、毛蟹、新鮮乳製品；08:00 人潮高峰，建議 07:30 入場或 09:00 後再去', en: 'Breakfast buffet (extra cost): Hokkaido kaisen-don station, crab, fresh dairy; peak rush 08:00 — arrive by 07:30 or after 09:00' },
+    recommend: { zh: '早餐自助（另計 約2,200円/人）：北海道海鮮丼台、毛蟹、乳製品；可當天直接購買；08:00 高峰，建議 07:30 入場或 09:00 後再去', en: 'Breakfast buffet (~¥2,200/person, extra): Hokkaido kaisen-don, crab, dairy; walk-in purchase OK; peak 08:00 — arrive 07:30 or after 09:00' },
     link: 'https://www.nishitetsu.jp/hotel/sapporo/',
   },
   '京王 Prelia 辦入住': {
     phone: '011-261-0311',
     hours: { zh: '入住 15:00 起 / 退房 11:00', en: 'Check-in from 15:00 / Check-out by 11:00' },
     address: { zh: '札幌市中央区北5条西2丁目', en: 'Kita 5-jo W2, Chuo-ku, Sapporo' },
-    rating: { score: '4.5/5', source: 'TripAdvisor', stars: 4 },
-    recommend: { zh: '早餐（另計）：道產有機蔬菜沙拉、現烤麵包、當季食材；質量勝於份量；評價：食材新鮮但種類偏少', en: 'Breakfast (extra cost): local organic salad, freshly baked bread, seasonal ingredients; quality over quantity — fresh but limited variety' },
+    rating: { score: '4.5/5', source: 'TripAdvisor', stars: 5 },
+    recommend: { zh: '早餐（另計 約1,800–2,300円/人）：道產有機蔬菜沙拉、現烤麵包、當季食材；可當天購買；質量勝於份量，種類偏少', en: 'Breakfast (~¥1,800–2,300/person, extra): local organic salad, freshly baked bread, seasonal ingredients; walk-in OK; quality over quantity — limited variety' },
     link: 'https://www.keioprelia.com/sapporo/',
   },
   'Century Marina Hakodate Check-in': {
@@ -822,7 +850,7 @@ const PLACE_DETAIL = {
     hours: { zh: '入住 14:00 起 / 退房 11:00', en: 'Check-in from 14:00 / Check-out by 11:00' },
     address: { zh: '函館市大手町22-10', en: '22-10 Otemachi, Hakodate' },
     rating: { score: '8.9/10', source: 'Booking.com', stars: 5 },
-    recommend: { zh: '北海道最強早餐之一（含於住宿）：無限刺身台、海鮮丼自選站、函館新鮮漁獲；屋上溫泉可眺望函館港；強烈建議 07:30 入場', en: "One of Hokkaido's best hotel breakfasts (included): unlimited sashimi, DIY kaisen-don station, fresh Hakodate seafood; rooftop onsen with harbor view — arrive at 07:30 to beat the rush" },
+    recommend: { zh: '早餐含於住宿（無需另付）：無限刺身台、海鮮丼自選站、函館鮮漁；屋上溫泉可眺望函館港；強烈建議 07:30 入場搶最鮮食材', en: 'Breakfast included (no extra cost): unlimited sashimi, DIY kaisen-don, fresh Hakodate catch; rooftop onsen with harbor view — arrive 07:30 for best selection' },
     link: 'https://www.centurymarina.com/',
   },
   '湖景 TOYA 乃之風渡假酒店 Check-in': {
@@ -830,7 +858,7 @@ const PLACE_DETAIL = {
     hours: { zh: '入住 14:00 起 / 退房 11:00', en: 'Check-in from 14:00 / Check-out by 11:00' },
     address: { zh: '虻田郡洞爺湖町洞爺湖温泉29', en: '29 Toyako Onsen, Toyako-cho, Abuta-gun' },
     rating: { score: '4.2/5', source: 'TripAdvisor', stars: 4 },
-    recommend: { zh: '晚餐＋早餐含於住宿；自助餐含螃蟹、成吉思汗羊肉、海鮮、道産乳製品；露天風呂正對洞爺湖；每晚 20:45 水上煙火（4/28–10/31）可從客房欣賞', en: 'Dinner + breakfast included in stay; buffet: crab, Jingisukan lamb, seafood, local dairy; rotenburo overlooking Toya Lake; nightly fireworks at 20:45 (Apr 28–Oct 31) visible from room' },
+    recommend: { zh: '晚餐＋早餐含於住宿（一泊二食，無需另付）；自助餐含螃蟹、成吉思汗羊肉、海鮮、道産乳製品；露天風呂正對洞爺湖；每晚 20:45 水上煙火可從客房欣賞', en: 'Dinner + breakfast included (1-night-2-meals plan, no extra cost); buffet: crab, Jingisukan lamb, seafood, local dairy; rotenburo overlooking Toya Lake; nightly fireworks at 20:45 visible from room' },
     link: 'https://nonokaze-resort.com/',
   },
 };
