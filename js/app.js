@@ -129,7 +129,16 @@ function selectDay(idx) {
 }
 
 // ── Day Map ────────────────────────────────────────────────
-function openDayMap(dayIdx) {
+function cleanPlaceName(name) {
+  return name
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]+\s*/gu, '') // strip emoji
+    .replace(/【[^】]+】/g, '')    // strip 【...】
+    .replace(/（[^）]+）/g, '')    // strip （...）
+    .replace(/\s*[+＋]\s*.+$/, '') // strip " + 副地點"
+    .trim();
+}
+
+function buildDayMapUrl(dayIdx) {
   const state = getState();
   const dayState = state[dayIdx];
   const cityZhMap = { Sapporo: '札幌', Hakodate: '函館', Toyako: '洞爺湖' };
@@ -138,23 +147,31 @@ function openDayMap(dayIdx) {
   const places = dayState.items
     .filter(item => getCategory(item) !== 'transport')
     .filter(item => item.place?.zh)
-    .map(item => encodeURIComponent(item.place.zh + ' ' + cityJp));
+    .map(item => {
+      const raw = item.place.zh;
+      // Try English name if place.en looks cleaner (no CJK)
+      const name = cleanPlaceName(raw) || raw;
+      return encodeURIComponent(name + ' ' + cityJp);
+    });
 
-  if (places.length === 0) return;
-  window.open('https://www.google.com/maps/dir/' + places.join('/'), '_blank', 'noopener');
+  if (places.length === 0) return null;
+  return 'https://www.google.com/maps/dir/' + places.join('/');
 }
 
 // ── Day Summary Card ───────────────────────────────────────
 function renderDaySummaryCard(dayState) {
   const meals = { breakfast: null, lunch: null, dinner: null };
   dayState.items.forEach(item => {
-    if (getCategory(item) !== 'food') return;
-    const t = item.time;
-    if (!t || t === '—') return;
-    const h = parseInt(t.split(':')[0], 10);
-    if (h < 11 && !meals.breakfast)           meals.breakfast = item.place[lang];
-    else if (h >= 11 && h < 15 && !meals.lunch) meals.lunch  = item.place[lang];
-    else if (h >= 15 && !meals.dinner)         meals.dinner   = item.place[lang];
+    const name = (item.place?.zh || '') + ' ' + (item.place?.en || '');
+    // Keyword detection first (most reliable)
+    let mt = null;
+    if (/早餐|breakfast/i.test(name))      mt = 'breakfast';
+    else if (/午餐|lunch/i.test(name))     mt = 'lunch';
+    else if (/晚餐|dinner/i.test(name))    mt = 'dinner';
+    // Fall back to emoji + time (mealType from impact.js)
+    if (!mt) mt = mealType(item);
+    if (!mt || mt === 'any') return;
+    if (!meals[mt]) meals[mt] = cleanPlaceName(item.place[lang]) || item.place[lang];
   });
 
   const rows = [
@@ -179,9 +196,9 @@ function renderDaySummaryCard(dayState) {
         <span>💴 ${dayState.mealBudget[lang]}</span>
       </div>
       ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
-      <button class="sum-map-btn" onclick="openDayMap(${activeDayIdx})">
+      <a class="sum-map-btn" href="${buildDayMapUrl(activeDayIdx) || '#'}" target="_blank" rel="noopener">
         🗺 ${lang === 'zh' ? '今日地圖' : "Today's Map"}
-      </button>
+      </a>
     </div>
   `;
 }
