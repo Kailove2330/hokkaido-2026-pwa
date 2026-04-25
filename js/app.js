@@ -128,6 +128,22 @@ function selectDay(idx) {
   document.querySelector('main').scrollTop = 0;
 }
 
+// ── Day Map ────────────────────────────────────────────────
+function openDayMap(dayIdx) {
+  const state = getState();
+  const dayState = state[dayIdx];
+  const cityZhMap = { Sapporo: '札幌', Hakodate: '函館', Toyako: '洞爺湖' };
+  const cityJp = cityZhMap[dayState.weatherCity] || '北海道';
+
+  const places = dayState.items
+    .filter(item => getCategory(item) !== 'transport')
+    .filter(item => item.place?.zh)
+    .map(item => encodeURIComponent(item.place.zh + ' ' + cityJp));
+
+  if (places.length === 0) return;
+  window.open('https://www.google.com/maps/dir/' + places.join('/'), '_blank', 'noopener');
+}
+
 // ── Day Summary Card ───────────────────────────────────────
 function renderDaySummaryCard(dayState) {
   const meals = { breakfast: null, lunch: null, dinner: null };
@@ -163,6 +179,9 @@ function renderDaySummaryCard(dayState) {
         <span>💴 ${dayState.mealBudget[lang]}</span>
       </div>
       ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
+      <button class="sum-map-btn" onclick="openDayMap(${activeDayIdx})">
+        🗺 ${lang === 'zh' ? '今日地圖' : "Today's Map"}
+      </button>
     </div>
   `;
 }

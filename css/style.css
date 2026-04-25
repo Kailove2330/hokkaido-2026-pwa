@@ -250,6 +250,13 @@ nav#bottom-nav {
 .sum-meal-val { font-size: 13px; color: var(--text); font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sum-footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding-top: 10px; border-top: 1px solid var(--border); }
 .sum-shopping { font-size: 12px; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.sum-map-btn {
+  display: block; width: 100%; margin-top: 10px;
+  padding: 9px 0; background: var(--navy); color: #fff;
+  border: none; border-radius: 9px; font-size: 13px; font-weight: 600;
+  cursor: pointer; letter-spacing: .3px;
+}
+.sum-map-btn:active { opacity: .8; }
 
 /* ── PHASE HEADER ─────────────────────────────────────── */
 .phase-header {
