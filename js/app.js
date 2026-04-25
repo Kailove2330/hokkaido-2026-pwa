@@ -373,6 +373,7 @@ function renderTimelineItems(dayState, impact) {
 
     const detailKey  = cleanPlaceName(item.place.zh);
     const hasDetail  = !editMode && !!PLACE_DETAIL[detailKey];
+    const isTappable = !editMode;
 
     let rowCls = '';
     if (isConflict) rowCls = 'tl-conflict';
@@ -387,8 +388,8 @@ function renderTimelineItems(dayState, impact) {
           ${isLast ? '' : '<div class="tl-vline"></div>'}
         </div>
         <div class="tl-content">
-          <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''} ${hasDetail ? 'tl-card-tappable' : ''}"
-               ${hasDetail ? `data-dk="${detailKey}" onclick="openDetailSheet(this.dataset.dk)"` : ''}>
+          <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''} ${hasDetail ? 'tl-card-tappable' : ''} ${isTappable && !hasDetail ? 'tl-card-plain-tap' : ''}"
+               ${isTappable ? `data-dk="${detailKey}" onclick="openDetailSheet(this.dataset.dk)"` : ''}>
             <div class="tl-card-top">
               <span class="cat-chip ${catInfo.cls}">${catInfo.icon} ${catInfo[lang]}</span>
               ${hasDetail ? `<span class="detail-hint">ⓘ</span>` : ''}
@@ -1088,15 +1089,14 @@ function renderSOS() {
 
 // ── PLACE DETAIL SHEET ─────────────────────────────────
 function openDetailSheet(key) {
-  const d = PLACE_DETAIL[key];
-  if (!d) return;
+  const d = PLACE_DETAIL[key] || null;
   const isZh = lang === 'zh';
 
   document.getElementById('detail-sheet-title').textContent = key;
 
   let html = '';
 
-  if (d.recommend) {
+  if (d && d.recommend) {
     html += `
       <div class="detail-row detail-recommend">
         <div class="detail-icon">⭐</div>
@@ -1104,7 +1104,7 @@ function openDetailSheet(key) {
       </div>
     `;
   }
-  if (d.hours) {
+  if (d && d.hours) {
     html += `
       <div class="detail-row">
         <div class="detail-icon">🕐</div>
@@ -1115,7 +1115,7 @@ function openDetailSheet(key) {
       </div>
     `;
   }
-  if (d.phone) {
+  if (d && d.phone) {
     html += `
       <div class="detail-row">
         <div class="detail-icon">📞</div>
@@ -1126,7 +1126,7 @@ function openDetailSheet(key) {
       </div>
     `;
   }
-  if (d.address) {
+  if (d && d.address) {
     html += `
       <div class="detail-row">
         <div class="detail-icon">📍</div>
@@ -1137,7 +1137,7 @@ function openDetailSheet(key) {
       </div>
     `;
   }
-  if (d.access) {
+  if (d && d.access) {
     const steps = d.access[lang].map(s =>
       `<div class="detail-step">${s.replace(/(⚡[^<\n]*)/, '<span class="warn-text">$1</span>')}</div>`
     ).join('');
@@ -1151,7 +1151,7 @@ function openDetailSheet(key) {
       </div>
     `;
   }
-  if (d.link) {
+  if (d && d.link) {
     html += `
       <div class="detail-row">
         <div class="detail-icon">🔗</div>

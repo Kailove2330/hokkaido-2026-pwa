@@ -1743,3 +1743,5 @@ nav#bottom-nav {
   color: #7c5cbf;
   font-weight: 500;
 }
+.tl-card-plain-tap { cursor: pointer; }
+.tl-card-plain-tap:active { opacity: 0.75; }
