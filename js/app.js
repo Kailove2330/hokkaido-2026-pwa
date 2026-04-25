@@ -197,7 +197,7 @@ function renderDaySummaryCard(dayState) {
       </div>
       ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
       <a class="sum-map-btn" href="${buildDayMapUrl(activeDayIdx) || '#'}" target="_blank" rel="noopener">
-        🗺 ${lang === 'zh' ? '今日地圖' : "Today's Map"}
+        <span style="font-size:15px;line-height:1">📍</span>${lang === 'zh' ? '今日地圖' : "Today's Map"}
       </a>
     </div>
   `;
