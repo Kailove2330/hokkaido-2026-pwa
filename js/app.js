@@ -707,27 +707,29 @@ function renderWeatherCard(state) {
   const segLabels = lang === 'zh' ? ['早', '午', '晚'] : ['AM', 'Noon', 'PM'];
   return `
     <div class="weather-card-v2">
-      <div class="wc2-left">
-        <div class="wc2-city" id="wc-city">${cityLabel}</div>
-        <div class="wc2-temp" id="wc-temp">—°</div>
-        <div class="wc2-feels" id="wc-feels"></div>
-        <div class="wc2-outfit" id="wc-outfit">${lang === 'zh' ? '天氣載入中...' : 'Loading weather...'}</div>
-      </div>
-      <div class="wc2-right">
-        <div class="wc2-emoji" id="wc-emoji">🌤</div>
-        <div class="wc2-desc" id="wc-desc"></div>
-        <button class="wc2-refresh" onclick="fetchWeather('${city}')">↻</button>
-      </div>
-    </div>
-    <div class="wc2-segments" id="wc-segments" style="display:none">
-      ${['morning','afternoon','evening'].map((k, i) => `
-        <div class="wc2-seg">
-          <div class="wc2-seg-label">${segLabels[i]}</div>
-          <div class="wc2-seg-temp" id="wc-seg-${k}">—°</div>
-          <div class="wc2-seg-icon" id="wc-seg-${k}-icon">—</div>
+      <div class="wc2-top">
+        <div class="wc2-left">
+          <div class="wc2-city" id="wc-city">${cityLabel}</div>
+          <div class="wc2-temp" id="wc-temp">—°</div>
+          <div class="wc2-feels" id="wc-feels"></div>
+          <div class="wc2-outfit" id="wc-outfit">${lang === 'zh' ? '天氣載入中...' : 'Loading weather...'}</div>
         </div>
-        ${i < 2 ? '<div class="wc2-seg-div"></div>' : ''}
-      `).join('')}
+        <div class="wc2-right">
+          <div class="wc2-emoji" id="wc-emoji">🌤</div>
+          <div class="wc2-desc" id="wc-desc"></div>
+          <button class="wc2-refresh" onclick="fetchWeather('${city}')">↻</button>
+        </div>
+      </div>
+      <div class="wc2-segments" id="wc-segments" style="display:none">
+        ${['morning','afternoon','evening'].map((k, i) => `
+          <div class="wc2-seg">
+            <div class="wc2-seg-label">${segLabels[i]}</div>
+            <div class="wc2-seg-temp" id="wc-seg-${k}">—°</div>
+            <div class="wc2-seg-icon" id="wc-seg-${k}-icon">—</div>
+          </div>
+          ${i < 2 ? '<div class="wc2-seg-div"></div>' : ''}
+        `).join('')}
+      </div>
     </div>
   `;
 }

@@ -882,10 +882,15 @@ nav#bottom-nav {
   padding: 14px 16px;
   margin-bottom: 10px;
   display: flex;
+  flex-direction: column;
+  gap: 0;
+  box-shadow: 0 2px 10px rgba(26,39,68,.3);
+}
+.wc2-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  box-shadow: 0 2px 10px rgba(26,39,68,.3);
 }
 .wc2-left { flex: 1; min-width: 0; }
 .wc2-city { font-size: 11px; opacity: .7; margin-bottom: 2px; letter-spacing: .5px; text-transform: uppercase; }
@@ -912,11 +917,9 @@ nav#bottom-nav {
 .wc2-segments {
   display: none;
   align-items: stretch;
-  background: rgba(255,255,255,.10);
-  border-radius: 0 0 14px 14px;
-  margin: 0 12px;
-  margin-top: -6px;
-  padding: 8px 0 10px;
+  border-top: 1px solid rgba(255,255,255,.18);
+  margin-top: 10px;
+  padding-top: 10px;
 }
 .wc2-seg {
   flex: 1;
