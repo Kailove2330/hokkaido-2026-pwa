@@ -1739,3 +1739,7 @@ nav#bottom-nav {
   font-size: 13px; color: var(--teal);
   text-decoration: underline; word-break: break-all;
 }
+.detail-blog-link {
+  color: #7c5cbf;
+  font-weight: 500;
+}

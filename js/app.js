@@ -1163,6 +1163,27 @@ function openDetailSheet(key) {
     `;
   }
 
+  // Blog search — auto-generated for every venue
+  {
+    const addrZh = d.address?.zh || '';
+    const blogCity = addrZh.includes('函館') ? '函館' :
+                     addrZh.includes('小樽') ? '小樽' :
+                     addrZh.includes('洞爺') ? '洞爺湖' :
+                     addrZh.includes('登別') ? '登別' :
+                     (addrZh.includes('機場') || addrZh.includes('空港')) ? '新千歳空港' : '札幌';
+    const searchName = key.replace(/^[⭐\s]+/, '').trim();
+    const blogQ = encodeURIComponent(searchName + ' ' + blogCity + ' ブログ');
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">📖</div>
+        <div>
+          <div class="detail-label">${isZh ? '部落格食記' : 'Blog reviews'}</div>
+          <a href="https://www.google.com/search?q=${blogQ}" target="_blank" rel="noopener" class="detail-link detail-blog-link">${isZh ? '搜尋最新食記 →' : 'Search latest reviews →'}</a>
+        </div>
+      </div>
+    `;
+  }
+
   document.getElementById('detail-sheet-body').innerHTML = html;
   document.getElementById('detail-sheet-overlay').style.display = 'flex';
 }
