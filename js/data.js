@@ -651,4 +651,71 @@ const PLACE_DETAIL = {
     address: { zh: '洞爺湖町洞爺湖温泉50', en: '50 Toyako Onsen, Toyako-cho' },
     recommend: { zh: '白汁粉（白玉白湯圓紅豆湯）600–900円', en: 'White mochi sweet soup ¥600–900' },
   },
+  // ── Day 2 ──
+  'Cafe BAAL': {
+    hours: { zh: '11:00–21:00（週三公休）', en: '11:00–21:00, closed Wed' },
+    address: { zh: '小樽市稲穂2丁目（近小樽站）', en: 'Near Otaru Station, Inaho 2-chome' },
+    recommend: { zh: '洋食牛排飯 1,500–2,500円；份量紮實、保護腿力', en: 'Western-style steak rice ¥1,500–2,500; hearty portions, saves your legs' },
+  },
+  // ── Day 3 ──
+  'とんかつ 檍': {
+    hours: { zh: '11:30–22:00', en: '11:30–22:00' },
+    address: { zh: '札幌市中央区南1条西5丁目', en: 'Minami 1-jo W5, Chuo-ku, Sapporo' },
+    recommend: { zh: '特上ロースかつ定食 2,500–4,000円；麥飯＋高麗菜無限續', en: 'Premium loin cutlet set ¥2,500–4,000; barley rice + cabbage unlimited refill' },
+  },
+  '⭐ 藻岩山展望台': {
+    phone: '011-561-8177',
+    hours: { zh: '纜車 10:30–22:00（最終上山 21:30）', en: 'Ropeway 10:30–22:00 (last ride up 21:30)' },
+    address: { zh: '札幌市南区藻岩山', en: 'Moiwa-yama, Minami-ku, Sapporo' },
+    recommend: { zh: '纜車來回 2,100円；日本三大夜景；5月日落約18:30，帶防風外套', en: 'Ropeway ¥2,100 RT; Japan top-3 night view; sunset ~18:30 in May — bring windproof jacket' },
+  },
+  '牛しゃぶ 牛すき 禪': {
+    hours: { zh: '18:00–23:00（需提前預約）', en: '18:00–23:00 (reservations required)' },
+    address: { zh: '札幌市中央区（薄野周邊）', en: 'Near Susukino, Chuo-ku, Sapporo' },
+    recommend: { zh: '黑毛和牛壽喜燒；備注「不吃生食」請全熟處理；套餐 10,000–15,000円', en: 'Kuroge wagyu sukiyaki; note "fully cooked only" when booking; course ¥10,000–15,000' },
+  },
+  // ── Day 5 ──
+  'DONGURI': {
+    hours: { zh: '07:00–19:00（依店而異）', en: '07:00–19:00 (varies by branch)' },
+    address: { zh: '札幌市各處（推薦大通附近店）', en: 'Multiple locations around Sapporo' },
+    recommend: { zh: '牛角形クロワッサン・豆沙包；日日現烤；早開門是最大優勢', en: 'Horn croissant, red bean bun; baked fresh daily; early opening is the key advantage' },
+  },
+  '⭐ 函館山觀景台': {
+    phone: '0138-23-6288',
+    hours: { zh: '纜車 10:00–22:00（10/16–4/24 至 21:00）；15m/s 強風停駛', en: 'Ropeway 10:00–22:00 (10/16–4/24 until 21:00); stops at 15m/s wind' },
+    address: { zh: '函館市函館山', en: 'Hakodate-yama, Hakodate' },
+    recommend: { zh: '纜車來回 1,500円；日落後30分最美；山頂較市區冷5–8°C', en: 'Ropeway ¥1,500 RT; best 30 min after sunset; top is 5–8°C colder than city' },
+  },
+  '味彩': {
+    phone: '0138-22-6751',
+    hours: { zh: '11:00–20:00（週二公休）', en: '11:00–20:00, closed Tue' },
+    address: { zh: '函館市本町16-13', en: '16-13 Honcho, Hakodate' },
+    recommend: { zh: '函館鹽拉麵老舖；透明清湯；あっさり鹽味 800–1,200円', en: 'Hakodate salt ramen institution; clear broth; light & savory ¥800–1,200' },
+  },
+  // ── Day 6 ──
+  '⭐ 五稜郭展望塔 / 公園': {
+    phone: '0138-51-4785',
+    hours: { zh: '09:00–18:00（4–10月至19:00）', en: '09:00–18:00 (Apr–Oct until 19:00)' },
+    address: { zh: '函館市五稜郭町43-9', en: '43-9 Goryokaku-cho, Hakodate' },
+    recommend: { zh: '展望台 900円（★必上）；俯瞰五角星形堡壘；公園免費', en: 'Observation tower ¥900 (★must do); star-shaped fort from above; park is free' },
+  },
+  '⭐ 八幡坂 / 元町建築群': {
+    hours: { zh: '舊函館区公会堂 09:00–17:00（週一公休）', en: 'Old Public Hall 09:00–17:00, closed Mon' },
+    address: { zh: '函館市元町', en: 'Motomachi, Hakodate' },
+    recommend: { zh: '八幡坂坡道海港透視日落最美；舊函館区公会堂 300円；周邊建築群免費', en: 'Hachiman-zaka sea view best at sunset; Old Public Hall ¥300; surrounding buildings free' },
+  },
+  // ── Day 8 ──
+  '⭐ 登別地獄谷 / 大湯沼川天然足湯': {
+    phone: '0143-84-3311',
+    hours: { zh: '地獄谷・足湯全日免費開放', en: 'Hell Valley & footbath: free, open all day' },
+    address: { zh: '登別市登別温泉町', en: 'Noboribetsu Onsen-cho, Noboribetsu' },
+    recommend: { zh: '地獄谷免費；足湯免費（帶小毛巾）；現場可領防水坐墊；泉源公園間歇泉每整點噴發', en: 'Hell Valley free; footbath free (bring towel); waterproof mat at entrance; geyser erupts hourly' },
+  },
+  // ── Day 9 ──
+  '一幻拉麵': {
+    phone: '011-213-2626',
+    hours: { zh: '10:00–21:30（機場店）', en: '10:00–21:30 (airport branch)' },
+    address: { zh: '新千歲機場 國內線 3F', en: 'New Chitose Airport Domestic Terminal 3F' },
+    recommend: { zh: '濃郁蝦味噌拉麵 1,200円；旅程最後一餐；蝦湯濃縮精華', en: 'Rich shrimp miso ramen ¥1,200; perfect final meal; intensely flavored shrimp broth' },
+  },
 };

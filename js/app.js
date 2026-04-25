@@ -203,7 +203,7 @@ function cleanPlaceName(name) {
     .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}]+\s*/gu, '') // strip emoji
     .replace(/【[^】]+】/g, '')    // strip 【...】
     .replace(/（[^）]+）/g, '')    // strip （...）
-    .replace(/\s*[+＋]\s*.+$/, '') // strip " + 副地點"
+    .replace(/\s*[+＋→]\s*.+$/, '') // strip " + 副地點" / " → 副動作"
     .trim();
 }
 
