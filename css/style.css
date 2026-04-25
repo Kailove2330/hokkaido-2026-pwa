@@ -1649,6 +1649,23 @@ nav#bottom-nav {
   font-size: 13px;
 }
 
+/* ── TAPPABLE CARD ───────────────────────────────────── */
+.tl-card-tappable {
+  cursor: pointer;
+  border-left: 3px solid var(--gold);
+}
+.tl-card-tappable:active {
+  background: #f7f5ee;
+}
+.detail-hint {
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 700;
+  margin-left: auto;
+  padding-left: 6px;
+  flex-shrink: 0;
+}
+
 /* ── DETAIL SHEET ─────────────────────────────────────── */
 #detail-sheet-overlay {
   position: fixed; inset: 0; z-index: 2000;

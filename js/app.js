@@ -368,8 +368,11 @@ function renderTimelineItems(dayState, impact) {
     const isLast     = itemIdx === items.length - 1;
     const noteHTML   = item.note ? formatNote(item.note[lang]) : '';
     const mapHTML    = item.maps
-      ? `<a href="${item.maps}" target="_blank" rel="noopener" class="map-btn">📍 ${T[lang].mapBtn}</a>`
+      ? `<a href="${item.maps}" target="_blank" rel="noopener" class="map-btn" onclick="event.stopPropagation()">📍 ${T[lang].mapBtn}</a>`
       : '';
+
+    const detailKey  = cleanPlaceName(item.place.zh);
+    const hasDetail  = !editMode && !!PLACE_DETAIL[detailKey];
 
     let rowCls = '';
     if (isConflict) rowCls = 'tl-conflict';
@@ -384,15 +387,17 @@ function renderTimelineItems(dayState, impact) {
           ${isLast ? '' : '<div class="tl-vline"></div>'}
         </div>
         <div class="tl-content">
-          <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''}">
+          <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''} ${hasDetail ? 'tl-card-tappable' : ''}"
+               ${hasDetail ? `data-dk="${detailKey}" onclick="openDetailSheet(this.dataset.dk)"` : ''}>
             <div class="tl-card-top">
               <span class="cat-chip ${catInfo.cls}">${catInfo.icon} ${catInfo[lang]}</span>
+              ${hasDetail ? `<span class="detail-hint">ⓘ</span>` : ''}
               ${editMode ? `
                 <div class="tl-edit-btns">
-                  <button class="ctrl-btn ctrl-edit" onclick="editItem('${item.id}')">✎</button>
-                  <button class="ctrl-btn" onclick="moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
-                  <button class="ctrl-btn" onclick="moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
-                  <button class="ctrl-btn ctrl-del" onclick="confirmDeleteItem('${item.id}')">✕</button>
+                  <button class="ctrl-btn ctrl-edit" onclick="event.stopPropagation();editItem('${item.id}')">✎</button>
+                  <button class="ctrl-btn" onclick="event.stopPropagation();moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
+                  <button class="ctrl-btn" onclick="event.stopPropagation();moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="ctrl-btn ctrl-del" onclick="event.stopPropagation();confirmDeleteItem('${item.id}')">✕</button>
                 </div>
               ` : ''}
             </div>
@@ -403,8 +408,7 @@ function renderTimelineItems(dayState, impact) {
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
               ${mapHTML}
-              ${(() => { const dk = cleanPlaceName(item.place.zh); return PLACE_DETAIL[dk] ? `<button class="detail-btn" data-key="${dk}" onclick="openDetailSheet(this.dataset.key)">ⓘ ${lang === 'zh' ? '詳情' : 'Info'}</button>` : ''; })()}
-              ${editMode ? `<button class="move-day-btn" onclick="showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
+              ${editMode ? `<button class="move-day-btn" onclick="event.stopPropagation();showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
             </div>
           </div>
         </div>
