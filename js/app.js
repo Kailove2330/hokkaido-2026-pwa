@@ -858,40 +858,71 @@ function renderSouvenirs() {
 // ── TRANSPORT ──────────────────────────────────────────────
 function renderTransport() {
   const container = document.getElementById('page-transport');
-  let html = `<div class="section-title">🚆 JR ${lang === 'zh' ? '主要路段' : 'Main Routes'}</div>`;
-  html += `<div class="card" style="overflow:auto"><table class="transport-table">
-    <thead><tr>
-      <th>${lang === 'zh' ? '路線' : 'Route'}</th>
-      <th>${lang === 'zh' ? '列車' : 'Train'}</th>
-      <th>${lang === 'zh' ? '時間' : 'Time'}</th>
-      <th>${lang === 'zh' ? '車資' : 'Fare'}</th>
-    </tr></thead><tbody>
-    ${TRANSPORT.jr.map(r => `
-      <tr>
-        <td>${r.route[lang]}</td><td>${r.train[lang]}</td>
-        <td style="white-space:nowrap">${r.time}</td>
-        <td style="white-space:nowrap">${r.fare}</td>
-      </tr>
-      <tr><td colspan="4" style="font-size:11px;color:#6b7a8d;padding-bottom:8px">${r.note[lang]}</td></tr>
-    `).join('')}
-    </tbody></table></div>`;
 
+  // Journey overview strip
+  const cities = lang === 'zh'
+    ? ['台北', '札幌', '小樽', '函館', '洞爺湖', '登別', '新千歲', '台北']
+    : ['Taipei', 'Sapporo', 'Otaru', 'Hakodate', 'Lake Toya', 'Noboribetsu', 'New Chitose', 'Taipei'];
+  const stripHtml = cities.map((c, i) =>
+    `<span class="tr-city-chip">${c}</span>${i < cities.length - 1 ? '<span class="tr-chip-arrow">›</span>' : ''}`
+  ).join('');
+
+  let html = `<div class="tr-journey-strip">${stripHtml}</div>`;
+
+  // JR route cards
+  html += `<div class="section-title">🚆 JR ${lang === 'zh' ? '主要路段' : 'Main Routes'}</div>`;
+  TRANSPORT.jr.forEach(r => {
+    const parts = r.route[lang].split(/\s*[→>]\s*/);
+    const from  = parts[0] || '';
+    const to    = parts[1] || '';
+    html += `
+      <div class="tr-card">
+        <div class="tr-route-row">
+          <span class="tr-city">${from}</span>
+          <span class="tr-arrow-line"><span class="tr-arrow-track"></span><span class="tr-arrow-head">›</span></span>
+          <span class="tr-city tr-city-to">${to}</span>
+        </div>
+        <div class="tr-train-name">${r.train[lang]}</div>
+        <div class="tr-meta">
+          <span class="tr-meta-item">⏱ ${r.time}</span>
+          <span class="tr-meta-sep">·</span>
+          <span class="tr-meta-item">💴 ${r.fare}</span>
+        </div>
+        ${r.note[lang] ? `<div class="tr-note">${r.note[lang]}</div>` : ''}
+      </div>
+    `;
+  });
+
+  // Local city cards
   html += `<div class="section-title mt-8">🚌 ${lang === 'zh' ? '各城市交通' : 'Local Transit'}</div>`;
   TRANSPORT.local.forEach(l => {
-    html += `<div class="local-card"><div class="local-city">${l.city[lang]}</div><div class="local-desc">${l.desc[lang]}</div></div>`;
+    html += `
+      <div class="tr-local-card">
+        <div class="tr-local-city">${l.city[lang]}</div>
+        <div class="tr-local-desc">${l.desc[lang]}</div>
+      </div>
+    `;
   });
 
+  // IC card Q&A
   html += `<div class="section-title mt-8">💳 ${lang === 'zh' ? 'IC 卡（Suica）' : 'IC Card (Suica)'}</div>`;
   TRANSPORT.ic.forEach(ic => {
-    html += `<div class="ic-card"><div class="ic-q">Q: ${ic.q[lang]}</div><div class="ic-a">A: ${ic.a[lang]}</div></div>`;
+    html += `
+      <div class="tr-ic-card">
+        <div class="tr-ic-q">${ic.q[lang]}</div>
+        <div class="tr-ic-a">${ic.a[lang]}</div>
+      </div>
+    `;
   });
 
+  // Budget
   html += `<div class="section-title mt-8">💴 ${T[lang].budgetTitle}</div>`;
   html += `<div class="card"><table class="budget-table">`;
   BUDGET.forEach(b => {
     html += `<tr class="${b.total ? 'total-row' : ''}"><td>${b.item[lang]}</td><td>${b.est}</td></tr>`;
   });
   html += `</table></div>`;
+
   container.innerHTML = html;
 }
 
