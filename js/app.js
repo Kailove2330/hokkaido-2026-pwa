@@ -403,7 +403,7 @@ function renderTimelineItems(dayState, impact) {
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
               ${mapHTML}
-              ${(() => { const dk = cleanPlaceName(item.place.zh); return PLACE_DETAIL[dk] ? `<button class="detail-btn" onclick="openDetailSheet(${JSON.stringify(dk)})">ⓘ ${lang === 'zh' ? '詳情' : 'Info'}</button>` : ''; })()}
+              ${(() => { const dk = cleanPlaceName(item.place.zh); return PLACE_DETAIL[dk] ? `<button class="detail-btn" data-key="${dk}" onclick="openDetailSheet(this.dataset.key)">ⓘ ${lang === 'zh' ? '詳情' : 'Info'}</button>` : ''; })()}
               ${editMode ? `<button class="move-day-btn" onclick="showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
             </div>
           </div>
