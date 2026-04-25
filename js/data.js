@@ -562,41 +562,56 @@ const PLACE_DETAIL = {
     hours: { zh: '每日 17:00–翌03:00', en: 'Daily 17:00–03:00+' },
     address: { zh: '札幌市中央区南5条西4丁目', en: 'Minami 5-jo W4, Chuo-ku, Sapporo' },
     recommend: { zh: '成吉思汗羊肉 · 生ラム（新鮮生羔羊）', en: 'Jingisukan lamb · Fresh raw lamb (nama-ramu)' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010103/1057043/',
   },
   'Parfaiteria PaL': {
     phone: '011-530-5505',
     hours: { zh: '週二–日 18:00–00:00（週一公休）', en: 'Tue–Sun 18:00–00:00, closed Mon' },
     address: { zh: '札幌市中央区南4条西4丁目', en: 'Minami 4-jo W4, Chuo-ku, Sapporo' },
     recommend: { zh: '季節限定夜聖代（北海道牛奶底）', en: 'Seasonal night parfait (Hokkaido milk base)' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010103/1049420/',
   },
   '⭐ 北一硝子 三號館': {
     phone: '0134-33-1993',
     hours: { zh: '每日 08:45–18:00', en: 'Daily 08:45–18:00' },
     address: { zh: '小樽市堺町7-26', en: '7-26 Sakaimachi, Otaru' },
     recommend: { zh: '煤油燈咖啡廳內用 · 手作玻璃杯（3,000円起）', en: 'Kerosene lamp café · Handmade glass from ¥3,000' },
+    access: {
+      zh: ['① 搭 JR 至小樽站', '② 沿堺町通り（南小樽方向）步行約 12 分至堺町7丁目（LeTAO 相距 50 公尺）'],
+      en: ['① Take JR to Otaru Station', '② Walk ~12 min along Sakaimachi-dori toward Minami-Otaru (LeTAO is 50m away)'],
+    },
+    link: 'https://www.kitaichiglass.co.jp/',
   },
   '⭐ LeTAO 小樽總店': {
     phone: '0120-468-111',
     hours: { zh: '每日 09:00–18:00（季節調整）', en: 'Daily 09:00–18:00 (season varies)' },
     address: { zh: '小樽市堺町7-16', en: '7-16 Sakaimachi, Otaru' },
     recommend: { zh: '2F 現做雙層乳酪蛋糕 900円 · 飲料套餐 1,400円', en: '2F fresh Double Fromage ¥900 · drink set ¥1,400' },
+    access: {
+      zh: ['① 搭 JR 至小樽站', '② 沿堺町通り（南小樽方向）步行約 12 分至堺町7丁目（與北一硝子相距 50 公尺）'],
+      en: ['① Take JR to Otaru Station', '② Walk ~12 min along Sakaimachi-dori toward Minami-Otaru (50m from 北一硝子)'],
+    },
+    link: 'https://www.letao.jp/',
   },
   'Sumire 味噌拉麵': {
     phone: '011-551-4960',
     hours: { zh: '11:00–15:00，18:00–21:00（週三公休）', en: '11:00–15:00, 18:00–21:00, closed Wed' },
     address: { zh: '札幌市中央区南5条西5丁目（薄野店）', en: 'Susukino, Minami 5-jo W5, Chuo-ku' },
     recommend: { zh: '味噌拉麵 · 奶油玉米味噌（コーンバターみそ）', en: 'Miso ramen · Rich butter corn miso' },
+    link: 'http://www.sumireya.com/',
   },
   'Sato': {
     hours: { zh: '夜間限定（約 19:00–翌01:00）', en: 'Night only (approx 19:00–01:00+)' },
     address: { zh: '札幌市中央区南4条西4丁目周邊', en: 'Near Minami 4-jo W4, Chuo-ku, Sapporo' },
     recommend: { zh: '季節夜聖代（每週更換）', en: 'Seasonal night parfait (weekly rotation)' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010102/1077806/',
   },
   'Espresso D Works': {
     phone: '011-231-4059',
     hours: { zh: '週一–五 08:00–18:00，週末 08:00–17:00', en: 'Mon–Fri 08:00–18:00, weekends 08:00–17:00' },
     address: { zh: '札幌市中央区大通西1丁目', en: 'Odori W1, Chuo-ku, Sapporo' },
     recommend: { zh: '水份100% 吐司 · 蓬鬆舒芙蕾 · 玉米濃湯套餐', en: '100% moisture toast · soufflé pancake · corn soup set' },
+    link: 'https://tabelog.com/grouplst/G04133/',
   },
   '⭐ 白色戀人公園': {
     phone: '011-666-1481',
@@ -624,54 +639,63 @@ const PLACE_DETAIL = {
     hours: { zh: '11:30–22:00（週三公休）', en: '11:30–22:00, closed Wed' },
     address: { zh: '札幌市中央区南2条西2丁目', en: 'Minami 2-jo W2, Chuo-ku, Sapporo' },
     recommend: { zh: '海老ベースのスープカレー · 辣度 0–40 可選', en: 'Shrimp broth soup curry · spice level 0–40' },
+    link: 'https://s-garaku.com/',
   },
   '千秋庵本店': {
     phone: '011-231-3681',
     hours: { zh: '10:00–18:00（不定休）', en: '10:00–18:00 (irregular holidays)' },
     address: { zh: '札幌市中央区北4条西3丁目', en: 'Kita 4-jo W3, Chuo-ku, Sapporo' },
     recommend: { zh: 'バリ銅鑼（巴里銅鑼）· 僅本店現場烤製', en: 'Bali Dorayaki · freshly baked in-store only' },
+    link: 'https://senshuan.co.jp/',
   },
   '札幌かに本家 站前總店': {
     phone: '011-222-0018',
     hours: { zh: '11:30–22:00（需提前預約）', en: '11:30–22:00 (reservations recommended)' },
     address: { zh: '札幌市中央区北4条西2丁目', en: 'Kita 4-jo W2, Chuo-ku, Sapporo' },
     recommend: { zh: '全熟螃蟹套餐（8,000–15,000円）· 指定包廂', en: 'Fully cooked crab course (¥8,000–15,000) · request private room' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010101/1000299/',
   },
   '幸運小丑漢堡 碼頭末廣店': {
     phone: '0138-26-2099',
     hours: { zh: '10:00–22:00（全年無休）', en: '10:00–22:00, open year-round' },
     address: { zh: '函館市末広町23-18', en: '23-18 Suehirocho, Hakodate' },
     recommend: { zh: '中華風炸雞漢堡（チャイニーズチキンバーガー）580円', en: 'Chinese Chicken Burger ¥580' },
+    link: 'https://luckypierrot.jp/',
   },
   '村上海膽': {
     phone: '0138-22-6086',
     hours: { zh: '09:00–18:00（週三・週四公休）', en: '09:00–18:00, closed Wed & Thu' },
     address: { zh: '函館市大手町22-1', en: '22-1 Otemachi, Hakodate' },
     recommend: { zh: '焗烤海膽（ウニグラタン）· 炙烤海膽（炙りウニ）· 避開生食', en: 'Uni gratin · grilled uni · skip raw uni' },
+    link: 'https://tabelog.com/hokkaido/A0105/A010501/1000136/',
   },
   '奧芝商店 函館本店': {
     phone: '0138-83-5007',
     hours: { zh: '11:30–21:00（週一・週二公休）', en: '11:30–21:00, closed Mon & Tue' },
     address: { zh: '函館市本町6-9', en: '6-9 Honcho, Hakodate' },
     recommend: { zh: '海老スープカレー（蝦湯咖哩）辣度 1–30', en: 'Shrimp broth soup curry, spice level 1–30' },
+    link: 'https://tabelog.com/hokkaido/A0105/A010501/1042739/',
   },
   '岡田屋': {
     phone: '0142-75-2041',
     hours: { zh: '10:00–17:00（不定休）', en: '10:00–17:00 (irregular)' },
     address: { zh: '洞爺湖町洞爺湖温泉50', en: '50 Toyako Onsen, Toyako-cho' },
     recommend: { zh: '白汁粉（白玉白湯圓紅豆湯）600–900円', en: 'White mochi sweet soup ¥600–900' },
+    link: 'https://tabelog.com/hokkaido/A0108/A010801/1003343/',
   },
   // ── Day 2 ──
   'Cafe BAAL': {
     hours: { zh: '11:00–21:00（週三公休）', en: '11:00–21:00, closed Wed' },
     address: { zh: '小樽市稲穂2丁目（近小樽站）', en: 'Near Otaru Station, Inaho 2-chome' },
     recommend: { zh: '洋食牛排飯 1,500–2,500円；份量紮實、保護腿力', en: 'Western-style steak rice ¥1,500–2,500; hearty portions, saves your legs' },
+    link: 'https://tabelog.com/hokkaido/A0106/A010601/1052877/',
   },
   // ── Day 3 ──
   'とんかつ 檍': {
     hours: { zh: '11:30–22:00', en: '11:30–22:00' },
     address: { zh: '札幌市中央区南1条西5丁目', en: 'Minami 1-jo W5, Chuo-ku, Sapporo' },
     recommend: { zh: '特上ロースかつ定食 2,500–4,000円；麥飯＋高麗菜無限續', en: 'Premium loin cutlet set ¥2,500–4,000; barley rice + cabbage unlimited refill' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010102/1063034/',
   },
   '⭐ 藻岩山展望台': {
     phone: '011-561-8177',
@@ -698,12 +722,14 @@ const PLACE_DETAIL = {
     hours: { zh: '18:00–23:00（需提前預約）', en: '18:00–23:00 (reservations required)' },
     address: { zh: '札幌市中央区（薄野周邊）', en: 'Near Susukino, Chuo-ku, Sapporo' },
     recommend: { zh: '黑毛和牛壽喜燒；備注「不吃生食」請全熟處理；套餐 10,000–15,000円', en: 'Kuroge wagyu sukiyaki; note "fully cooked only" when booking; course ¥10,000–15,000' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010103/1003634/',
   },
   // ── Day 5 ──
   'DONGURI': {
     hours: { zh: '07:00–19:00（依店而異）', en: '07:00–19:00 (varies by branch)' },
     address: { zh: '札幌市各處（推薦大通附近店）', en: 'Multiple locations around Sapporo' },
     recommend: { zh: '牛角形クロワッサン・豆沙包；日日現烤；早開門是最大優勢', en: 'Horn croissant, red bean bun; baked fresh daily; early opening is the key advantage' },
+    link: 'https://tabelog.com/hokkaido/A0101/A010102/1050116/',
   },
   '⭐ 函館山觀景台': {
     phone: '0138-23-6288',
@@ -748,6 +774,11 @@ const PLACE_DETAIL = {
     hours: { zh: '舊函館区公会堂 09:00–17:00（週一公休）', en: 'Old Public Hall 09:00–17:00, closed Mon' },
     address: { zh: '函館市元町', en: 'Motomachi, Hakodate' },
     recommend: { zh: '八幡坂坡道海港透視日落最美；舊函館区公会堂 300円；周邊建築群免費', en: 'Hachiman-zaka sea view best at sunset; Old Public Hall ¥300; surrounding buildings free' },
+    access: {
+      zh: ['① 市電至「十字街」站（或「末広町」站）下車', '② 步行 5–10 分往山方向即進入元町歷史建築區', '③ 八幡坂・旧公会堂・カトリック元町教会皆在步行範圍內'],
+      en: ['① City tram to "Jujigai" or "Suehirocho" stop', '② Walk 5–10 min uphill into Motomachi historical district', '③ Hachimanaka slope, Old Public Hall, Catholic Church all within walking distance'],
+    },
+    link: 'https://www.hakobura.jp/spots/478',
   },
   // ── Day 8 ──
   '⭐ 登別地獄谷 / 大湯沼川天然足湯': {
@@ -767,5 +798,6 @@ const PLACE_DETAIL = {
     hours: { zh: '10:00–21:30（機場店）', en: '10:00–21:30 (airport branch)' },
     address: { zh: '新千歲機場 國內線 3F', en: 'New Chitose Airport Domestic Terminal 3F' },
     recommend: { zh: '濃郁蝦味噌拉麵 1,200円；旅程最後一餐；蝦湯濃縮精華', en: 'Rich shrimp miso ramen ¥1,200; perfect final meal; intensely flavored shrimp broth' },
+    link: 'https://tabelog.com/hokkaido/A0107/A010701/1034338/',
   },
 };
