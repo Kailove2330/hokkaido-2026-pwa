@@ -403,6 +403,7 @@ function renderTimelineItems(dayState, impact) {
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
               ${mapHTML}
+              ${(() => { const dk = cleanPlaceName(item.place.zh); return PLACE_DETAIL[dk] ? `<button class="detail-btn" onclick="openDetailSheet(${JSON.stringify(dk)})">ⓘ ${lang === 'zh' ? '詳情' : 'Info'}</button>` : ''; })()}
               ${editMode ? `<button class="move-day-btn" onclick="showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
             </div>
           </div>
@@ -1079,6 +1080,66 @@ function renderSOS() {
   }
 
   container.innerHTML = html;
+}
+
+// ── PLACE DETAIL SHEET ─────────────────────────────────
+function openDetailSheet(key) {
+  const d = PLACE_DETAIL[key];
+  if (!d) return;
+  const isZh = lang === 'zh';
+
+  document.getElementById('detail-sheet-title').textContent = key;
+
+  let html = '';
+
+  if (d.recommend) {
+    html += `
+      <div class="detail-row detail-recommend">
+        <div class="detail-icon">⭐</div>
+        <div class="detail-val">${d.recommend[lang]}</div>
+      </div>
+    `;
+  }
+  if (d.hours) {
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">🕐</div>
+        <div>
+          <div class="detail-label">${isZh ? '營業時間' : 'Hours'}</div>
+          <div class="detail-val">${d.hours[lang]}</div>
+        </div>
+      </div>
+    `;
+  }
+  if (d.phone) {
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">📞</div>
+        <div>
+          <div class="detail-label">${isZh ? '電話' : 'Phone'}</div>
+          <a href="tel:${d.phone}" class="detail-val detail-phone">${d.phone}</a>
+        </div>
+      </div>
+    `;
+  }
+  if (d.address) {
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">📍</div>
+        <div>
+          <div class="detail-label">${isZh ? '地址' : 'Address'}</div>
+          <div class="detail-val">${d.address[lang]}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('detail-sheet-body').innerHTML = html;
+  document.getElementById('detail-sheet-overlay').style.display = 'flex';
+}
+
+function closeDetailSheet() {
+  document.getElementById('detail-sheet-overlay').style.display = 'none';
 }
 
 // ── INIT ───────────────────────────────────────────────────

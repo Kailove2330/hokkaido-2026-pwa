@@ -67,6 +67,17 @@
       <div id="map-leaflet"></div>
     </div>
 
+    <!-- Place Detail Sheet -->
+    <div id="detail-sheet-overlay" style="display:none" onclick="closeDetailSheet()">
+      <div id="detail-sheet" onclick="event.stopPropagation()">
+        <div class="detail-sheet-header">
+          <div class="detail-sheet-title" id="detail-sheet-title"></div>
+          <button class="detail-sheet-close" onclick="closeDetailSheet()">✕</button>
+        </div>
+        <div id="detail-sheet-body"></div>
+      </div>
+    </div>
+
     <!-- Move-to-day bottom sheet -->
     <div id="move-sheet-overlay" style="display:none">
       <div id="move-sheet">

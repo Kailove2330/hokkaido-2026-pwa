@@ -83,9 +83,10 @@ const DAYS = [
       { time: '14:30', place: { zh: '堺町通 + 小樽音樂盒堂 本館', en: 'Sakaimachi Street + Otaru Music Box Museum' }, duration: '60min', note: { zh: '音樂盒堂本館免費參觀；限定款 3,000円起', en: 'Music Box Museum free entry; limited editions from ¥3,000' }, maps: 'https://maps.google.com/?q=小樽オルゴール堂本館', warn: false },
       { time: '15:30', place: { zh: '⭐ LeTAO 小樽總店（二樓內用現做雙層乳酪蛋糕）', en: '⭐ LeTAO Main Store (2F Fresh Double Fromage)' }, duration: '90min', note: { zh: '⚡ 停留 90 分；二樓現做雙層乳酪蛋糕 900円；附飲料套餐 1,400円', en: '⚡ Allow 90 min; 2F fresh Double Fromage ¥900; drink set ¥1,400' }, maps: 'https://maps.google.com/?q=LeTAO+Otaru', warn: true },
       { time: '17:30', place: { zh: '⭐ 小樽運河夜景散步 → JR 返回札幌', en: '⭐ Otaru Canal Night Walk → JR Back to Sapporo' }, duration: '60min', note: { zh: '⚡ 黃金窗口 17:30–18:30（點燈最美）；JR 約 50 分返回', en: '⚡ Golden window 17:30–18:30 (lanterns lit); JR ~50 min back' }, maps: 'https://maps.google.com/?q=Otaru+Canal', warn: true },
-      { time: '19:30', place: { zh: '🍛【晚餐】奧芝商店 站前創成寺（蝦味湯咖哩）', en: '🍛 Dinner: Okura Shoten Soup Curry (Shrimp)' }, duration: '90min', note: { zh: '海老出汁スープカレー 1,500–2,200円', en: 'Shrimp broth soup curry ¥1,500–2,200' }, maps: 'https://maps.google.com/?q=奥芝商店+札幌', warn: false },
+      { time: '18:30', place: { zh: '🍜【晚餐】Sumire 味噌拉麵（薄野店）', en: '🍜 Dinner: Sumire Miso Ramen (Susukino)' }, duration: '60min', note: { zh: '札幌三大味噌拉麵之一；奶油玉米系；1,200–1,500円', en: "One of Sapporo's top 3 miso ramen; butter corn style; ¥1,200–1,500" }, maps: 'https://maps.google.com/?q=すみれ+薄野+札幌', warn: false },
+      { time: '20:00', place: { zh: '🍨 Sato（夜聖代）', en: '🍨 Sato Night Parfait' }, duration: '60min', note: { zh: '達成「拉麵接聖代」成就！夜間限定聖代', en: '"Ramen → Parfait" achievement unlocked! Night-only dessert' }, maps: 'https://maps.google.com/?q=パフェ+さとう+札幌', warn: false },
     ],
-    mealBudget: { zh: '午餐 2,000円 + 下午茶 1,400円 + 晚餐 2,000円／人', en: 'Lunch ¥2,000 + café ¥1,400 + dinner ¥2,000/person' },
+    mealBudget: { zh: '午餐 2,000円 + 下午茶 1,400円 + 晚餐 1,500円 + 聖代 1,200円／人', en: 'Lunch ¥2,000 + café ¥1,400 + dinner ¥1,500 + parfait ¥1,200/person' },
     shopping: { zh: 'LeTAO 起司夾心餅乾、北一硝子玻璃杯、音樂盒堂限定款', en: 'LeTAO cheese biscuits, Kitaichi glass, Music Box limited edition' },
   },
   {
@@ -119,14 +120,14 @@ const DAYS = [
       { time: '07:30', place: { zh: '🍳 京王 Prelia 自助餐（飯店早餐）', en: '🍳 Keio Prelia Buffet (Hotel Breakfast)' }, duration: '60min', note: null, maps: null, warn: false },
       { time: '09:00', place: { zh: '歷史地標打卡（紅磚廳舍 → 時計台 → 電視塔）', en: 'Historic Landmarks (Red Brick Hall → Clock Tower → TV Tower)' }, duration: '75min', note: { zh: '時計台內部 200円；電視塔展望台 700円（選做）', en: 'Clock Tower interior ¥200; TV Tower observatory ¥700 (optional)' }, maps: 'https://maps.google.com/?q=Sapporo+Clock+Tower', warn: false },
       { time: '10:30', place: { zh: '中島公園 / 豐平館（晨間湖畔 + 明治洋樓）', en: 'Nakajima Park / Hoheikan (Morning Lakeside + Meiji Hall)' }, duration: '60min', note: { zh: '豐平館參觀 300円；中島公園免費；湖畔空氣最佳', en: 'Hoheikan ¥300; Nakajima Park free; best morning air by the lake' }, maps: 'https://maps.google.com/?q=Nakajima+Park+Sapporo', warn: false },
-      { time: '11:30', place: { zh: '🛍️【核心採購啟動】大丸 → Stellar Place → APIA → PARCO', en: '🛍️ Core Shopping: Daimaru → Stellar Place → APIA → PARCO' }, duration: '90min', note: { zh: 'UNIQLO、大國藥妝、3COINS、SERIA、大創；伴手禮全面掃蕩', en: 'UNIQLO, Daikoku Drugstore, 3COINS, SERIA, Daiso; full souvenir sweep' }, maps: 'https://maps.google.com/?q=Daimaru+Sapporo', warn: false },
-      { time: '13:00', place: { zh: '☕【午餐】六花亭 札幌本店（熱披薩 + 咖啡）', en: '☕ Lunch: Rokkatei Main Store (Hot Pizza + Coffee)' }, duration: '60min', note: { zh: '⚡ 13:00 前抽號碼牌；披薩套餐 1,000–1,500円；現場限定熱食', en: '⚡ Get ticket before 13:00; pizza set ¥1,000–1,500; hot food in-store only' }, maps: 'https://maps.google.com/?q=六花亭+札幌本店', warn: true },
-      { time: '14:30', place: { zh: '採購收尾（大丸 B1 食品館 + 北菓樓）', en: 'Final Shopping (Daimaru B1 Food Hall + Kitakaro)' }, duration: '180min', note: { zh: '六花亭、北菓樓、ROYCE\'、蜂蜜、昆布零食一次清單', en: 'Rokkatei, Kitakaro, ROYCE\', honey, kombu snacks — final sweep' }, maps: 'https://maps.google.com/?q=Daimaru+Sapporo', warn: false },
+      { time: '11:45', place: { zh: '🛍️【核心採購啟動】大丸 → Stellar Place → APIA → PARCO', en: '🛍️ Core Shopping: Daimaru → Stellar Place → APIA → PARCO' }, duration: '90min', note: { zh: '⚡ 先至 GARAKU 抽整理券再逛街；UNIQLO、大國藥妝、3COINS、SERIA、大創', en: '⚡ Grab GARAKU ticket first, then shop: UNIQLO, Daikoku, 3COINS, SERIA, Daiso' }, maps: 'https://maps.google.com/?q=Daimaru+Sapporo', warn: true },
+      { time: '13:30', place: { zh: '🍛【午餐】GARAKU 湯咖哩', en: '🍛 Lunch: GARAKU Soup Curry' }, duration: '60min', note: { zh: '札幌神級名店；海老ベース湯咖哩 1,500–2,200円；辣度 0–40 可選', en: 'Sapporo legend; shrimp broth soup curry ¥1,500–2,200; spice level 0–40' }, maps: 'https://maps.google.com/?q=GARAKU+札幌', warn: false },
+      { time: '15:30', place: { zh: '☕ 千秋庵本店（巴里銅鑼）', en: '☕ Senshuya Main Store (Bali Dorayaki)' }, duration: '30min', note: { zh: '中繼體力補給；現烤バリ銅鑼（僅限本店）', en: 'Mid-afternoon fuel; freshly baked Bali Dorayaki (in-store only)' }, maps: 'https://maps.google.com/?q=千秋庵本店+札幌', warn: false },
       { time: '17:30', place: { zh: '⚡【中繼降載】返回京王飯店休息洗漱', en: '⚡ Mid-point Reset: Return to Keio Hotel, freshen up' }, duration: '150min', note: { zh: '22:00 啟動行李終極收納與封箱（宅急便 5/18 寄出）', en: '22:00 final packing & seal bags for 5/18 Yamato pickup' }, maps: null, warn: true },
       { time: '20:00', place: { zh: '🦀【晚餐】札幌かに本家 站前總店（全熟螃蟹火鍋）', en: '🦀 Dinner: Sapporo Kani Honke (Fully Cooked Crab Hot Pot)' }, duration: '120min', note: { zh: '⭐️ 建議選擇包廂；全熟螃蟹套餐 8,000–15,000円；需提前預約', en: '⭐️ Request private room; fully cooked crab course ¥8,000–15,000; reserve ahead' }, maps: 'https://maps.google.com/?q=札幌かに本家+站前総店', warn: true },
     ],
-    mealBudget: { zh: '午餐 1,500円 + 晚餐 10,000–15,000円／人', en: 'Lunch ¥1,500 + dinner ¥10,000–15,000/person' },
-    shopping: { zh: '六花亭 丸成奶油三明治・酒糖｜北菓樓 妖精之森・開拓米果｜大國藥妝｜3COINS｜SERIA', en: 'Rokkatei Marusei・Sake Candy｜Kitakaro Baumkuchen・Crackers｜Daikoku Drug｜3COINS｜SERIA' },
+    mealBudget: { zh: '午餐 2,000円 + 午茶 300円 + 晚餐 10,000–15,000円／人', en: 'Lunch ¥2,000 + snack ¥300 + dinner ¥10,000–15,000/person' },
+    shopping: { zh: '六花亭 丸成奶油三明治・酒糖｜北菓樓 妖精之森・開拓米果｜千秋庵 巴里銅鑼｜大國藥妝｜3COINS｜SERIA', en: 'Rokkatei Marusei・Sake Candy｜Kitakaro Baumkuchen・Crackers｜Senshuya Bali Dorayaki｜Daikoku Drug｜3COINS｜SERIA' },
   },
   {
     day: 5,
@@ -161,9 +162,9 @@ const DAYS = [
       { time: '13:00', place: { zh: '🦔【午餐】村上海膽（全熟解鎖：焗烤海膽 / 烤海膽）', en: '🦔 Lunch: Murakami Uni (Fully Cooked: Gratin / Grilled Uni)' }, duration: '60min', note: { zh: '⚡ 全熟點法：焗烤ウニ、炙り烤ウニ（避開生ウニ）；當季套餐 3,000–6,000円', en: '⚡ Fully cooked options: uni gratin, grilled uni (skip raw); seasonal set ¥3,000–6,000' }, maps: 'https://maps.google.com/?q=村上海膽+函館', warn: true },
       { time: '14:30', place: { zh: '⭐ 五稜郭展望塔 / 公園', en: '⭐ Goryokaku Tower / Park' }, duration: '90min', note: { zh: '⚡ 塔頂展望台 900円（★必上）；公園內自由散步', en: '⚡ Tower observation ¥900 (★must do); free stroll in park' }, maps: 'https://maps.google.com/?q=Goryokaku+Tower+Hakodate', warn: true },
       { time: '16:30', place: { zh: '⭐ 八幡坂 / 元町建築群（大正風情漫步）', en: '⭐ Hachiman-zaka / Motomachi (Taisho-era Stroll)' }, duration: '60min', note: { zh: '⚡ 注意車流；八幡坂海港透視日落最美；舊區公會堂 300円', en: '⚡ Watch traffic; Hachiman-zaka sea view best at sunset; Old Public Hall ¥300' }, maps: 'https://maps.google.com/?q=Hachiman-zaka+Hakodate', warn: true },
-      { time: '19:30', place: { zh: '🍢【晚餐】大門橫丁 屋台村', en: '🍢 Dinner: Daimon Yokocho Yatai Village' }, duration: '90min', note: { zh: '無需預約；視現場狀況自由選擇熟食店鋪；人均 2,000–3,500円', en: 'No reservation needed; choose freely by crowd; ¥2,000–3,500/person' }, maps: 'https://maps.google.com/?q=大門横丁+函館', warn: false },
+      { time: '18:00', place: { zh: '🍛【晚餐】奧芝商店 函館本店（蝦味湯咖哩）', en: '🍛 Dinner: Okushiba Hakodate (Shrimp Soup Curry)' }, duration: '90min', note: { zh: '⚡ 已避開週一・週二公休；海老スープカレー 1,500–2,500円；辣度 1–30', en: '⚡ Avoids Mon/Tue closures; shrimp soup curry ¥1,500–2,500; spice level 1–30' }, maps: 'https://maps.google.com/?q=奥芝商店+函館本店', warn: true },
     ],
-    mealBudget: { zh: '午餐 4,000–6,000円 + 晚餐 2,500円／人', en: 'Lunch ¥4,000–6,000 + dinner ¥2,500/person' },
+    mealBudget: { zh: '午餐 4,000–6,000円 + 晚餐 2,000円／人', en: 'Lunch ¥4,000–6,000 + dinner ¥2,000/person' },
     shopping: { zh: "SNAFFLE'S 起司歐姆蕾蛋糕 Catchcakes（6 入 1,296円，需冷藏）", en: "SNAFFLE'S Cheese Omelette Cake Catchcakes (6pc ¥1,296, refrigerate)" },
   },
   {
@@ -531,6 +532,14 @@ const PLACE_COORDS = {
   // Day 9
   '🍳 乃之風自助餐（最後早餐）':                              [42.5582, 140.7810],
   '🍜【午餐】一幻拉麵（國內線 3F）→ 2F 最終名產採買':        [42.7762, 141.6925],
+  // New Day 2 (V4)
+  '🍜【晚餐】Sumire 味噌拉麵（薄野店）':                      [43.0560, 141.3540],
+  '🍨 Sato（夜聖代）':                                        [43.0614, 141.3558],
+  // New Day 4 (V4)
+  '🍛【午餐】GARAKU 湯咖哩':                                  [43.0578, 141.3529],
+  '☕ 千秋庵本店（巴里銅鑼）':                                [43.0693, 141.3536],
+  // New Day 6 (V4)
+  '🍛【晚餐】奧芝商店 函館本店（蝦味湯咖哩）':               [41.7695, 140.7250],
 };
 
 // ── BUDGET ─────────────────────────────────────────────────
@@ -544,3 +553,102 @@ const BUDGET = [
   { item: { zh: '宅急便（行李宅配）', en: 'Luggage forwarding' }, est: '¥3,000–5,000' },
   { item: { zh: '合計（不含機票飯店）', en: 'Total (excl. flights & hotels)' }, est: '¥109,000–164,000', total: true },
 ];
+
+// ── PLACE DETAIL (Approach B: keyed by cleanPlaceName result) ─
+// Keys must match what cleanPlaceName(item.place.zh) returns exactly.
+const PLACE_DETAIL = {
+  '成吉思汗達摩 5.5 店': {
+    phone: '011-521-4804',
+    hours: { zh: '每日 17:00–翌03:00', en: 'Daily 17:00–03:00+' },
+    address: { zh: '札幌市中央区南5条西4丁目', en: 'Minami 5-jo W4, Chuo-ku, Sapporo' },
+    recommend: { zh: '成吉思汗羊肉 · 生ラム（新鮮生羔羊）', en: 'Jingisukan lamb · Fresh raw lamb (nama-ramu)' },
+  },
+  'Parfaiteria PaL': {
+    phone: '011-530-5505',
+    hours: { zh: '週二–日 18:00–00:00（週一公休）', en: 'Tue–Sun 18:00–00:00, closed Mon' },
+    address: { zh: '札幌市中央区南4条西4丁目', en: 'Minami 4-jo W4, Chuo-ku, Sapporo' },
+    recommend: { zh: '季節限定夜聖代（北海道牛奶底）', en: 'Seasonal night parfait (Hokkaido milk base)' },
+  },
+  '⭐ 北一硝子 三號館': {
+    phone: '0134-33-1993',
+    hours: { zh: '每日 08:45–18:00', en: 'Daily 08:45–18:00' },
+    address: { zh: '小樽市堺町7-26', en: '7-26 Sakaimachi, Otaru' },
+    recommend: { zh: '煤油燈咖啡廳內用 · 手作玻璃杯（3,000円起）', en: 'Kerosene lamp café · Handmade glass from ¥3,000' },
+  },
+  '⭐ LeTAO 小樽總店': {
+    phone: '0120-468-111',
+    hours: { zh: '每日 09:00–18:00（季節調整）', en: 'Daily 09:00–18:00 (season varies)' },
+    address: { zh: '小樽市堺町7-16', en: '7-16 Sakaimachi, Otaru' },
+    recommend: { zh: '2F 現做雙層乳酪蛋糕 900円 · 飲料套餐 1,400円', en: '2F fresh Double Fromage ¥900 · drink set ¥1,400' },
+  },
+  'Sumire 味噌拉麵': {
+    phone: '011-551-4960',
+    hours: { zh: '11:00–15:00，18:00–21:00（週三公休）', en: '11:00–15:00, 18:00–21:00, closed Wed' },
+    address: { zh: '札幌市中央区南5条西5丁目（薄野店）', en: 'Susukino, Minami 5-jo W5, Chuo-ku' },
+    recommend: { zh: '味噌拉麵 · 奶油玉米味噌（コーンバターみそ）', en: 'Miso ramen · Rich butter corn miso' },
+  },
+  'Sato': {
+    hours: { zh: '夜間限定（約 19:00–翌01:00）', en: 'Night only (approx 19:00–01:00+)' },
+    address: { zh: '札幌市中央区南4条西4丁目周邊', en: 'Near Minami 4-jo W4, Chuo-ku, Sapporo' },
+    recommend: { zh: '季節夜聖代（每週更換）', en: 'Seasonal night parfait (weekly rotation)' },
+  },
+  'Espresso D Works': {
+    phone: '011-231-4059',
+    hours: { zh: '週一–五 08:00–18:00，週末 08:00–17:00', en: 'Mon–Fri 08:00–18:00, weekends 08:00–17:00' },
+    address: { zh: '札幌市中央区大通西1丁目', en: 'Odori W1, Chuo-ku, Sapporo' },
+    recommend: { zh: '水份100% 吐司 · 蓬鬆舒芙蕾 · 玉米濃湯套餐', en: '100% moisture toast · soufflé pancake · corn soup set' },
+  },
+  '⭐ 白色戀人公園': {
+    phone: '011-666-1481',
+    hours: { zh: '09:00–18:00（依季節調整）', en: '09:00–18:00 (season varies)' },
+    address: { zh: '札幌市西区宮の沢2条2丁目11-36', en: '2-2-11-36 Miyanosawa, Nishi-ku, Sapporo' },
+    recommend: { zh: '工廠參觀票（預購 1,000円）· 舒芙蕾鬆餅 · 訂製磁鐵（1,500円起）', en: 'Factory tour (pre-book ¥1,000) · soufflé pancake · custom magnet (from ¥1,500)' },
+  },
+  '北海道神宮 / 圓山公園': {
+    hours: { zh: '開放參拜 06:00–17:00', en: 'Worship hours 06:00–17:00' },
+    address: { zh: '札幌市中央区宮ヶ丘474', en: '474 Miyagaoka, Chuo-ku, Sapporo' },
+    recommend: { zh: '判官さま現烤麻糬（限量 300円）· 福餅 · 圓山公園湖畔散步', en: 'Hangan grilled mochi (limited, ¥300) · Fuku-mochi · Maruyama Park stroll' },
+  },
+  'GARAKU 湯咖哩': {
+    phone: '011-233-5568',
+    hours: { zh: '11:30–22:00（週三公休）', en: '11:30–22:00, closed Wed' },
+    address: { zh: '札幌市中央区南2条西2丁目', en: 'Minami 2-jo W2, Chuo-ku, Sapporo' },
+    recommend: { zh: '海老ベースのスープカレー · 辣度 0–40 可選', en: 'Shrimp broth soup curry · spice level 0–40' },
+  },
+  '千秋庵本店': {
+    phone: '011-231-3681',
+    hours: { zh: '10:00–18:00（不定休）', en: '10:00–18:00 (irregular holidays)' },
+    address: { zh: '札幌市中央区北4条西3丁目', en: 'Kita 4-jo W3, Chuo-ku, Sapporo' },
+    recommend: { zh: 'バリ銅鑼（巴里銅鑼）· 僅本店現場烤製', en: 'Bali Dorayaki · freshly baked in-store only' },
+  },
+  '札幌かに本家 站前總店': {
+    phone: '011-222-0018',
+    hours: { zh: '11:30–22:00（需提前預約）', en: '11:30–22:00 (reservations recommended)' },
+    address: { zh: '札幌市中央区北4条西2丁目', en: 'Kita 4-jo W2, Chuo-ku, Sapporo' },
+    recommend: { zh: '全熟螃蟹套餐（8,000–15,000円）· 指定包廂', en: 'Fully cooked crab course (¥8,000–15,000) · request private room' },
+  },
+  '幸運小丑漢堡 碼頭末廣店': {
+    phone: '0138-26-2099',
+    hours: { zh: '10:00–22:00（全年無休）', en: '10:00–22:00, open year-round' },
+    address: { zh: '函館市末広町23-18', en: '23-18 Suehirocho, Hakodate' },
+    recommend: { zh: '中華風炸雞漢堡（チャイニーズチキンバーガー）580円', en: 'Chinese Chicken Burger ¥580' },
+  },
+  '村上海膽': {
+    phone: '0138-22-6086',
+    hours: { zh: '09:00–18:00（週三・週四公休）', en: '09:00–18:00, closed Wed & Thu' },
+    address: { zh: '函館市大手町22-1', en: '22-1 Otemachi, Hakodate' },
+    recommend: { zh: '焗烤海膽（ウニグラタン）· 炙烤海膽（炙りウニ）· 避開生食', en: 'Uni gratin · grilled uni · skip raw uni' },
+  },
+  '奧芝商店 函館本店': {
+    phone: '0138-83-5007',
+    hours: { zh: '11:30–21:00（週一・週二公休）', en: '11:30–21:00, closed Mon & Tue' },
+    address: { zh: '函館市本町6-9', en: '6-9 Honcho, Hakodate' },
+    recommend: { zh: '海老スープカレー（蝦湯咖哩）辣度 1–30', en: 'Shrimp broth soup curry, spice level 1–30' },
+  },
+  '岡田屋': {
+    phone: '0142-75-2041',
+    hours: { zh: '10:00–17:00（不定休）', en: '10:00–17:00 (irregular)' },
+    address: { zh: '洞爺湖町洞爺湖温泉50', en: '50 Toyako Onsen, Toyako-cho' },
+    recommend: { zh: '白汁粉（白玉白湯圓紅豆湯）600–900円', en: 'White mochi sweet soup ¥600–900' },
+  },
+};
