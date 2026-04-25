@@ -1137,6 +1137,31 @@ function openDetailSheet(key) {
       </div>
     `;
   }
+  if (d.access) {
+    const steps = d.access[lang].map(s =>
+      `<div class="detail-step">${s.replace(/(⚡[^<\n]*)/, '<span class="warn-text">$1</span>')}</div>`
+    ).join('');
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">🚌</div>
+        <div style="flex:1">
+          <div class="detail-label">${isZh ? '交通接駁' : 'Getting there'}</div>
+          <div class="detail-steps">${steps}</div>
+        </div>
+      </div>
+    `;
+  }
+  if (d.link) {
+    html += `
+      <div class="detail-row">
+        <div class="detail-icon">🔗</div>
+        <div>
+          <div class="detail-label">${isZh ? '官方資訊 / 即時班表' : 'Official info & schedule'}</div>
+          <a href="${d.link}" target="_blank" rel="noopener" class="detail-link">${d.link.replace(/^https?:\/\//, '')}</a>
+        </div>
+      </div>
+    `;
+  }
 
   document.getElementById('detail-sheet-body').innerHTML = html;
   document.getElementById('detail-sheet-overlay').style.display = 'flex';

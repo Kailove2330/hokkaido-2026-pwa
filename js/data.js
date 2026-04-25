@@ -603,11 +603,21 @@ const PLACE_DETAIL = {
     hours: { zh: '09:00–18:00（依季節調整）', en: '09:00–18:00 (season varies)' },
     address: { zh: '札幌市西区宮の沢2条2丁目11-36', en: '2-2-11-36 Miyanosawa, Nishi-ku, Sapporo' },
     recommend: { zh: '工廠參觀票（預購 1,000円）· 舒芙蕾鬆餅 · 訂製磁鐵（1,500円起）', en: 'Factory tour (pre-book ¥1,000) · soufflé pancake · custom magnet (from ¥1,500)' },
+    access: {
+      zh: ['① 地下鐵東西線至終點「宮の沢」站', '② 步行約 7 分鐘直達（依指標走）'],
+      en: ['① Subway Tozai Line to terminal "Miyanosawa"', '② Walk ~7 min following signs'],
+    },
+    link: 'https://www.shiroikoibitopark.jp/',
   },
   '北海道神宮 / 圓山公園': {
     hours: { zh: '開放參拜 06:00–17:00', en: 'Worship hours 06:00–17:00' },
     address: { zh: '札幌市中央区宮ヶ丘474', en: '474 Miyagaoka, Chuo-ku, Sapporo' },
     recommend: { zh: '判官さま現烤麻糬（限量 300円）· 福餅 · 圓山公園湖畔散步', en: 'Hangan grilled mochi (limited, ¥300) · Fuku-mochi · Maruyama Park stroll' },
+    access: {
+      zh: ['① 地下鐵東西線至「円山公園」站', '② 步行約 10 分鐘至神宮正門（沿指標走）'],
+      en: ['① Subway Tozai Line to "Maruyama Koen"', '② Walk ~10 min to main shrine gate (follow signs)'],
+    },
+    link: 'https://www.hokkaidojingu.or.jp/',
   },
   'GARAKU 湯咖哩': {
     phone: '011-233-5568',
@@ -668,6 +678,21 @@ const PLACE_DETAIL = {
     hours: { zh: '纜車 10:30–22:00（最終上山 21:30）', en: 'Ropeway 10:30–22:00 (last ride up 21:30)' },
     address: { zh: '札幌市南区藻岩山', en: 'Moiwa-yama, Minami-ku, Sapporo' },
     recommend: { zh: '纜車來回 2,100円；日本三大夜景；5月日落約18:30，帶防風外套', en: 'Ropeway ¥2,100 RT; Japan top-3 night view; sunset ~18:30 in May — bring windproof jacket' },
+    access: {
+      zh: [
+        '① 搭市電（路面電車）至「ロープウェイ入口」站',
+        '② 步行約 10 分 或 搭免費接駁巴士至山麓駅（20:00 後加班）',
+        '③ ロープウェイ（約5分）→ ミニケーブルカー（約2分）抵達山頂',
+        '⚡ 纜車約每 20 分一班；建議 17:00 前抵達山麓站',
+      ],
+      en: [
+        '① City tram to "Ropeway-Iriguchi" stop',
+        '② Walk ~10 min or take free shuttle bus to cable car base (extra runs after 20:00)',
+        '③ Ropeway (~5 min) → Mini cable car (~2 min) to summit',
+        '⚡ Ropeway runs every ~20 min; arrive at base by 17:00 recommended',
+      ],
+    },
+    link: 'https://mt-moiwa.jp/',
   },
   '牛しゃぶ 牛すき 禪': {
     hours: { zh: '18:00–23:00（需提前預約）', en: '18:00–23:00 (reservations required)' },
@@ -685,6 +710,21 @@ const PLACE_DETAIL = {
     hours: { zh: '纜車 10:00–22:00（10/16–4/24 至 21:00）；15m/s 強風停駛', en: 'Ropeway 10:00–22:00 (10/16–4/24 until 21:00); stops at 15m/s wind' },
     address: { zh: '函館市函館山', en: 'Hakodate-yama, Hakodate' },
     recommend: { zh: '纜車來回 1,500円；日落後30分最美；山頂較市區冷5–8°C', en: 'Ropeway ¥1,500 RT; best 30 min after sunset; top is 5–8°C colder than city' },
+    access: {
+      zh: [
+        '① 市電至「十字街」站，步行約 10 分至纜車乘車口（もとまち方向）',
+        '② ロープウェイ（來回 1,500円）約 3 分抵達山頂',
+        '⚡ 纜車約每 10 分一班；旺季排隊可達 30–60 分，建議 17:30 前抵達',
+        '⚡ 出發前至官網確認風速，15m/s 以上停駛',
+      ],
+      en: [
+        '① City tram to "Jujigai", walk ~10 min to ropeway station (toward Motomachi)',
+        '② Ropeway (¥1,500 RT) ~3 min to summit',
+        '⚡ Runs every ~10 min; peak season queue 30–60 min — arrive by 17:30',
+        '⚡ Check wind speed on official site before going (stops at 15m/s)',
+      ],
+    },
+    link: 'https://334.co.jp/',
   },
   '味彩': {
     phone: '0138-22-6751',
@@ -698,6 +738,11 @@ const PLACE_DETAIL = {
     hours: { zh: '09:00–18:00（4–10月至19:00）', en: '09:00–18:00 (Apr–Oct until 19:00)' },
     address: { zh: '函館市五稜郭町43-9', en: '43-9 Goryokaku-cho, Hakodate' },
     recommend: { zh: '展望台 900円（★必上）；俯瞰五角星形堡壘；公園免費', en: 'Observation tower ¥900 (★must do); star-shaped fort from above; park is free' },
+    access: {
+      zh: ['① 市電至「五稜郭公園前」站', '② 步行約 15 分鐘至展望塔（沿五稜郭通直走）'],
+      en: ['① City tram to "Goryokaku-Koen-mae" stop', '② Walk ~15 min to tower (straight along Goryokaku-dori)'],
+    },
+    link: 'https://www.goryokaku-tower.co.jp/',
   },
   '⭐ 八幡坂 / 元町建築群': {
     hours: { zh: '舊函館区公会堂 09:00–17:00（週一公休）', en: 'Old Public Hall 09:00–17:00, closed Mon' },
@@ -710,6 +755,11 @@ const PLACE_DETAIL = {
     hours: { zh: '地獄谷・足湯全日免費開放', en: 'Hell Valley & footbath: free, open all day' },
     address: { zh: '登別市登別温泉町', en: 'Noboribetsu Onsen-cho, Noboribetsu' },
     recommend: { zh: '地獄谷免費；足湯免費（帶小毛巾）；現場可領防水坐墊；泉源公園間歇泉每整點噴發', en: 'Hell Valley free; footbath free (bring towel); waterproof mat at entrance; geyser erupts hourly' },
+    access: {
+      zh: ['① 搭 JR 特急 / 普通列車至登別站（洞爺出發約 20 分）', '② 登別站搭道南バス至登別溫泉巴士總站（約 10 分，票價 380円）', '⚡ 班次每小時 1–2 班，出發前確認時刻表'],
+      en: ['① Take JR Limited/Local Express to Noboribetsu Station (~20 min from Toya)', '② Take Donan Bus from station to Noboribetsu Onsen terminal (~10 min, ¥380)', '⚡ ~1–2 buses/hour — check schedule before departing'],
+    },
+    link: 'https://noboribetsu-spa.jp/',
   },
   // ── Day 9 ──
   '一幻拉麵': {
