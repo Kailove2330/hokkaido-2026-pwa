@@ -1288,6 +1288,44 @@ nav#bottom-nav {
   color: var(--muted);
   padding: 4px 16px 10px;
 }
+.sv-subtab-bar {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sv-subtab-bar::-webkit-scrollbar { display: none; }
+.sv-subtab {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid #dde3ee;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: all 0.15s;
+}
+.sv-subtab.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.sv-subtab-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  vertical-align: middle;
+  margin-left: 3px;
+  margin-bottom: 1px;
+}
 .sv-group {
   margin: 0 12px 14px;
 }

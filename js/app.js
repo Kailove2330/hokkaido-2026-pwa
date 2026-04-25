@@ -6,6 +6,7 @@ let lang = localStorage.getItem('hk_lang') || 'zh';
 let activeDayIdx = 0;
 let editMode = false;
 let souvenirTab = 0;
+let svSubTab = 0;
 let svOpenId = null;
 
 // ── Storage helpers ────────────────────────────────────────
@@ -611,6 +612,13 @@ function getSvPurchases() {
 
 function setSvTab(t) {
   souvenirTab = t;
+  svSubTab = 0;
+  svOpenId = null;
+  renderSouvenirs();
+}
+
+function setSvSubTab(i) {
+  svSubTab = i;
   svOpenId = null;
   renderSouvenirs();
 }
@@ -755,83 +763,95 @@ function renderSouvenirs() {
   const totalBought = allItems.filter(i => purchases[i.id]).length;
   const totalSpent  = allItems.reduce((s, i) => s + (purchases[i.id]?.paid || 0), 0);
 
-  const dataset   = souvenirTab === 0 ? SOUVENIRS : DRUGSTORE;
-  const tab0Label = lang === 'zh' ? '伴手禮' : 'Souvenirs';
-  const tab1Label = lang === 'zh' ? '藥妝' : 'Drugstore';
+  const dataset    = souvenirTab === 0 ? SOUVENIRS : DRUGSTORE;
+  const tab0Label  = lang === 'zh' ? '伴手禮' : 'Souvenirs';
+  const tab1Label  = lang === 'zh' ? '藥妝' : 'Drugstore';
   const summaryTxt = lang === 'zh'
     ? `已購 ${totalBought} 件｜花費 ${totalSpent.toLocaleString()} 円`
     : `${totalBought} bought | ¥${totalSpent.toLocaleString()} spent`;
+
+  // Guard svSubTab against out-of-range after tab switch
+  const safeSubTab = Math.min(svSubTab, dataset.length - 1);
+
+  // Sub-tab bar
+  const subTabsHtml = dataset.map((g, i) => {
+    const groupBought = g.items.filter(item => purchases[item.id]).length;
+    const dot = groupBought > 0 ? `<span class="sv-subtab-dot"></span>` : '';
+    return `<button class="sv-subtab${i === safeSubTab ? ' active' : ''}" onclick="setSvSubTab(${i})">
+      ${g.tab[lang]}${dot}
+    </button>`;
+  }).join('');
 
   let html = `
     <div class="sv-tab-bar">
       <button class="sv-tab ${souvenirTab === 0 ? 'active' : ''}" onclick="setSvTab(0)">${tab0Label}</button>
       <button class="sv-tab ${souvenirTab === 1 ? 'active' : ''}" onclick="setSvTab(1)">${tab1Label}</button>
     </div>
+    <div class="sv-subtab-bar">${subTabsHtml}</div>
     <div class="sv-summary">${summaryTxt}</div>
   `;
 
-  dataset.forEach(group => {
-    html += `<div class="sv-group"><div class="sv-group-title">${group.category[lang]}</div>`;
+  // Only render the selected sub-tab group
+  const group = dataset[safeSubTab];
+  html += `<div class="sv-group"><div class="sv-group-title">${group.category[lang]}</div>`;
 
-    group.items.forEach(item => {
-      const p       = purchases[item.id];
-      const isOpen  = svOpenId === item.id;
-      const isBought = !!p;
+  group.items.forEach(item => {
+    const p        = purchases[item.id];
+    const isOpen   = svOpenId === item.id;
+    const isBought = !!p;
 
-      const badges = [
-        item.cold    ? `<span class="badge badge-cold">❄ ${T[lang].cold}</span>` : '',
-        item.airport ? `<span class="badge badge-airport">✈ ${T[lang].limitedAirport}</span>` : '',
-      ].filter(Boolean).join('');
-      const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
+    const badges = [
+      item.cold    ? `<span class="badge badge-cold">❄ ${T[lang].cold}</span>` : '',
+      item.airport ? `<span class="badge badge-airport">✈ ${T[lang].limitedAirport}</span>` : '',
+    ].filter(Boolean).join('');
+    const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
 
-      const statusHtml = isBought
-        ? `<div class="sv-status-bought">✓<br>${p.qty}件${p.paid ? '<br>' + p.paid.toLocaleString() + '円' : ''}</div>`
-        : `<div class="sv-status-add">＋</div>`;
+    const statusHtml = isBought
+      ? `<div class="sv-status-bought">✓<br>${p.qty}件${p.paid ? '<br>' + p.paid.toLocaleString() + '円' : ''}</div>`
+      : `<div class="sv-status-add">＋</div>`;
 
-      const formHtml = isOpen ? `
-        <div class="sv-form" onclick="event.stopPropagation()">
-          <div class="sv-form-row">
-            <label class="sv-form-label">${lang === 'zh' ? '數量' : 'Qty'}</label>
-            <input class="sv-form-input" id="sv-qty-${item.id}" type="number" min="1" value="${p?.qty || 1}">
-          </div>
-          <div class="sv-form-row">
-            <label class="sv-form-label">${lang === 'zh' ? '花費（円）' : 'Paid (¥)'}</label>
-            <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" value="${p?.paid || ''}">
-          </div>
-          <div class="sv-form-btns">
-            <button class="sv-btn-save" onclick="saveSvPurchase('${item.id}')">
-              ${lang === 'zh' ? '記錄' : 'Save'}
-            </button>
-            <button class="sv-btn-cancel" onclick="closeSvCard(event)">
-              ${lang === 'zh' ? '取消' : 'Cancel'}
-            </button>
-            ${isBought ? `<button class="sv-btn-clear" onclick="clearSvPurchase('${item.id}')">
-              ${lang === 'zh' ? '清除' : 'Clear'}
-            </button>` : ''}
-          </div>
+    const formHtml = isOpen ? `
+      <div class="sv-form" onclick="event.stopPropagation()">
+        <div class="sv-form-row">
+          <label class="sv-form-label">${lang === 'zh' ? '數量' : 'Qty'}</label>
+          <input class="sv-form-input" id="sv-qty-${item.id}" type="number" min="1" value="${p?.qty || 1}">
         </div>
-      ` : '';
-
-      html += `
-        <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
-             onclick="openSvCard('${item.id}')">
-          <div class="sv-card-body">
-            <div class="sv-card-left">
-              <div class="sv-card-name">${item.name[lang]}</div>
-              ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
-              ${badges ? `<div class="badge-row">${badges}</div>` : ''}
-              ${noteHtml}
-            </div>
-            <div class="sv-card-right">${statusHtml}</div>
-          </div>
-          ${formHtml}
+        <div class="sv-form-row">
+          <label class="sv-form-label">${lang === 'zh' ? '花費（円）' : 'Paid (¥)'}</label>
+          <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" value="${p?.paid || ''}">
         </div>
-      `;
-    });
+        <div class="sv-form-btns">
+          <button class="sv-btn-save" onclick="saveSvPurchase('${item.id}')">
+            ${lang === 'zh' ? '記錄' : 'Save'}
+          </button>
+          <button class="sv-btn-cancel" onclick="closeSvCard(event)">
+            ${lang === 'zh' ? '取消' : 'Cancel'}
+          </button>
+          ${isBought ? `<button class="sv-btn-clear" onclick="clearSvPurchase('${item.id}')">
+            ${lang === 'zh' ? '清除' : 'Clear'}
+          </button>` : ''}
+        </div>
+      </div>
+    ` : '';
 
-    html += '</div>';
+    html += `
+      <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
+           onclick="openSvCard('${item.id}')">
+        <div class="sv-card-body">
+          <div class="sv-card-left">
+            <div class="sv-card-name">${item.name[lang]}</div>
+            ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
+            ${badges ? `<div class="badge-row">${badges}</div>` : ''}
+            ${noteHtml}
+          </div>
+          <div class="sv-card-right">${statusHtml}</div>
+        </div>
+        ${formHtml}
+      </div>
+    `;
   });
 
+  html += '</div>';
   container.innerHTML = html;
 }
 
