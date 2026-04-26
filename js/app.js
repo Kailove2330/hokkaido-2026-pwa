@@ -72,17 +72,25 @@ const CAT = {
 };
 
 function getCategory(item) {
-  const text = [
-    item.place?.zh || '', item.place?.en || '',
-    item.note?.zh  || '', item.note?.en  || ''
-  ].join(' ');
-  if (/機場|airport|搭機|搭飛機|ci1[23]\d|jr|特急|巴士|bus|shuttle|地下鉄|電車|train|抵達|出發|前往|IC卡|pasmo|suica/i.test(text))
+  const placeTxt = item.place?.zh || '';
+  const fullTxt = [placeTxt, item.place?.en || '', item.note?.zh || '', item.note?.en || ''].join(' ');
+  // Sight landmarks — override before transport (運河, 夜景, 展望台, 神社, etc.)
+  if (/運河|夜景散步|展望台|展望塔|觀景台|神宮|神社|煙火|足湯|美術館|溫泉街|地獄谷|公園|城跡|五稜郭|藻岩山|有珠山/i.test(placeTxt))
+    return 'sight';
+  // Transport
+  if (/機場|airport|搭機|搭飛機|jr|特急|巴士|bus|shuttle|地下鉄|電車|train|抵達|出發|前往|IC卡|pasmo|suica|yamato|黑貓宅急便|行李報到|出境|安全檢查/i.test(fullTxt))
     return 'transport';
-  if (/飯店|hotel|resort|旅館|check.?in|check.?out|入住|退房|apa |dormy|威斯汀|洲際|hilton|solaria/i.test(text))
-    return 'hotel';
-  if (/[🍜🍣🦀🍱🍛🍲🥩🍤🍺🥐]|拉麵|壽司|螃蟹|餐廳|食堂|午餐|晚餐|早餐|dinner|lunch|breakfast|ramen|sushi|crab|bbq|restaurant|居酒屋|成吉思汗|海鮮丼|ジンギスカン/i.test(text))
+  // Food — check early so hotel breakfast isn't swallowed by hotel rule
+  if (/早餐|自助餐|buffet/i.test(fullTxt))
     return 'food';
-  if (/購物|shopping|百貨|伴手禮|土産|royce|六花亭|calbee|ishiya|letao|tsujiguchi|朝市|海鮮市場|市場|藥妝/i.test(text))
+  // Hotel
+  if (/飯店|hotel|resort|旅館|check.?in|check.?out|入住|退房|apa |dormy|威斯汀|洲際|hilton|solaria/i.test(fullTxt))
+    return 'hotel';
+  // Food (rest)
+  if (/[🍜🍣🦀🍱🍛🍲🥩🍤🍺🥐]|拉麵|壽司|螃蟹|餐廳|食堂|午餐|晚餐|dinner|lunch|breakfast|ramen|sushi|crab|bbq|restaurant|居酒屋|成吉思汗|海鮮丼|ジンギスカン|聖代|パフェ|漢堡|burger|下午茶|甜點|dessert|銅鑼|dorayaki/i.test(fullTxt))
+    return 'food';
+  // Shop
+  if (/購物|shopping|百貨|伴手禮|土産|royce|六花亭|calbee|ishiya|letao|tsujiguchi|朝市|海鮮市場|市場|藥妝/i.test(fullTxt))
     return 'shop';
   return 'sight';
 }
