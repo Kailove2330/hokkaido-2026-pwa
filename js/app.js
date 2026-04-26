@@ -374,6 +374,9 @@ function renderTimelineItems(dayState, impact) {
     const detailKey  = cleanPlaceName(item.place.zh);
     const hasDetail  = !editMode && !!PLACE_DETAIL[detailKey];
     const isTappable = !editMode;
+    const bannerHtml = !editMode && item.img
+      ? `<div class="tl-card-banner"><img src="${item.img}" alt="" loading="lazy"></div>`
+      : '';
 
     let rowCls = '';
     if (isConflict) rowCls = 'tl-conflict';
@@ -390,6 +393,7 @@ function renderTimelineItems(dayState, impact) {
         <div class="tl-content">
           <div class="tl-card ${isConflict ? 'card-conflict' : ''} ${isMoved ? 'card-moved' : ''} ${hasDetail ? 'tl-card-tappable' : ''} ${isTappable && !hasDetail ? 'tl-card-plain-tap' : ''}"
                ${isTappable ? `data-dk="${detailKey}" onclick="openDetailSheet(this.dataset.dk)"` : ''}>
+            ${bannerHtml}
             <div class="tl-card-top">
               <span class="cat-chip ${catInfo.cls}">${catInfo.icon} ${catInfo[lang]}</span>
               ${hasDetail ? `<span class="detail-hint">ⓘ</span>` : ''}
