@@ -1,5 +1,5 @@
 // Service Worker — Hokkaido 2026 PWA
-const CACHE_NAME = 'hokkaido-2026-v41';
+const CACHE_NAME = 'hokkaido-2026-v42';
 const STATIC_ASSETS = [
   './',
   './index.html',

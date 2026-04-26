@@ -87,6 +87,12 @@ function deleteItem(itemId) {
   _save();
 }
 
+// Clear all items from a day
+function clearDayItems(dayIdx) {
+  _state = _state.map((d, i) => i === dayIdx ? { ...d, items: [] } : d);
+  _save();
+}
+
 // Move item to another day (append to end of target day)
 function moveItemToDay(itemId, fromDayIdx, toDayIdx) {
   let moved = null;

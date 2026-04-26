@@ -286,16 +286,22 @@ function openMapModal(dayIdx) {
         iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18],
       });
       const name = cleanPlaceName(item.place[lang]) || item.place[lang];
+      const labelName = name.length > 14 ? name.slice(0, 13) + '…' : name;
       const mapsUrl = item.maps ||
         `https://www.google.com/maps/search/${encodeURIComponent(item.place.zh + ' 北海道')}`;
-      return L.marker(item.coords, { icon }).addTo(leafletMap).bindPopup(`
+      const marker = L.marker(item.coords, { icon }).addTo(leafletMap);
+      marker.bindTooltip(labelName, {
+        permanent: true, direction: 'right', className: 'map-label', offset: [8, 0],
+      });
+      marker.bindPopup(`
         <div class="map-popup">
           <div class="mp-num">${item.time && item.time !== '—' ? item.time : ''}</div>
           <div class="mp-name">${name}</div>
           <a href="${mapsUrl}" target="_blank" rel="noopener" class="mp-nav">
             📍 ${lang === 'zh' ? '導航到這裡' : 'Navigate here'}
           </a>
-        </div>`, { maxWidth: 200 });
+        </div>`, { maxWidth: 220 });
+      return marker;
     });
 
     if (stops.length > 1) {
@@ -423,6 +429,9 @@ function renderActiveDayView(state) {
           ? (lang === 'zh' ? '✓ 完成編輯' : '✓ Done')
           : (lang === 'zh' ? '✏️ 編輯行程' : '✏️ Edit')}
       </button>
+      ${editMode
+        ? `<button class="del-day-btn" onclick="confirmDeleteDay(${activeDayIdx})">🗑 ${lang === 'zh' ? '清空本天' : 'Clear Day'}</button>`
+        : ''}
       ${isModified()
         ? `<button class="reset-btn" onclick="confirmReset()">↺ ${lang === 'zh' ? '還原' : 'Reset'}</button>`
         : ''}
@@ -672,6 +681,19 @@ function confirmReset() {
   const msg = lang === 'zh' ? '確定要還原所有行程變更嗎？' : 'Reset all itinerary changes?';
   if (confirm(msg)) {
     resetState();
+    renderItinerary();
+  }
+}
+
+function confirmDeleteDay(dayIdx) {
+  const state = getState();
+  const day = state[dayIdx];
+  const label = `Day ${day.day}（${day.date[lang]}）`;
+  const msg = lang === 'zh'
+    ? `確定要清空 ${label} 的全部行程嗎？此操作可透過「還原」復原。`
+    : `Clear all items for ${label}? You can undo with Reset.`;
+  if (confirm(msg)) {
+    clearDayItems(dayIdx);
     renderItinerary();
   }
 }
