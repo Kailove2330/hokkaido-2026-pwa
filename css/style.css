@@ -1550,6 +1550,15 @@ nav#bottom-nav {
   padding: 10px 12px;
   gap: 8px;
 }
+.sv-card-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-right: 10px;
+  align-self: flex-start;
+}
 .sv-card-left { flex: 1; min-width: 0; }
 .sv-card-name {
   font-size: 13.5px;

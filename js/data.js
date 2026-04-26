@@ -235,25 +235,25 @@ const SOUVENIRS = [
     category: { zh: '📍 小樽（Day 2）', en: '📍 Otaru (Day 2)' },
     tab: { zh: '小樽', en: 'Otaru' },
     items: [
-      { id: 's1', name: { zh: 'LeTAO 起司夾心餅乾（色內通系列）', en: 'LeTAO Cheese Biscuits (Irouchi-dori)' }, price: '500–800円', cold: false, airport: false, note: { zh: '小樽本店種類最齊', en: 'Best selection at Otaru main store' } },
+      { id: 's1', name: { zh: 'LeTAO 起司夾心餅乾（色內通系列）', en: 'LeTAO Cheese Biscuits (Irouchi-dori)' }, price: '500–800円', cold: false, airport: false, img: 'images/souvenirs/letao-biscuit.jpg', note: { zh: '小樽本店種類最齊', en: 'Best selection at Otaru main store' } },
       { id: 's2', name: { zh: 'LeTAO THÉNOIR 大吉嶺紅茶巧克力夾心', en: 'LeTAO THÉNOIR Darjeeling Chocolate' }, price: '—', cold: false, airport: false, note: { zh: '小樽本店限定', en: 'Otaru main store exclusive' } },
-      { id: 's3', name: { zh: '北一硝子 手作玻璃杯', en: 'Kitaichi Glass Handmade Cup' }, price: '3,000–8,000円', cold: false, airport: false, note: { zh: '請店家加強包裝', en: 'Ask for extra wrapping' } },
+      { id: 's3', name: { zh: '北一硝子 手作玻璃杯', en: 'Kitaichi Glass Handmade Cup' }, price: '3,000–8,000円', cold: false, airport: false, img: 'images/souvenirs/kitaichi-glass.jpg', note: { zh: '請店家加強包裝', en: 'Ask for extra wrapping' } },
     ]
   },
   {
     category: { zh: '📍 白色戀人公園（Day 3）', en: '📍 Shiroi Koibito Park (Day 3)' },
     tab: { zh: '白色戀人', en: 'Shiroi Koibito' },
     items: [
-      { id: 's4', name: { zh: '白色戀人 工廠限定包裝 + 訂製磁鐵', en: 'Shiroi Koibito Factory Box + Custom Magnet' }, price: '2,200–3,500円 + 1,500円', cold: false, airport: false, note: { zh: '訂製磁鐵為現場限定', en: 'Custom magnet is on-site exclusive' } },
+      { id: 's4', name: { zh: '白色戀人 工廠限定包裝 + 訂製磁鐵', en: 'Shiroi Koibito Factory Box + Custom Magnet' }, price: '2,200–3,500円 + 1,500円', cold: false, airport: false, img: 'images/souvenirs/shiroi-koibito.jpg', note: { zh: '訂製磁鐵為現場限定', en: 'Custom magnet is on-site exclusive' } },
     ]
   },
   {
     category: { zh: '📍 札幌 Day 3–4（核心戰場）', en: '📍 Sapporo Day 3–4 (Core Shopping)' },
     tab: { zh: '札幌', en: 'Sapporo' },
     items: [
-      { id: 's5', name: { zh: '六花亭 丸成奶油三明治（Marusei Butter Sand）', en: 'Rokkatei Marusei Butter Sand' }, price: '216円×6入', cold: false, airport: false, note: null },
-      { id: 's6', name: { zh: '六花亭 酒糖（六花のつゆ）', en: 'Rokkatei Sake Candy (Rikka no Tsuyu)' }, price: '—', cold: false, airport: false, note: { zh: '⚡ 糖衣極脆弱（液體糖），獨立裝入硬盒保護', en: '⚡ Ultra-fragile liquid-filled sugar — pack in hard box' } },
-      { id: 's7', name: { zh: '北菓樓 妖精之森年輪蛋糕（整條）', en: 'Kitakaro Elf Forest Baumkuchen' }, price: '2,500円', cold: false, airport: false, note: null },
+      { id: 's5', name: { zh: '六花亭 丸成奶油三明治（Marusei Butter Sand）', en: 'Rokkatei Marusei Butter Sand' }, price: '216円×6入', cold: false, airport: false, img: 'images/souvenirs/rokkatei-marusei.jpg', note: null },
+      { id: 's6', name: { zh: '六花亭 酒糖（六花のつゆ）', en: 'Rokkatei Sake Candy (Rikka no Tsuyu)' }, price: '—', cold: false, airport: false, img: 'images/souvenirs/rokkatei-sake.jpg', note: { zh: '⚡ 糖衣極脆弱（液體糖），獨立裝入硬盒保護', en: '⚡ Ultra-fragile liquid-filled sugar — pack in hard box' } },
+      { id: 's7', name: { zh: '北菓樓 妖精之森年輪蛋糕（整條）', en: 'Kitakaro Elf Forest Baumkuchen' }, price: '2,500円', cold: false, airport: false, img: 'images/souvenirs/kitakaro-baum.jpg', note: null },
       { id: 's8', name: { zh: '北菓樓 開拓米果（枝幸帆立貝口味）', en: 'Kitakaro Kaitaku Rice Crackers (Scallop)' }, price: '—', cold: false, airport: false, note: null },
       { id: 's8b', name: { zh: '柳月 三方六年輪蛋糕', en: 'Yanagitsuji Sanporo-Roku Baumkuchen' }, price: '~1,800円', cold: false, airport: false, note: { zh: '白樺樹紋雙色巧克力外層；來自帶廣；已切片方便享用', en: 'White birch-patterned baumkuchen from Obihiro; pre-sliced, easy to share' } },
       { id: 's8c', name: { zh: '札幌農學校 牛奶餅乾', en: 'Sapporo Nogakko Milk Biscuits' }, price: '~800円', cold: false, airport: false, note: { zh: '北海道大學共同研發；純粹北海道鮮乳奶香；適合送給孩子', en: "Co-developed with Hokkaido Univ.; pure milky flavor — great kids' gift" } },
@@ -264,16 +264,16 @@ const SOUVENIRS = [
     category: { zh: '📍 函館（Day 6）', en: '📍 Hakodate (Day 6)' },
     tab: { zh: '函館', en: 'Hakodate' },
     items: [
-      { id: 's10', name: { zh: "SNAFFLE'S 起司歐姆蕾蛋糕 Catchcakes", en: "SNAFFLE'S Cheese Omelette Catchcakes" }, price: '1,296円 / 6入', cold: true, airport: false, note: { zh: '需冷藏，3 天賞味期限', en: 'Refrigerate, 3-day shelf life' } },
+      { id: 's10', name: { zh: "SNAFFLE'S 起司歐姆蕾蛋糕 Catchcakes", en: "SNAFFLE'S Cheese Omelette Catchcakes" }, price: '1,296円 / 6入', cold: true, airport: false, img: 'images/souvenirs/snaffles.jpg', note: { zh: '需冷藏，3 天賞味期限', en: 'Refrigerate, 3-day shelf life' } },
     ]
   },
   {
     category: { zh: '✈️ 新千歲機場（Day 9）— 限定品優先', en: '✈️ New Chitose Airport (Day 9) — Exclusives First' },
     tab: { zh: '✈️ 機場', en: '✈️ Airport' },
     items: [
-      { id: 's11', name: { zh: 'Calbee 薯條三兄弟（北海道奶油口味）', en: 'Calbee Jaga Pokkuru (Hokkaido Butter)' }, price: '900円/盒', cold: false, airport: true, note: { zh: '⚡ 國際線安檢後限定，市區找不到', en: '⚡ International terminal AFTER security only — not sold in city' } },
-      { id: 's12', name: { zh: 'ROYCE\' 生巧克力（牛奶口味）', en: "ROYCE' Nama Chocolate (Milk)" }, price: '800–1,200円', cold: true, airport: true, note: { zh: '⚡ 安檢後免稅店買，購買保冷袋（300円）', en: '⚡ Buy AFTER security at duty-free; add cold pack (¥300)' } },
-      { id: 's13', name: { zh: 'LeTAO 乳酪蛋糕（Double Fromage）', en: 'LeTAO Double Fromage Cheesecake' }, price: '2,000円', cold: true, airport: false, note: { zh: '需保冷袋；冷凍可保 2 週', en: 'Requires cold bag; freezes for 2 weeks' } },
+      { id: 's11', name: { zh: 'Calbee 薯條三兄弟（北海道奶油口味）', en: 'Calbee Jaga Pokkuru (Hokkaido Butter)' }, price: '900円/盒', cold: false, airport: true, img: 'images/souvenirs/calbee.jpg', note: { zh: '⚡ 國際線安檢後限定，市區找不到', en: '⚡ International terminal AFTER security only — not sold in city' } },
+      { id: 's12', name: { zh: 'ROYCE\' 生巧克力（牛奶口味）', en: "ROYCE' Nama Chocolate (Milk)" }, price: '800–1,200円', cold: true, airport: true, img: 'images/souvenirs/royce.jpg', note: { zh: '⚡ 安檢後免稅店買，購買保冷袋（300円）', en: '⚡ Buy AFTER security at duty-free; add cold pack (¥300)' } },
+      { id: 's13', name: { zh: 'LeTAO 乳酪蛋糕（Double Fromage）', en: 'LeTAO Double Fromage Cheesecake' }, price: '2,000円', cold: true, airport: false, img: 'images/souvenirs/letao-cake.jpg', note: { zh: '需保冷袋；冷凍可保 2 週', en: 'Requires cold bag; freezes for 2 weeks' } },
       { id: 's14', name: { zh: 'ISHIYA 白雪戀人 聯名禮盒', en: 'ISHIYA Yukikoibito Gift Box' }, price: '—', cold: false, airport: true, note: { zh: '北海道 7 大機場限定包裝，送禮最體面', en: 'Exclusive to 7 Hokkaido airports — premium gift option' } },
       { id: 's15', name: { zh: '辻口博啓 北海道牛奶 カステラ', en: 'Tsujiguchi Hokkaido Milk Castella' }, price: '—', cold: false, airport: true, note: { zh: '新千歲 3F 聯絡通道「微笑之路」實體限定', en: 'New Chitose 3F Smile Road exclusive — physical store only' } },
       { id: 's16', name: { zh: 'LeTAO まあある ブランシェール', en: 'LeTAO Maaru Blanchere' }, price: '—', cold: false, airport: true, note: { zh: '機場 LeTAO 限定隱藏版白巧克力堅果脆餅', en: 'Airport LeTAO exclusive — white choc nut crisp' } },

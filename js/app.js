@@ -926,10 +926,15 @@ function renderSouvenirs() {
       </div>
     ` : '';
 
+    const thumbHtml = item.img
+      ? `<img class="sv-card-thumb" src="${item.img}" alt="" loading="lazy">`
+      : '';
+
     html += `
       <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
            onclick="openSvCard('${item.id}')">
         <div class="sv-card-body">
+          ${thumbHtml}
           <div class="sv-card-left">
             <div class="sv-card-name">${item.name[lang]}</div>
             ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
