@@ -143,8 +143,8 @@ function openMapModal(dayIdx) {
   const dayState = state[dayIdx];
 
   const stops = dayState.items
-    .filter(item => PLACE_COORDS[item.place.zh] && getCategory(item) !== 'transport')
-    .map(item => ({ ...item, coords: PLACE_COORDS[item.place.zh] }));
+    .filter(item => item.coord && getCategory(item) !== 'transport')
+    .map(item => ({ ...item, coords: item.coord }));
 
   if (stops.length === 0) {
     alert(lang === 'zh' ? '此天無地圖資料' : 'No map data for this day');
