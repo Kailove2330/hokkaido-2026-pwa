@@ -1649,6 +1649,72 @@ nav#bottom-nav {
   font-size: 13px;
 }
 
+/* ── COUPON CARDS ────────────────────────────────────── */
+.coupon-intro {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 10px 16px 6px;
+}
+.coupon-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 4px solid var(--gold);
+}
+.coupon-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.coupon-icon { font-size: 1.3rem; }
+.coupon-store {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--navy);
+}
+.coupon-discount {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #c0392b;
+  margin: 2px 0 6px;
+}
+.coupon-area {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.coupon-how {
+  font-size: 0.82rem;
+  color: #444;
+  line-height: 1.45;
+  margin-bottom: 4px;
+}
+.coupon-tip {
+  font-size: 0.78rem;
+  color: #e67e22;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.coupon-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+.coupon-btn:active { opacity: 0.82; }
+
 /* ── TAPPABLE CARD ───────────────────────────────────── */
 .tl-card-tappable {
   cursor: pointer;

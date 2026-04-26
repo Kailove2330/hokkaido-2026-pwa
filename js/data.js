@@ -255,6 +255,8 @@ const SOUVENIRS = [
       { id: 's6', name: { zh: '六花亭 酒糖（六花のつゆ）', en: 'Rokkatei Sake Candy (Rikka no Tsuyu)' }, price: '—', cold: false, airport: false, note: { zh: '⚡ 糖衣極脆弱（液體糖），獨立裝入硬盒保護', en: '⚡ Ultra-fragile liquid-filled sugar — pack in hard box' } },
       { id: 's7', name: { zh: '北菓樓 妖精之森年輪蛋糕（整條）', en: 'Kitakaro Elf Forest Baumkuchen' }, price: '2,500円', cold: false, airport: false, note: null },
       { id: 's8', name: { zh: '北菓樓 開拓米果（枝幸帆立貝口味）', en: 'Kitakaro Kaitaku Rice Crackers (Scallop)' }, price: '—', cold: false, airport: false, note: null },
+      { id: 's8b', name: { zh: '柳月 三方六年輪蛋糕', en: 'Yanagitsuji Sanporo-Roku Baumkuchen' }, price: '~1,800円', cold: false, airport: false, note: { zh: '白樺樹紋雙色巧克力外層；來自帶廣；已切片方便享用', en: 'White birch-patterned baumkuchen from Obihiro; pre-sliced, easy to share' } },
+      { id: 's8c', name: { zh: '札幌農學校 牛奶餅乾', en: 'Sapporo Nogakko Milk Biscuits' }, price: '~800円', cold: false, airport: false, note: { zh: '北海道大學共同研發；純粹北海道鮮乳奶香；適合送給孩子', en: "Co-developed with Hokkaido Univ.; pure milky flavor — great kids' gift" } },
       { id: 's9', name: { zh: '北海道神宮 御守', en: 'Hokkaido Jingu Omamori' }, price: '~500円', cold: false, airport: false, note: null },
     ]
   },
@@ -324,6 +326,8 @@ const DRUGSTORE = [
       { id: 'd11', name: { zh: '肌研 極潤保濕乳液', en: 'Hada Labo Gokujun Lotion' }, price: '~700円', note: { zh: '玻尿酸保濕；日本最暢銷保濕品牌', en: "Japan's best-selling hyaluronic acid moisturizer" } },
       { id: 'd12', name: { zh: 'MINON 胺基酸保濕面膜', en: 'MINON Amino Mask' }, price: '~1,500円', note: { zh: '敏感肌適用，5 片裝', en: 'Sensitive skin formula, 5-pack' } },
       { id: 'd13', name: { zh: 'Curel 潤浸保濕乳霜', en: 'Curel Intensive Moisture Cream' }, price: '~900円', note: { zh: '乾燥肌首選，CP 值高', en: 'Top pick for dry skin, great value' } },
+      { id: 'd19', name: { zh: 'Loshi 北海道馬油護膚霜', en: 'Loshi Hokkaido Horse Oil Cream' }, price: '~800円', note: { zh: '日本銷量第一馬油品牌；台灣悶熱氣候建議只用於腳跟/手肘急救', en: "Japan's #1 horse oil cream; in humid climates use only on heels/elbows" } },
+      { id: 'd20', name: { zh: 'LuLuLun 北海道限定面膜', en: 'LuLuLun Hokkaido Limited Face Mask' }, price: '~600円', note: { zh: '哈密瓜/薰衣草/牛奶/蜂蜜 4 款；7片×多袋裝；⚡ 吸飽精華液後重量驚人，小心行李超重', en: 'Melon/lavender/milk/honey 4 types; 7 sheets×multi-pack; ⚡ heavy when soaked — watch luggage weight' } },
     ]
   },
   {
@@ -342,6 +346,60 @@ const DRUGSTORE = [
       { id: 'd17', name: { zh: 'メンソレータム（萬能膏）', en: 'Mentholatum Ointment' }, price: '~400円', note: { zh: '乾裂嘴唇、皮膚乾燥急救', en: 'Lip and skin rescue for dry conditions' } },
       { id: 'd18', name: { zh: 'ニベア 藍罐乳霜', en: 'NIVEA Creme (blue tin)' }, price: '~300円', note: { zh: '全身保濕，台灣找不到大罐裝', en: 'Full-body moisturizer; larger cans only in Japan' } },
     ]
+  },
+];
+
+// ── COUPONS ───────────────────────────────────────────────
+const COUPONS = [
+  {
+    id: 'c1',
+    store: { zh: '唐吉訶德（狸小路）', en: "Don Quijote (Tanukikoji)" },
+    icon: '🐧',
+    area: { zh: '札幌 狸小路 3 丁目 / 24H 營業', en: 'Sapporo Tanukikoji 3-chome / 24H' },
+    discount: { zh: '5% 折扣優惠券', en: '5% Off Coupon' },
+    how: { zh: '現場打開連結 → 出示條碼給收銀員掃描', en: 'Open link in-store → show barcode to cashier' },
+    url: 'https://www.djapanpass.com/coupon/0054000103',
+    tip: { zh: '⚡ 必須在店內現場打開連結才能啟用，勿提前截圖', en: '⚡ Must open link in-store to activate — do NOT screenshot in advance' },
+  },
+  {
+    id: 'c2',
+    store: { zh: '札幌藥妝 (Sapporo Drug)', en: 'Sapporo Drug Store (Satudora)' },
+    icon: '💊',
+    area: { zh: '狸小路商店街 / 全北海道', en: 'Tanukikoji / all Hokkaido' },
+    discount: { zh: '免稅 10% + 再享 5% 折扣', en: 'Tax-free 10% + extra 5% off' },
+    how: { zh: '結帳時出示護照辦免稅 + 手機出示優惠券讓店員掃條碼', en: 'Show passport for tax-free + scan coupon barcode at checkout' },
+    url: 'https://drive.google.com/drive/folders/1-ZRPcWPNEJj2L0Qh7Nlt9DgFprWWBmpX?usp=drive_link',
+    tip: { zh: '限 Tax Free 門市有效；需消費滿 5,000円 方可辦免稅', en: 'Valid at Tax Free stores only; min. ¥5,000 purchase for tax exemption' },
+  },
+  {
+    id: 'c3',
+    store: { zh: 'BIC CAMERA 札幌店', en: 'BIC CAMERA Sapporo' },
+    icon: '📷',
+    area: { zh: '札幌站步行 5 分鐘（JR Tower 旁）', en: '5 min walk from Sapporo Stn (near JR Tower)' },
+    discount: { zh: '外國旅客折扣券（免稅 ＋ 額外折扣）', en: 'Tourist discount (tax-free + extra off)' },
+    how: { zh: '結帳時出示護照辦免稅，同時出示折扣券給店員', en: 'Show passport for tax-free + show discount coupon at checkout' },
+    url: 'https://drive.google.com/drive/folders/1hbym9vmuU7fcr_kb1YuQDQbOCUIWlv6r?usp=drive_link',
+    tip: null,
+  },
+  {
+    id: 'c4',
+    store: { zh: '鶴羽藥妝 (Tsuruha Drug)', en: 'Tsuruha Drug' },
+    icon: '🦢',
+    area: { zh: '狸小路商店街 / 全北海道', en: 'Tanukikoji / all Hokkaido' },
+    discount: { zh: '外國旅客購物優惠券', en: 'Tourist coupon' },
+    how: { zh: '手機出示優惠券條碼讓店員掃描', en: 'Show coupon barcode on phone to cashier' },
+    url: 'https://drive.google.com/drive/folders/1AIYdHwvAcsafdC2Flx0DlN6FMU3fjXaV?usp=drive_link',
+    tip: null,
+  },
+  {
+    id: 'c5',
+    store: { zh: '松本清 (Matsumoto Kiyoshi)', en: 'Matsumoto Kiyoshi' },
+    icon: '🟡',
+    area: { zh: '狸小路商店街', en: 'Tanukikoji' },
+    discount: { zh: '外國旅客購物優惠券', en: 'Tourist coupon' },
+    how: { zh: '手機出示優惠券給店員掃條碼', en: 'Show coupon on phone for cashier to scan' },
+    url: 'https://drive.google.com/drive/folders/1QzHpuzHLTxq8s7jBXn20XS9OoMvkFSxi?usp=drive_link',
+    tip: null,
   },
 ];
 

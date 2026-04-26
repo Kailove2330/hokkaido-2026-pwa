@@ -612,6 +612,37 @@ function saveItemEdit() {
   renderItinerary();
 }
 
+// ── COUPON HELPERS ─────────────────────────────────────────
+function openCoupon(url) {
+  window.open(url, '_blank');
+}
+
+function renderCouponsHtml() {
+  const intro = lang === 'zh'
+    ? '<div class="coupon-intro">點「開啟優惠券」後，在店內出示畫面給店員即可使用</div>'
+    : '<div class="coupon-intro">Tap "Open Coupon" and show the screen to the cashier in-store</div>';
+  const btnLabel = lang === 'zh' ? '開啟優惠券 →' : 'Open Coupon →';
+
+  let html = intro;
+  COUPONS.forEach(c => {
+    const tipHtml = c.tip ? `<div class="coupon-tip">${c.tip[lang]}</div>` : '';
+    html += `
+      <div class="coupon-card">
+        <div class="coupon-card-header">
+          <span class="coupon-icon">${c.icon}</span>
+          <span class="coupon-store">${c.store[lang]}</span>
+        </div>
+        <div class="coupon-discount">${c.discount[lang]}</div>
+        <div class="coupon-area">📍 ${c.area[lang]}</div>
+        <div class="coupon-how">✦ ${c.how[lang]}</div>
+        ${tipHtml}
+        <button class="coupon-btn" onclick="openCoupon('${c.url}')">${btnLabel}</button>
+      </div>
+    `;
+  });
+  return html;
+}
+
 // ── SOUVENIR PURCHASES ─────────────────────────────────────
 function getSvPurchases() {
   try { return JSON.parse(localStorage.getItem('hk_sv_purchases') || '{}'); }
@@ -812,30 +843,42 @@ function renderSouvenirs() {
   const totalBought = allItems.filter(i => purchases[i.id]).length;
   const totalSpent  = allItems.reduce((s, i) => s + (purchases[i.id]?.paid || 0), 0);
 
-  const dataset    = souvenirTab === 0 ? SOUVENIRS : DRUGSTORE;
+  const dataset    = souvenirTab === 0 ? SOUVENIRS : (souvenirTab === 1 ? DRUGSTORE : null);
   const tab0Label  = lang === 'zh' ? '伴手禮' : 'Souvenirs';
   const tab1Label  = lang === 'zh' ? '藥妝' : 'Drugstore';
+  const tab2Label  = lang === 'zh' ? '優惠券' : 'Coupons';
   const summaryTxt = lang === 'zh'
     ? `已購 ${totalBought} 件｜花費 ${totalSpent.toLocaleString()} 円`
     : `${totalBought} bought | ¥${totalSpent.toLocaleString()} spent`;
 
   // Guard svSubTab against out-of-range after tab switch
-  const safeSubTab = Math.min(svSubTab, dataset.length - 1);
+  const safeSubTab = dataset ? Math.min(svSubTab, dataset.length - 1) : 0;
 
-  // Sub-tab bar
-  const subTabsHtml = dataset.map((g, i) => {
+  // Sub-tab bar (only for tabs 0 and 1)
+  const subTabsHtml = dataset ? dataset.map((g, i) => {
     const groupBought = g.items.filter(item => purchases[item.id]).length;
     const dot = groupBought > 0 ? `<span class="sv-subtab-dot"></span>` : '';
     return `<button class="sv-subtab${i === safeSubTab ? ' active' : ''}" onclick="setSvSubTab(${i})">
       ${g.tab[lang]}${dot}
     </button>`;
-  }).join('');
+  }).join('') : '';
 
   let html = `
     <div class="sv-tab-bar">
       <button class="sv-tab ${souvenirTab === 0 ? 'active' : ''}" onclick="setSvTab(0)">${tab0Label}</button>
       <button class="sv-tab ${souvenirTab === 1 ? 'active' : ''}" onclick="setSvTab(1)">${tab1Label}</button>
+      <button class="sv-tab ${souvenirTab === 2 ? 'active' : ''}" onclick="setSvTab(2)">${tab2Label}</button>
     </div>
+  `;
+
+  // Coupon tab — different layout, render and return early
+  if (souvenirTab === 2) {
+    html += renderCouponsHtml();
+    container.innerHTML = html;
+    return;
+  }
+
+  html += `
     <div class="sv-subtab-bar">${subTabsHtml}</div>
     <div class="sv-summary">${summaryTxt}</div>
   `;
