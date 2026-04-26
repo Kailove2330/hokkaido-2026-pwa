@@ -10,6 +10,7 @@ let svSubTab = 0;
 let svOpenId = null;
 let transportTab = 0;
 let sosTab = 0;
+let pendingCascade = null; // { dayIdx, fromItemIdx, deltaMins }
 
 // ── Storage helpers ────────────────────────────────────────
 function getChecked(key) {
@@ -95,6 +96,56 @@ function getCategory(item) {
   return 'sight';
 }
 
+// ── TRANSIT ESTIMATION ─────────────────────────────────────
+function haversineKm(c1, c2) {
+  const R = 6371, r = Math.PI / 180;
+  const dLat = (c2[0] - c1[0]) * r, dLon = (c2[1] - c1[1]) * r;
+  const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*r)*Math.cos(c2[0]*r)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function estimateTransit(c1, c2) {
+  if (!c1 || !c2) return null;
+  const roadKm = haversineKm(c1, c2) * 1.4;
+  if (roadKm < 0.8) return { mins: Math.max(2, Math.round(roadKm / 4.5 * 60)), mode: 'walk' };
+  return { mins: Math.max(5, Math.round(roadKm / 25 * 60)), mode: 'car' };
+}
+
+function minsToTimeStr(m) {
+  const h = Math.floor(m / 60) % 24;
+  const mn = m % 60;
+  return `${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`;
+}
+
+// ── CASCADE ─────────────────────────────────────────────────
+function offerCascade(dayIdx, fromItemIdx, deltaMins) {
+  const state = getState();
+  const afterItems = state[dayIdx].items
+    .slice(fromItemIdx + 1)
+    .filter(it => parseTimeMin(it.time) >= 0);
+  if (afterItems.length === 0) return;
+  pendingCascade = { dayIdx, fromItemIdx, deltaMins };
+  renderItinerary();
+}
+
+function applyCascade() {
+  if (!pendingCascade) return;
+  const { dayIdx, fromItemIdx, deltaMins } = pendingCascade;
+  const state = getState();
+  const items = state[dayIdx].items;
+  for (let i = fromItemIdx + 1; i < items.length; i++) {
+    const t = parseTimeMin(items[i].time);
+    if (t >= 0) updateItem(items[i].id, { time: minsToTimeStr(t + deltaMins) });
+  }
+  pendingCascade = null;
+  renderItinerary();
+}
+
+function dismissCascade() {
+  pendingCascade = null;
+  renderItinerary();
+}
+
 // ── ITINERARY ──────────────────────────────────────────────
 function renderItinerary() {
   const container = document.getElementById('page-itinerary');
@@ -135,6 +186,7 @@ function renderDayStrip(state) {
 
 function selectDay(idx) {
   activeDayIdx = idx;
+  pendingCascade = null;
   renderItinerary();
   document.querySelector('main').scrollTop = 0;
 }
@@ -321,6 +373,24 @@ function renderActiveDayView(state) {
     </div>
   `;
 
+  // Cascade banner
+  if (pendingCascade && pendingCascade.dayIdx === activeDayIdx) {
+    const afterCount = dayState.items
+      .slice(pendingCascade.fromItemIdx + 1)
+      .filter(it => parseTimeMin(it.time) >= 0).length;
+    const sign = pendingCascade.deltaMins > 0 ? '+' : '';
+    const msg = lang === 'zh'
+      ? `後面 ${afterCount} 個行程需推移 ${sign}${pendingCascade.deltaMins} 分，一起調整？`
+      : `Shift ${afterCount} items by ${sign}${pendingCascade.deltaMins}min?`;
+    html += `
+      <div class="cascade-banner">
+        <span class="cascade-msg">${msg}</span>
+        <button class="cascade-apply" onclick="applyCascade()">${lang === 'zh' ? '推移' : 'Shift'}</button>
+        <button class="cascade-dismiss" onclick="dismissCascade()">${lang === 'zh' ? '略過' : 'Skip'}</button>
+      </div>
+    `;
+  }
+
   // Timeline
   html += `<div class="timeline">${renderTimelineItems(dayState, impact)}</div>`;
 
@@ -394,6 +464,31 @@ function renderTimelineItems(dayState, impact) {
     else if (isMoved) rowCls = 'tl-moved';
     else if (item.warn) rowCls = 'tl-warn';
 
+    // Transit connector to next item
+    let transitHTML = '';
+    if (!isLast && !editMode) {
+      const nextItem = items[itemIdx + 1];
+      const nextCat  = getCategory(nextItem);
+      const skipTransit = cat === 'transport' || nextCat === 'transport';
+      if (!skipTransit && item.coord && nextItem.coord) {
+        const transit = estimateTransit(item.coord, nextItem.coord);
+        if (transit) {
+          const tCurr = parseTimeMin(item.time);
+          const dur   = parseDurationMin(item.duration);
+          const tNext = parseTimeMin(nextItem.time);
+          const endWithTransit = (tCurr >= 0 && dur > 0) ? tCurr + dur + transit.mins : -1;
+          const hasConflict = endWithTransit > 0 && tNext >= 0 && tNext < endWithTransit;
+          const icon  = transit.mode === 'walk' ? '🚶' : '🚕';
+          const label = lang === 'zh' ? `${icon} 約${transit.mins}分` : `${icon} ~${transit.mins}min`;
+          transitHTML = `
+            <div class="tl-transit-connector${hasConflict ? ' tl-transit-conflict' : ''}">
+              <span class="tl-transit-badge">${label}</span>
+              ${hasConflict ? `<span class="tl-transit-warn">${lang === 'zh' ? '⚠ 時間不足' : '⚠ Not enough time'}</span>` : ''}
+            </div>`;
+        }
+      }
+    }
+
     html += `
       <div class="tl-row ${rowCls}" data-id="${item.id}">
         <div class="tl-time-col">${item.time !== '—' ? item.time : ''}</div>
@@ -427,6 +522,7 @@ function renderTimelineItems(dayState, impact) {
               ${editMode ? `<button class="move-day-btn" onclick="event.stopPropagation();showMoveSheet('${item.id}', ${activeDayIdx})">📅 ${lang === 'zh' ? '移到...' : 'Move to...'}</button>` : ''}
             </div>
           </div>
+          ${transitHTML}
         </div>
       </div>
     `;
@@ -602,11 +698,18 @@ function saveItemEdit() {
   } else {
     // ── EDIT MODE ──
     const state = getState();
-    let existing = null;
-    for (const d of state) {
-      const it = d.items.find(it => it.id === itemId);
-      if (it) { existing = it; break; }
+    let existing = null, existingDayIdx = -1;
+    for (let di = 0; di < state.length; di++) {
+      const it = state[di].items.find(it => it.id === itemId);
+      if (it) { existing = it; existingDayIdx = di; break; }
     }
+
+    // Capture old end time for cascade calculation
+    const oldStartMins = parseTimeMin(existing?.time);
+    const oldDurMins   = parseDurationMin(existing?.duration);
+    const newStartMins = parseTimeMin(time);
+    const newDurMins   = parseDurationMin(duration);
+
     const changes = { time, duration };
 
     // Update place in current language (keep other lang unchanged)
@@ -621,6 +724,23 @@ function saveItemEdit() {
       : { zh: noteText, en: noteText };
 
     updateItem(itemId, changes);
+
+    // Offer cascade if end time shifted
+    if (existingDayIdx >= 0 && oldStartMins >= 0 && newStartMins >= 0) {
+      const oldEnd = oldStartMins + oldDurMins;
+      const newEnd = newStartMins + newDurMins;
+      const delta  = newEnd - oldEnd;
+      if (delta !== 0) {
+        const updatedState = getState();
+        const editedIdx = updatedState[existingDayIdx].items.findIndex(it => it.id === itemId);
+        if (editedIdx >= 0) {
+          closeEditSheet();
+          renderItinerary();
+          offerCascade(existingDayIdx, editedIdx, delta);
+          return;
+        }
+      }
+    }
   }
 
   closeEditSheet();
