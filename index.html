@@ -10,7 +10,7 @@
   <title>北海道 2026</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/style.css?v=42" />
+  <link rel="stylesheet" href="css/style.css?v=44" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -26,6 +26,7 @@
       <section class="page" id="page-transport"></section>
       <section class="page" id="page-checklist"></section>
       <section class="page" id="page-sos"></section>
+      <section class="page" id="page-overview"></section>
     </main>
 
     <nav id="bottom-nav"></nav>
@@ -89,10 +90,11 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/data.js?v=42"></script>
-  <script src="js/state.js?v=42"></script>
-  <script src="js/impact.js?v=42"></script>
-  <script src="js/app.js?v=42"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="js/data.js?v=44"></script>
+  <script src="js/state.js?v=44"></script>
+  <script src="js/impact.js?v=44"></script>
+  <script src="js/app.js?v=44"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

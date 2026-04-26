@@ -40,12 +40,13 @@ function renderAll() {
   renderTransport();
   renderChecklist();
   renderSOS();
+  if (activeTab === 5) renderOverview();
 }
 
 // ── Tabs ───────────────────────────────────────────────────
 let activeTab = 0;
 function renderTabs() {
-  const icons = ['🗓','🛍','🚆','✅','🆘'];
+  const icons = ['🗓','🛍','🚆','✅','🆘','📋'];
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = T[lang].tabs.map((label, i) => `
     <button class="tab-btn ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -61,6 +62,7 @@ function switchTab(i) {
     p.classList.toggle('active', idx === i);
   });
   renderTabs();
+  if (i === 5) renderOverview();
 }
 
 // ── CATEGORY DETECTION ─────────────────────────────────────
@@ -207,6 +209,27 @@ function renderItinerary() {
   html += renderDayStrip(state);
   html += renderActiveDayView(state);
   container.innerHTML = html;
+
+  // SortableJS drag-and-drop (edit mode only)
+  if (editMode && typeof Sortable !== 'undefined') {
+    const timelineEl = container.querySelector('.timeline');
+    if (timelineEl) {
+      Sortable.create(timelineEl, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'tl-drag-ghost',
+        chosenClass: 'tl-drag-chosen',
+        delay: 0,
+        delayOnTouchOnly: false,
+        onEnd(evt) {
+          if (evt.oldIndex !== evt.newIndex) {
+            moveItemWithinDay(activeDayIdx, evt.oldIndex, evt.newIndex);
+            renderItinerary();
+          }
+        },
+      });
+    }
+  }
 
   // Scroll active pill into view
   setTimeout(() => {
@@ -429,9 +452,10 @@ function renderActiveDayView(state) {
           ? (lang === 'zh' ? '✓ 完成編輯' : '✓ Done')
           : (lang === 'zh' ? '✏️ 編輯行程' : '✏️ Edit')}
       </button>
-      ${editMode
-        ? `<button class="del-day-btn" onclick="confirmDeleteDay(${activeDayIdx})">🗑 ${lang === 'zh' ? '清空本天' : 'Clear Day'}</button>`
-        : ''}
+      ${editMode ? `
+        <button class="copy-day-btn" onclick="confirmCopyDay(${activeDayIdx})">⎘ ${lang === 'zh' ? '複製本天' : 'Copy Day'}</button>
+        <button class="del-day-btn" onclick="confirmDeleteDay(${activeDayIdx})">🗑 ${lang === 'zh' ? '清空本天' : 'Clear Day'}</button>
+      ` : ''}
       ${isModified()
         ? `<button class="reset-btn" onclick="confirmReset()">↺ ${lang === 'zh' ? '還原' : 'Reset'}</button>`
         : ''}
@@ -579,9 +603,9 @@ function renderTimelineItems(dayState, impact) {
               ${hasDetail ? `<span class="detail-hint">ⓘ</span>` : ''}
               ${editMode ? `
                 <div class="tl-edit-btns">
+                  <span class="drag-handle" title="拖曳排序">⠿</span>
                   <button class="ctrl-btn ctrl-edit" onclick="event.stopPropagation();editItem('${item.id}')">✎</button>
-                  <button class="ctrl-btn" onclick="event.stopPropagation();moveUp(${itemIdx})" ${itemIdx === 0 ? 'disabled' : ''}>↑</button>
-                  <button class="ctrl-btn" onclick="event.stopPropagation();moveDown(${itemIdx})" ${itemIdx === items.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="ctrl-btn ctrl-copy" onclick="event.stopPropagation();copyItem('${item.id}')">⎘</button>
                   <button class="ctrl-btn ctrl-del" onclick="event.stopPropagation();confirmDeleteItem('${item.id}')">✕</button>
                 </div>
               ` : ''}
@@ -696,6 +720,187 @@ function confirmDeleteDay(dayIdx) {
     clearDayItems(dayIdx);
     renderItinerary();
   }
+}
+
+// ── COPY ITEM / COPY DAY ──────────────────────────────────
+function copyItem(itemId) {
+  const state = getState();
+  let found = null, foundDayIdx = -1;
+  for (let di = 0; di < state.length; di++) {
+    const it = state[di].items.find(it => it.id === itemId);
+    if (it) { found = it; foundDayIdx = di; break; }
+  }
+  if (!found) return;
+  const dayNum = state[foundDayIdx].day;
+  addItem(foundDayIdx, { ...found, id: `d${dayNum}_c${Date.now()}` });
+  renderItinerary();
+}
+
+function confirmCopyDay(fromDayIdx) {
+  const state = getState();
+  const overlay = document.getElementById('move-sheet-overlay');
+  const list    = document.getElementById('move-day-list');
+  document.getElementById('move-sheet-title').textContent =
+    lang === 'zh' ? '複製到哪一天？' : 'Copy to which day?';
+  list.innerHTML = state.map((d, i) => {
+    if (i === fromDayIdx) return '';
+    const dateNum = d.date.zh.match(/\/(\d+)/)?.[1] || d.day;
+    return `
+      <button class="move-day-option" onclick="executeCopyDay(${fromDayIdx}, ${i})">
+        <span class="move-day-num">${T[lang].day} ${d.day} · ${dateNum}</span>
+        <span class="move-day-title">${d.title[lang]}</span>
+      </button>
+    `;
+  }).join('');
+  document.getElementById('move-sheet-cancel').textContent = lang === 'zh' ? '取消' : 'Cancel';
+  overlay.style.display = 'flex';
+}
+
+function executeCopyDay(fromDayIdx, toDayIdx) {
+  closeSheet();
+  const state = getState();
+  const dayNum = state[toDayIdx].day;
+  state[fromDayIdx].items.forEach((item, i) => {
+    addItem(toDayIdx, { ...item, id: `d${dayNum}_c${Date.now()}_${i}`, originalDay: dayNum });
+  });
+  activeDayIdx = toDayIdx;
+  renderItinerary();
+}
+
+// ── OVERVIEW PAGE ──────────────────────────────────────────
+const DAY_COLORS = ['#e63946','#f77f00','#f1c40f','#27ae60','#1abc9c','#3498db','#9b59b6','#e76f51','#f72585'];
+
+function renderOverview() {
+  const container = document.getElementById('page-overview');
+  if (!container) return;
+  const state = getState();
+
+  let html = `<div class="overview-page">`;
+  html += `
+    <div class="overview-header">
+      <div class="overview-title">${lang === 'zh' ? '行程總覽' : 'Trip Overview'}</div>
+      <div class="overview-actions">
+        <button class="ov-btn ov-map-btn" onclick="openAllDaysMap()">🗺 ${lang === 'zh' ? '地圖總覽' : 'Full Map'}</button>
+        <button class="ov-btn ov-export-btn" onclick="exportTripText()">📋 ${lang === 'zh' ? '輸出文字' : 'Export'}</button>
+      </div>
+    </div>
+  `;
+
+  state.forEach((day, idx) => {
+    const color = DAY_COLORS[idx % DAY_COLORS.length];
+    const itemsHtml = day.items.map(item => {
+      const t = item.time !== '—'
+        ? `<span class="ov-item-time">${item.time}</span>`
+        : `<span class="ov-item-time ov-time-empty">—</span>`;
+      return `<div class="ov-item">${t}<span class="ov-item-place">${item.place[lang]}</span></div>`;
+    }).join('');
+
+    html += `
+      <div class="ov-day-card" onclick="goToDay(${idx})" style="--day-color:${color}">
+        <div class="ov-day-header">
+          <span class="ov-day-badge" style="background:${color}">${T[lang].day} ${day.day}${T[lang].dayUnit}</span>
+          <span class="ov-day-date">${day.date[lang]}</span>
+          <span class="ov-day-title">${day.title[lang]}</span>
+        </div>
+        <div class="ov-day-items">${itemsHtml || `<span class="ov-empty">${lang === 'zh' ? '（無行程）' : '(No items)'}</span>`}</div>
+      </div>
+    `;
+  });
+
+  const notes = localStorage.getItem('hk_trip_notes') || '';
+  html += `
+    <div class="ov-notes-section">
+      <div class="ov-notes-label">📝 ${lang === 'zh' ? '個人備注' : 'Personal Notes'}</div>
+      <textarea class="ov-notes-area" id="ov-notes-input"
+        placeholder="${lang === 'zh' ? '行前注意事項、提醒事項...' : 'Pre-trip notes, reminders...'}"
+        oninput="saveOvNotes()">${notes}</textarea>
+    </div>
+  `;
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function goToDay(idx) {
+  activeDayIdx = idx;
+  activeTab = 0;
+  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === 0));
+  renderTabs();
+  renderItinerary();
+}
+
+function saveOvNotes() {
+  const val = document.getElementById('ov-notes-input')?.value || '';
+  localStorage.setItem('hk_trip_notes', val);
+}
+
+function exportTripText() {
+  const state = getState();
+  const lines = [T[lang].appTitle, ''];
+  state.forEach(day => {
+    lines.push(`── ${T[lang].day} ${day.day}${T[lang].dayUnit}  ${day.date[lang]}  ${day.title[lang]} ──`);
+    day.items.forEach(item => {
+      const t   = item.time !== '—' ? item.time : '     ';
+      const dur = item.duration && item.duration !== '—' ? `  (${item.duration})` : '';
+      lines.push(`${t}  ${item.place[lang]}${dur}`);
+    });
+    lines.push('');
+  });
+  const text = lines.join('\n');
+
+  const btn = document.querySelector('.ov-export-btn');
+  const origText = btn?.textContent;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      if (btn) {
+        btn.textContent = lang === 'zh' ? '✓ 已複製！' : '✓ Copied!';
+        setTimeout(() => { if (btn) btn.textContent = origText; }, 2000);
+      }
+    });
+  } else {
+    prompt(lang === 'zh' ? '複製以下文字：' : 'Copy the text below:', text);
+  }
+}
+
+function openAllDaysMap() {
+  if (typeof L === 'undefined') {
+    alert(lang === 'zh' ? '地圖需要網路連線' : 'Map requires internet connection');
+    return;
+  }
+  const state = getState();
+  const modal = document.getElementById('map-modal');
+  document.getElementById('map-modal-title').textContent = lang === 'zh' ? '全程路線總覽' : 'All Days Map';
+  modal.style.display = 'flex';
+
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+  leafletMap = L.map('map-leaflet');
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© CartoDB', maxZoom: 18,
+  }).addTo(leafletMap);
+
+  const allBounds = [];
+  state.forEach((dayState, dayIdx) => {
+    const color = DAY_COLORS[dayIdx % DAY_COLORS.length];
+    const stops = dayState.items.filter(it => it.coord && getCategory(it) !== 'transport');
+    if (!stops.length) return;
+    const coords = stops.map(s => s.coord);
+    allBounds.push(...coords);
+    if (coords.length > 1) L.polyline(coords, { color, weight: 3, opacity: 0.75 }).addTo(leafletMap);
+    stops.forEach((stop, si) => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:${color};color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${si+1}</div>`,
+        iconSize: [20, 20], iconAnchor: [10, 10],
+      });
+      const label = `D${dayState.day} ${stop.place[lang]}`;
+      L.marker(stop.coord, { icon }).addTo(leafletMap)
+        .bindTooltip(label, { permanent: false, direction: 'right', className: 'map-label' });
+    });
+  });
+
+  if (allBounds.length) leafletMap.fitBounds(allBounds, { padding: [24, 24] });
+  setTimeout(() => leafletMap?.invalidateSize(), 100);
 }
 
 // ── ITEM EDIT MODAL ────────────────────────────────────────

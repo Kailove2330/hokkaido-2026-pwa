@@ -755,6 +755,18 @@ nav#bottom-nav {
   cursor: pointer;
   white-space: nowrap;
 }
+.copy-day-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 .del-day-btn {
   background: #fef2f2;
   color: #dc2626;
@@ -1359,6 +1371,35 @@ nav#bottom-nav {
   cursor: pointer;
 }
 
+/* ── DRAG-AND-DROP ────────────────────────────────────── */
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  color: var(--muted);
+  cursor: grab;
+  border-radius: 6px;
+  margin-right: 2px;
+  touch-action: none;
+}
+.drag-handle:active { cursor: grabbing; }
+
+.tl-drag-ghost {
+  opacity: 0.4;
+}
+.tl-drag-chosen {
+  background: #f0f7ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(42,122,140,0.18);
+}
+.tl-drag-ghost .tl-card,
+.tl-drag-chosen .tl-card {
+  box-shadow: none;
+}
+
 /* ── CTRL VARIANT BUTTONS ─────────────────────────────── */
 .ctrl-btn.ctrl-edit {
   background: #fef3c7;
@@ -1366,6 +1407,13 @@ nav#bottom-nav {
   font-size: 13px;
 }
 .ctrl-btn.ctrl-edit:active { background: var(--gold); color: #fff; }
+
+.ctrl-btn.ctrl-copy {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 13px;
+}
+.ctrl-btn.ctrl-copy:active { background: #0369a1; color: #fff; }
 
 .ctrl-btn.ctrl-del {
   background: #fee2e2;
@@ -1937,3 +1985,138 @@ nav#bottom-nav {
 }
 .tl-card-plain-tap { cursor: pointer; }
 .tl-card-plain-tap:active { opacity: 0.75; }
+
+/* ── OVERVIEW PAGE ────────────────────────────────────── */
+.overview-page {
+  padding: 12px;
+  padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 16px);
+}
+.overview-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.overview-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--navy);
+  flex: 1;
+  min-width: 100px;
+}
+.overview-actions {
+  display: flex;
+  gap: 8px;
+}
+.ov-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ov-map-btn  { background: var(--navy); color: #fff; }
+.ov-map-btn:active  { background: #0f172a; }
+.ov-export-btn { background: var(--teal); color: #fff; }
+.ov-export-btn:active { background: #1e6676; }
+
+.ov-day-card {
+  background: var(--card);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border-left: 4px solid var(--day-color, #ccc);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ov-day-card:active { opacity: 0.82; }
+.ov-day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 6px;
+}
+.ov-day-badge {
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ov-day-date {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ov-day-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-day-items {
+  padding: 2px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ov-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ov-item-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  width: 38px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.ov-time-empty { color: var(--border); }
+.ov-item-place {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-empty {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+.ov-notes-section {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 6px;
+}
+.ov-notes-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.ov-notes-area {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  color: var(--text);
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.6;
+  background: var(--bg);
+}
+.ov-notes-area:focus { outline: none; border-color: var(--teal); }

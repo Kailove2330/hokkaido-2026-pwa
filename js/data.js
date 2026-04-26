@@ -5,7 +5,7 @@
 const T = {
   zh: {
     appTitle: '北海道 2026',
-    tabs: ['行程', '伴手禮', '交通', '出發準備', 'SOS'],
+    tabs: ['行程', '伴手禮', '交通', '出發準備', 'SOS', '總覽'],
     day: '第', dayUnit: '天',
     steps: '預估步數',
     stepsUnit: '步',
@@ -26,7 +26,7 @@ const T = {
   },
   en: {
     appTitle: 'Hokkaido 2026',
-    tabs: ['Itinerary', 'Souvenirs', 'Transport', 'Checklist', 'SOS'],
+    tabs: ['Itinerary', 'Souvenirs', 'Transport', 'Checklist', 'SOS', 'Overview'],
     day: 'Day', dayUnit: '',
     steps: 'Est. steps',
     stepsUnit: 'steps',
