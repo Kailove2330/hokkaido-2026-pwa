@@ -159,8 +159,8 @@ function openMapModal(dayIdx) {
 
   requestAnimationFrame(() => {
     leafletMap = L.map('map-leaflet', { zoomControl: true });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap', maxZoom: 18,
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO', maxZoom: 19, subdomains: 'abcd',
     }).addTo(leafletMap);
 
     const markers = stops.map((item, i) => {
@@ -375,7 +375,10 @@ function renderTimelineItems(dayState, impact) {
     const hasDetail  = !editMode && !!PLACE_DETAIL[detailKey];
     const isTappable = !editMode;
     const bannerHtml = !editMode && item.img
-      ? `<div class="tl-card-banner"><img src="${item.img}" alt="" loading="lazy"></div>`
+      ? `<div class="tl-card-banner">
+          <img src="${item.img}" alt="" loading="lazy">
+          ${item.time && item.time !== '—' ? `<div class="tl-banner-time">${item.time}</div>` : ''}
+        </div>`
       : '';
 
     let rowCls = '';
