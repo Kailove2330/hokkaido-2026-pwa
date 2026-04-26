@@ -96,7 +96,60 @@ function getCategory(item) {
   return 'sight';
 }
 
-// ── TRANSIT ESTIMATION ─────────────────────────────────────
+// ── TRANSIT ESTIMATION + OSRM ──────────────────────────────
+const osrmCache = {}; // 'day-N' → { 'i-j': mins } | null (failed)
+
+async function fetchDayTransits(dayState) {
+  const items = dayState.items;
+  const pairs = [];
+  for (let i = 0; i < items.length - 1; i++) {
+    const curr = items[i], next = items[i + 1];
+    if (curr.coord && next.coord &&
+        getCategory(curr) !== 'transport' &&
+        getCategory(next) !== 'transport') {
+      pairs.push({ from: curr.coord, to: next.coord, fi: i, ti: i + 1 });
+    }
+  }
+  if (pairs.length === 0) return {};
+
+  // Each pair gets 2 consecutive slots: [from0, to0, from1, to1, ...]
+  const coordArr = pairs.flatMap(p => [
+    `${p.from[1]},${p.from[0]}`,
+    `${p.to[1]},${p.to[0]}`
+  ]);
+  const sources = pairs.map((_, i) => i * 2).join(',');
+  const dests   = pairs.map((_, i) => i * 2 + 1).join(',');
+  const url = `https://router.project-osrm.org/table/v1/driving/${coordArr.join(';')}?sources=${sources}&destinations=${dests}&annotations=duration`;
+
+  try {
+    const resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (data.code !== 'Ok') throw new Error(data.code);
+    const result = {};
+    pairs.forEach((p, i) => {
+      const secs = data.durations[i]?.[i];
+      if (secs != null) result[`${p.fi}-${p.ti}`] = Math.max(1, Math.round(secs / 60));
+    });
+    return result;
+  } catch (e) {
+    console.warn('[OSRM] failed, using estimates:', e.message);
+    return null;
+  }
+}
+
+async function updateTransitsForDay(dayIdx) {
+  const state = getState();
+  if (dayIdx !== activeDayIdx) return;
+  const dayState = state[dayIdx];
+  const key = `day-${dayState.day}`;
+  if (key in osrmCache) return; // already fetched or failed
+  osrmCache[key] = undefined; // mark as in-flight
+  const transits = await fetchDayTransits(dayState);
+  osrmCache[key] = transits;
+  if (dayIdx === activeDayIdx) renderItinerary();
+}
+
 function haversineKm(c1, c2) {
   const R = 6371, r = Math.PI / 180;
   const dLat = (c2[0] - c1[0]) * r, dLon = (c2[1] - c1[1]) * r;
@@ -163,6 +216,9 @@ function renderItinerary() {
 
   // Fetch weather for active day
   fetchWeather(state[activeDayIdx].weatherCity);
+
+  // Fetch OSRM transits in background (no-op if cached)
+  updateTransitsForDay(activeDayIdx).catch(() => {});
 }
 
 // ── Day Strip ──────────────────────────────────────────────
@@ -471,7 +527,14 @@ function renderTimelineItems(dayState, impact) {
       const nextCat  = getCategory(nextItem);
       const skipTransit = cat === 'transport' || nextCat === 'transport';
       if (!skipTransit && item.coord && nextItem.coord) {
-        const transit = estimateTransit(item.coord, nextItem.coord);
+        // Use OSRM real data if cached, else haversine estimate
+        const cacheKey = `day-${dayState.day}`;
+        const cached   = osrmCache[cacheKey];
+        const realMins = cached?.[`${itemIdx}-${itemIdx+1}`];
+        const isReal   = realMins != null;
+        const transit  = isReal
+          ? { mins: realMins, mode: 'car' }
+          : estimateTransit(item.coord, nextItem.coord);
         if (transit) {
           const tCurr = parseTimeMin(item.time);
           const dur   = parseDurationMin(item.duration);
@@ -479,7 +542,9 @@ function renderTimelineItems(dayState, impact) {
           const endWithTransit = (tCurr >= 0 && dur > 0) ? tCurr + dur + transit.mins : -1;
           const hasConflict = endWithTransit > 0 && tNext >= 0 && tNext < endWithTransit;
           const icon  = transit.mode === 'walk' ? '🚶' : '🚕';
-          const label = lang === 'zh' ? `${icon} 約${transit.mins}分` : `${icon} ~${transit.mins}min`;
+          const approx = isReal ? '' : (lang === 'zh' ? '約' : '~');
+          const unit  = lang === 'zh' ? '分' : 'min';
+          const label = `${icon} ${approx}${transit.mins}${unit}`;
           transitHTML = `
             <div class="tl-transit-connector${hasConflict ? ' tl-transit-conflict' : ''}">
               <span class="tl-transit-badge">${label}</span>

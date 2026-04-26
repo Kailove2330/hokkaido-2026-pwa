@@ -1,5 +1,5 @@
 // Service Worker — Hokkaido 2026 PWA
-const CACHE_NAME = 'hokkaido-2026-v40';
+const CACHE_NAME = 'hokkaido-2026-v41';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -30,8 +30,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Weather API — network first, no cache
-  if (url.hostname === 'wttr.in') {
+  // External APIs — network first, no cache
+  if (url.hostname === 'wttr.in' || url.hostname === 'router.project-osrm.org') {
     event.respondWith(
       fetch(event.request).catch(() => new Response('{}', { headers: { 'Content-Type': 'application/json' } }))
     );
