@@ -1974,6 +1974,7 @@ async function submitPin() {
 }
 
 // ── GEMINI Q&A ─────────────────────────────────────────────
+// Model: gemini-2.5-flash-preview (via Cloudflare Worker proxy)
 const GEMINI_URL = 'https://hokkaido-gemini.m220uc.workers.dev';
 
 let aiOpen = false;
