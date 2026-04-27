@@ -1931,47 +1931,6 @@ function closeDetailSheet() {
 }
 
 // ── PIN GATE ───────────────────────────────────────────────
-const PIN_HASH    = 'cc0993cb09acb7cfffde863f748567afb13aa44b109f517a9584a966c2b62cc2';
-const PIN_KEY     = 'hk_pin_ok';
-const PIN_EXPIRY  = 30 * 24 * 60 * 60 * 1000; // 30 days
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-function isPinUnlocked() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(PIN_KEY) || 'null');
-    return saved && Date.now() - saved.ts < PIN_EXPIRY;
-  } catch { return false; }
-}
-
-function showPinGate() {
-  const overlay = document.getElementById('pin-overlay');
-  overlay.style.display = 'flex';
-  setTimeout(() => document.getElementById('pin-input').focus(), 100);
-}
-
-function hidePinGate() {
-  document.getElementById('pin-overlay').style.display = 'none';
-}
-
-async function submitPin() {
-  const val = document.getElementById('pin-input').value.trim();
-  const err  = document.getElementById('pin-error');
-  if (!val) return;
-  const hash = await sha256(val);
-  if (hash === PIN_HASH) {
-    localStorage.setItem(PIN_KEY, JSON.stringify({ ts: Date.now() }));
-    hidePinGate();
-    initApp();
-  } else {
-    err.textContent = '密碼錯誤，請再試';
-    document.getElementById('pin-input').value = '';
-    document.getElementById('pin-input').focus();
-  }
-}
 
 // ── GEMINI Q&A ─────────────────────────────────────────────
 // Model: gemini-2.5-flash-preview (via Cloudflare Worker proxy)
@@ -2108,15 +2067,5 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // PIN gate on load
-  document.getElementById('pin-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitPin();
-  });
-
-  if (isPinUnlocked()) {
-    hidePinGate();
-    initApp();
-  } else {
-    showPinGate();
-  }
+  initApp();
 });
