@@ -676,7 +676,9 @@ function renderTimelineItems(dayState, impact) {
     const detailKey    = cleanPlaceName(item.place.zh);
     const hasDetail    = !editMode && !!PLACE_DETAIL[detailKey];
     const isTappable   = !editMode;
-    const hoursConflict = !editMode ? checkHoursConflict(item, dayState) : null;
+    const hoursConflict    = !editMode ? checkHoursConflict(item, dayState) : null;
+    const recommendText    = !editMode && (cat === 'food' || cat === 'hotel') && PLACE_DETAIL[detailKey]?.recommend
+      ? PLACE_DETAIL[detailKey].recommend[lang] : null;
     const bannerHtml = !editMode && item.img
       ? `<div class="tl-card-banner">
           <img src="${item.img}" alt="" loading="lazy">
@@ -746,6 +748,7 @@ function renderTimelineItems(dayState, impact) {
               ` : ''}
             </div>
             <div class="tl-place">${item.place[lang]}</div>
+            ${recommendText ? `<div class="tl-recommend">⭐ ${recommendText}</div>` : ''}
             ${item.duration && item.duration !== '—' ? `<div class="tl-duration">${item.duration}</div>` : ''}
             ${noteHTML ? `<div class="tl-note">${noteHTML}</div>` : ''}
             ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'}</div>` : ''}
