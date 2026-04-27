@@ -2408,7 +2408,7 @@ main.ai-mode {
 #ai-footer {
   display: flex; flex-direction: column; gap: 6px;
   padding: 8px 12px;
-  padding-bottom: max(env(safe-area-inset-bottom), 10px);
+  padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 10px);
   border-top: 1px solid var(--border);
   background: #fafafa;
   flex-shrink: 0;
