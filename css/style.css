@@ -712,6 +712,17 @@ nav#bottom-nav {
   margin-top: 3px;
 }
 
+.hours-warn {
+  font-size: 11px;
+  color: #b45309;
+  font-weight: 600;
+  margin-top: 3px;
+  padding: 2px 5px;
+  background: #fff7ed;
+  border-radius: 4px;
+  display: inline-block;
+}
+
 .moved-tag {
   font-size: 10px;
   background: #dbeafe;

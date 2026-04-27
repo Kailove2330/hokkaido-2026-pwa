@@ -214,6 +214,97 @@ function minsToTimeStr(m) {
   return `${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`;
 }
 
+// ── BUSINESS HOURS DETECTION (#4) ─────────────────────────
+function parseHours(hoursStr) {
+  if (!hoursStr) return null;
+  // Skip hotel check-in/out strings
+  if (/入住|退房|check.?in|check.?out/i.test(hoursStr)) return null;
+  // Irregular — can't reliably detect
+  if (/不定休|irregular/i.test(hoursStr)) return { irregular: true };
+  // Always open
+  if (/全日.*開放|全年.*無休|open all day|open year.round/i.test(hoursStr))
+    return { alwaysOpen: true };
+
+  // Extract time ranges: strict 2-digit HH:MM to avoid matching dates like 10/16
+  const timeRangeRe = /(\d{2}):(\d{2})\s*[–\-–]\s*(?:翌)?(\d{2}):(\d{2})/g;
+  const ranges = [];
+  let m;
+  while ((m = timeRangeRe.exec(hoursStr)) !== null) {
+    const open  = parseInt(m[1]) * 60 + parseInt(m[2]);
+    let   close = parseInt(m[3]) * 60 + parseInt(m[4]);
+    if (close <= open) close += 1440; // overnight (incl. –00:00)
+    ranges.push({ open, close });
+  }
+  if (ranges.length === 0) return null;
+
+  // Extract closed days (Chinese: 週X公休, only when directly preceding 公休)
+  const dayMap = { '一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':0,'天':0 };
+  const closedDays = [];
+  const closedRe = /((?:週[一二三四五六日天](?:・|&|、)?)+)公休/g;
+  let cr;
+  while ((cr = closedRe.exec(hoursStr)) !== null) {
+    const chars = cr[1].match(/週([一二三四五六日天])/g) || [];
+    chars.forEach(c => { const d = dayMap[c[1]]; if (d !== undefined) closedDays.push(d); });
+  }
+  // English closed days
+  const enDayMap = { mon:1, tue:2, wed:3, thu:4, fri:5, sat:6, sun:0 };
+  const enClosed = /closed\s+(mon|tue|wed|thu|fri|sat|sun)/gi;
+  let ec;
+  while ((ec = enClosed.exec(hoursStr)) !== null) {
+    const d = enDayMap[ec[1].toLowerCase()]; if (d !== undefined) closedDays.push(d);
+  }
+
+  return { ranges, closedDays };
+}
+
+function getDayOfWeek(dayState) {
+  const m = (dayState.date?.zh || '').match(/（([一二三四五六日天])）/);
+  if (!m) return null;
+  const map = { '一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':0,'天':0 };
+  return map[m[1]] ?? null;
+}
+
+function checkHoursConflict(item, dayState) {
+  if (!item.place?.zh) return null;
+  const key    = cleanPlaceName(item.place.zh);
+  const detail = PLACE_DETAIL[key];
+  if (!detail?.hours) return null;
+
+  const parsed = parseHours(detail.hours.zh);
+  if (!parsed || parsed.alwaysOpen || parsed.irregular) return null;
+
+  const itemMins = parseTimeMin(item.time);
+  if (itemMins < 0) return null; // no scheduled time
+
+  const dow = getDayOfWeek(dayState);
+  const dowNames = lang === 'zh'
+    ? ['日','一','二','三','四','五','六']
+    : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Closed day?
+  if (dow !== null && parsed.closedDays.includes(dow)) {
+    return {
+      type: 'closed',
+      msg: lang === 'zh' ? `⛔ 週${dowNames[dow]}公休` : `⛔ Closed ${dowNames[dow]}`
+    };
+  }
+
+  // Outside operating hours?
+  if (parsed.ranges.length > 0) {
+    const inRange = parsed.ranges.some(r => itemMins >= r.open && itemMins < r.close);
+    if (!inRange) {
+      const display = parsed.ranges
+        .map(r => `${minsToTimeStr(r.open % 1440)}–${minsToTimeStr(r.close % 1440)}`)
+        .join(', ');
+      return {
+        type: 'outside',
+        msg: lang === 'zh' ? `⏰ 營業 ${display}` : `⏰ Open ${display}`
+      };
+    }
+  }
+  return null;
+}
+
 // ── CASCADE ─────────────────────────────────────────────────
 function offerCascade(dayIdx, fromItemIdx, deltaMins) {
   const state = getState();
@@ -582,9 +673,10 @@ function renderTimelineItems(dayState, impact) {
       ? `<a href="${item.maps}" target="_blank" rel="noopener" class="map-btn" onclick="event.stopPropagation()">📍 ${T[lang].mapBtn}</a>`
       : '';
 
-    const detailKey  = cleanPlaceName(item.place.zh);
-    const hasDetail  = !editMode && !!PLACE_DETAIL[detailKey];
-    const isTappable = !editMode;
+    const detailKey    = cleanPlaceName(item.place.zh);
+    const hasDetail    = !editMode && !!PLACE_DETAIL[detailKey];
+    const isTappable   = !editMode;
+    const hoursConflict = !editMode ? checkHoursConflict(item, dayState) : null;
     const bannerHtml = !editMode && item.img
       ? `<div class="tl-card-banner">
           <img src="${item.img}" alt="" loading="lazy">
@@ -657,6 +749,7 @@ function renderTimelineItems(dayState, impact) {
             ${item.duration && item.duration !== '—' ? `<div class="tl-duration">${item.duration}</div>` : ''}
             ${noteHTML ? `<div class="tl-note">${noteHTML}</div>` : ''}
             ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'}</div>` : ''}
+            ${hoursConflict ? `<div class="hours-warn">${hoursConflict.msg}</div>` : ''}
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
               ${mapHTML}
