@@ -1991,6 +1991,33 @@ nav#bottom-nav {
   padding: 12px;
   padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 16px);
 }
+/* Sub-tabs */
+.ov-sub-tabs {
+  display: flex;
+  background: #edf0f5;
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 14px;
+  gap: 3px;
+}
+.ov-sub-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  padding: 9px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.ov-sub-tab.active {
+  background: var(--card);
+  color: var(--navy);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
 .overview-header {
   display: flex;
   align-items: center;
@@ -2008,6 +2035,7 @@ nav#bottom-nav {
 .overview-actions {
   display: flex;
   gap: 8px;
+  margin-bottom: 12px;
 }
 .ov-btn {
   border: none;
@@ -2120,3 +2148,8 @@ nav#bottom-nav {
   background: var(--bg);
 }
 .ov-notes-area:focus { outline: none; border-color: var(--teal); }
+.ov-notes-fullpage { margin-top: 0; }
+.ov-notes-tall {
+  min-height: calc(100vh - 220px);
+  resize: none;
+}

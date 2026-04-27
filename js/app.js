@@ -11,6 +11,7 @@ let svOpenId = null;
 let transportTab = 0;
 let sosTab = 0;
 let pendingCascade = null; // { dayIdx, fromItemIdx, deltaMins }
+let ovSubTab = 0; // 0 = 行程總覽, 1 = 備注
 
 // ── Storage helpers ────────────────────────────────────────
 function getChecked(key) {
@@ -40,13 +41,13 @@ function renderAll() {
   renderTransport();
   renderChecklist();
   renderSOS();
-  if (activeTab === 5) renderOverview();
+  renderOverview();
 }
 
 // ── Tabs ───────────────────────────────────────────────────
 let activeTab = 0;
 function renderTabs() {
-  const icons = ['🗓','🛍','🚆','✅','🆘','📋'];
+  const icons = ['📋','🗓','🛍','🚆','✅','🆘'];
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = T[lang].tabs.map((label, i) => `
     <button class="tab-btn ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -62,7 +63,7 @@ function switchTab(i) {
     p.classList.toggle('active', idx === i);
   });
   renderTabs();
-  if (i === 5) renderOverview();
+  if (i === 0) renderOverview();
 }
 
 // ── CATEGORY DETECTION ─────────────────────────────────────
@@ -377,15 +378,17 @@ function renderDaySummaryCard(dayState) {
   const meals = { breakfast: null, lunch: null, dinner: null };
   dayState.items.forEach(item => {
     const name = (item.place?.zh || '') + ' ' + (item.place?.en || '');
-    // Keyword detection first (most reliable)
     let mt = null;
-    if (/早餐|breakfast/i.test(name))      mt = 'breakfast';
-    else if (/午餐|lunch/i.test(name))     mt = 'lunch';
-    else if (/晚餐|dinner/i.test(name))    mt = 'dinner';
+    let explicit = false;
+    // Explicit keyword (【早/午/晚餐】) always wins over time-based fallback
+    if (/早餐|breakfast/i.test(name))      { mt = 'breakfast'; explicit = true; }
+    else if (/午餐|lunch/i.test(name))     { mt = 'lunch';     explicit = true; }
+    else if (/晚餐|dinner/i.test(name))    { mt = 'dinner';    explicit = true; }
     // Fall back to emoji + time (mealType from impact.js)
     if (!mt) mt = mealType(item);
     if (!mt || mt === 'any') return;
-    if (!meals[mt]) meals[mt] = cleanPlaceName(item.place[lang]) || item.place[lang];
+    // Explicit keyword overwrites time-based; time-based only fills empty slot
+    if (explicit || !meals[mt]) meals[mt] = cleanPlaceName(item.place[lang]) || item.place[lang];
   });
 
   const rows = [
@@ -776,46 +779,56 @@ function renderOverview() {
   const state = getState();
 
   let html = `<div class="overview-page">`;
+
+  // Sub-tab bar
+  const tabScheduleLabel = lang === 'zh' ? '行程總覽' : 'Schedule';
+  const tabNotesLabel    = lang === 'zh' ? '備注'     : 'Notes';
   html += `
-    <div class="overview-header">
-      <div class="overview-title">${lang === 'zh' ? '行程總覽' : 'Trip Overview'}</div>
+    <div class="ov-sub-tabs">
+      <button class="ov-sub-tab ${ovSubTab === 0 ? 'active' : ''}" onclick="setOvSubTab(0)">${tabScheduleLabel}</button>
+      <button class="ov-sub-tab ${ovSubTab === 1 ? 'active' : ''}" onclick="setOvSubTab(1)">${tabNotesLabel}</button>
+    </div>
+  `;
+
+  if (ovSubTab === 0) {
+    // ── Schedule view ─────────────────────────────────────
+    html += `
       <div class="overview-actions">
         <button class="ov-btn ov-map-btn" onclick="openAllDaysMap()">🗺 ${lang === 'zh' ? '地圖總覽' : 'Full Map'}</button>
         <button class="ov-btn ov-export-btn" onclick="exportTripText()">📋 ${lang === 'zh' ? '輸出文字' : 'Export'}</button>
       </div>
-    </div>
-  `;
-
-  state.forEach((day, idx) => {
-    const color = DAY_COLORS[idx % DAY_COLORS.length];
-    const itemsHtml = day.items.map(item => {
-      const t = item.time !== '—'
-        ? `<span class="ov-item-time">${item.time}</span>`
-        : `<span class="ov-item-time ov-time-empty">—</span>`;
-      return `<div class="ov-item">${t}<span class="ov-item-place">${item.place[lang]}</span></div>`;
-    }).join('');
-
-    html += `
-      <div class="ov-day-card" onclick="goToDay(${idx})" style="--day-color:${color}">
-        <div class="ov-day-header">
-          <span class="ov-day-badge" style="background:${color}">${T[lang].day} ${day.day}${T[lang].dayUnit}</span>
-          <span class="ov-day-date">${day.date[lang]}</span>
-          <span class="ov-day-title">${day.title[lang]}</span>
+    `;
+    state.forEach((day, idx) => {
+      const color = DAY_COLORS[idx % DAY_COLORS.length];
+      const itemsHtml = day.items.map(item => {
+        const t = item.time !== '—'
+          ? `<span class="ov-item-time">${item.time}</span>`
+          : `<span class="ov-item-time ov-time-empty">—</span>`;
+        return `<div class="ov-item">${t}<span class="ov-item-place">${item.place[lang]}</span></div>`;
+      }).join('');
+      html += `
+        <div class="ov-day-card" onclick="goToDay(${idx})" style="--day-color:${color}">
+          <div class="ov-day-header">
+            <span class="ov-day-badge" style="background:${color}">${T[lang].day} ${day.day}${T[lang].dayUnit}</span>
+            <span class="ov-day-date">${day.date[lang]}</span>
+            <span class="ov-day-title">${day.title[lang]}</span>
+          </div>
+          <div class="ov-day-items">${itemsHtml || `<span class="ov-empty">${lang === 'zh' ? '（無行程）' : '(No items)'}</span>`}</div>
         </div>
-        <div class="ov-day-items">${itemsHtml || `<span class="ov-empty">${lang === 'zh' ? '（無行程）' : '(No items)'}</span>`}</div>
+      `;
+    });
+  } else {
+    // ── Notes view ────────────────────────────────────────
+    const notes = localStorage.getItem('hk_trip_notes') || '';
+    html += `
+      <div class="ov-notes-section ov-notes-fullpage">
+        <div class="ov-notes-label">📝 ${lang === 'zh' ? '個人備注' : 'Personal Notes'}</div>
+        <textarea class="ov-notes-area ov-notes-tall" id="ov-notes-input"
+          placeholder="${lang === 'zh' ? '行前注意事項、提醒事項、要帶的東西...' : 'Pre-trip notes, reminders, packing list...'}"
+          oninput="saveOvNotes()">${notes}</textarea>
       </div>
     `;
-  });
-
-  const notes = localStorage.getItem('hk_trip_notes') || '';
-  html += `
-    <div class="ov-notes-section">
-      <div class="ov-notes-label">📝 ${lang === 'zh' ? '個人備注' : 'Personal Notes'}</div>
-      <textarea class="ov-notes-area" id="ov-notes-input"
-        placeholder="${lang === 'zh' ? '行前注意事項、提醒事項...' : 'Pre-trip notes, reminders...'}"
-        oninput="saveOvNotes()">${notes}</textarea>
-    </div>
-  `;
+  }
 
   html += `</div>`;
   container.innerHTML = html;
@@ -823,10 +836,15 @@ function renderOverview() {
 
 function goToDay(idx) {
   activeDayIdx = idx;
-  activeTab = 0;
-  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === 0));
+  activeTab = 1;
+  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === 1));
   renderTabs();
   renderItinerary();
+}
+
+function setOvSubTab(i) {
+  ovSubTab = i;
+  renderOverview();
 }
 
 function saveOvNotes() {
