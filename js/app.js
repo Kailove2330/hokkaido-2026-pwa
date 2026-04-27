@@ -1974,8 +1974,7 @@ async function submitPin() {
 }
 
 // ── GEMINI Q&A ─────────────────────────────────────────────
-const GEMINI_KEY = 'AIzaSyDkudsBInoZWfmEmn1VtNNm33azkKw7kyM';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = 'https://hokkaido-gemini.m220uc.workers.dev';
 
 let aiOpen = false;
 let aiHistory = []; // {role, text}
