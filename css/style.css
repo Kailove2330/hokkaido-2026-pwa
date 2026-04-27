@@ -2321,28 +2321,31 @@ nav#bottom-nav {
 }
 
 /* ── AI PANEL ─────────────────────────────────────────── */
-/* AI mode: lock main scroll, page fills height */
+/* AI mode: lock scroll, build full-height flex chain */
 main.ai-mode {
   overflow: hidden;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 #page-overview.ai-mode {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex !important;
   flex-direction: column;
 }
 #page-overview.ai-mode .overview-page {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   padding: 0;
 }
 .ai-in-ov {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   overflow: hidden;
 }
 .ai-usage-bar {
@@ -2364,21 +2367,22 @@ main.ai-mode {
 }
 .ai-messages-ov {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 0;
   box-sizing: border-box;
 }
 /* Sub-tabs stay at top in all modes */
+.ov-sub-tabs { flex-shrink: 0; }
 #page-overview.ai-mode .ov-sub-tabs {
   margin: 0;
   border-radius: 0;
   padding: 4px 12px;
-  flex-shrink: 0;
 }
 
 #ai-messages {
