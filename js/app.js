@@ -39,7 +39,6 @@ function renderAll() {
   renderItinerary();
   renderSouvenirs();
   renderTransport();
-  renderChecklist();
   renderSOS();
   renderOverview();
 }
@@ -47,7 +46,7 @@ function renderAll() {
 // ── Tabs ───────────────────────────────────────────────────
 let activeTab = 0;
 function renderTabs() {
-  const icons = ['📋','🗓','🛍','🚆','✅','🆘'];
+  const icons = ['📋','🗓','🛍','🚆','🆘'];
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = T[lang].tabs.map((label, i) => `
     <button class="tab-btn ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -62,6 +61,11 @@ function switchTab(i) {
   document.querySelectorAll('.page').forEach((p, idx) => {
     p.classList.toggle('active', idx === i);
   });
+  // Clean up ai-mode if leaving overview
+  if (i !== 0) {
+    document.querySelector('main')?.classList.remove('ai-mode');
+    document.getElementById('page-overview')?.classList.remove('ai-mode');
+  }
   renderTabs();
   if (i === 0) renderOverview();
 }
@@ -752,7 +756,7 @@ function renderTimelineItems(dayState, impact) {
             ${item.duration && item.duration !== '—' ? `<div class="tl-duration">${item.duration}</div>` : ''}
             ${noteHTML ? `<div class="tl-note">${noteHTML}</div>` : ''}
             ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'}</div>` : ''}
-            ${hoursConflict ? `<div class="hours-warn">${hoursConflict.msg}</div>` : ''}
+            ${hoursConflict ? `<div class="hours-warn">${hoursConflict.msg} <button class="hours-ai-btn" onclick="event.stopPropagation();askAIConflict('${item.id}')">✨</button></div>` : ''}
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
               ${mapHTML}
@@ -1016,10 +1020,12 @@ function renderOverview() {
   // Sub-tab bar
   const tabScheduleLabel = lang === 'zh' ? '行程總覽' : 'Schedule';
   const tabNotesLabel    = lang === 'zh' ? '備注'     : 'Notes';
+  const tabAILabel       = '✨ AI';
   html += `
     <div class="ov-sub-tabs">
       <button class="ov-sub-tab ${ovSubTab === 0 ? 'active' : ''}" onclick="setOvSubTab(0)">${tabScheduleLabel}</button>
       <button class="ov-sub-tab ${ovSubTab === 1 ? 'active' : ''}" onclick="setOvSubTab(1)">${tabNotesLabel}</button>
+      <button class="ov-sub-tab ${ovSubTab === 2 ? 'active' : ''}" onclick="setOvSubTab(2)">${tabAILabel}</button>
     </div>
   `;
 
@@ -1050,7 +1056,7 @@ function renderOverview() {
         </div>
       `;
     });
-  } else {
+  } else if (ovSubTab === 1) {
     // ── Notes view ────────────────────────────────────────
     const notes = localStorage.getItem('hk_trip_notes') || '';
     html += `
@@ -1059,6 +1065,33 @@ function renderOverview() {
         <textarea class="ov-notes-area ov-notes-tall" id="ov-notes-input"
           placeholder="${lang === 'zh' ? '行前注意事項、提醒事項、要帶的東西...' : 'Pre-trip notes, reminders, packing list...'}"
           oninput="saveOvNotes()">${notes}</textarea>
+      </div>
+    `;
+  } else {
+    // ── AI chat view ──────────────────────────────────────
+    const usage     = getAIUsage();
+    const remaining = 20 - usage.count;
+    const disabled  = remaining <= 0 ? 'disabled' : '';
+    const usageColor = remaining <= 5 ? '#dc2626' : remaining <= 10 ? '#d97706' : '#6366f1';
+    html += `
+      <div class="ai-in-ov">
+        <div class="ai-usage-bar">
+          <span>${lang === 'zh' ? '北海道助理' : 'AI Assistant'}</span>
+          <span class="ai-usage-count" style="color:${usageColor}">${lang === 'zh' ? `剩餘 ${remaining}/20 次` : `${remaining}/20 left`}</span>
+        </div>
+        <div id="ai-messages" class="ai-messages-ov">${renderAIHistory()}</div>
+        <div id="ai-footer">
+          <div id="ai-chips">
+            <button class="ai-chip" onclick="quickAsk('weather')">🌤 ${lang === 'zh' ? '天氣' : 'Weather'}</button>
+            <button class="ai-chip" onclick="quickAsk('sights')">🗺 ${lang === 'zh' ? '景點' : 'Sights'}</button>
+            <button class="ai-chip" onclick="quickAsk('food')">🍜 ${lang === 'zh' ? '美食' : 'Food'}</button>
+            <button class="ai-chip" onclick="quickAsk('transport')">🚆 ${lang === 'zh' ? '交通' : 'Transit'}</button>
+          </div>
+          <div id="ai-input-row">
+            <textarea id="ai-input" placeholder="${lang === 'zh' ? '問我任何問題...' : 'Ask me anything...'}" rows="2" ${disabled}></textarea>
+            <button id="ai-send" onclick="sendAI()" ${disabled}>${lang === 'zh' ? '送出' : 'Send'}</button>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -1077,7 +1110,22 @@ function goToDay(idx) {
 
 function setOvSubTab(i) {
   ovSubTab = i;
+  const main = document.querySelector('main');
+  const page = document.getElementById('page-overview');
+  if (i === 2) {
+    main?.classList.add('ai-mode');
+    page?.classList.add('ai-mode');
+  } else {
+    main?.classList.remove('ai-mode');
+    page?.classList.remove('ai-mode');
+  }
   renderOverview();
+  if (i === 2) {
+    setTimeout(() => {
+      const msgs = document.getElementById('ai-messages');
+      if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }, 50);
+  }
 }
 
 function saveOvNotes() {
@@ -1718,6 +1766,7 @@ function renderTransport() {
 // ── CHECKLIST ──────────────────────────────────────────────
 function renderChecklist() {
   const container = document.getElementById('page-checklist');
+  if (!container) return;
   const total = CHECKLIST.reduce((s, c) => s + c.items.length, 0);
   const done  = CHECKLIST.reduce((s, c) => s + c.items.filter(i => checkedItems.has(i.id)).length, 0);
 
@@ -1936,8 +1985,52 @@ function closeDetailSheet() {
 // Model: gemini-2.5-flash-preview (via Cloudflare Worker proxy)
 const GEMINI_URL = 'https://hokkaido-gemini.m220uc.workers.dev';
 
-let aiOpen = false;
 let aiHistory = []; // {role, text}
+
+// ── AI usage counter (20/day) ──────────────────────────────
+function getAIUsage() {
+  try {
+    const s = JSON.parse(localStorage.getItem('hk_ai_usage') || '{}');
+    const today = new Date().toISOString().slice(0, 10);
+    if (s.date !== today) return { date: today, count: 0 };
+    return s;
+  } catch { return { date: new Date().toISOString().slice(0, 10), count: 0 }; }
+}
+function incrementAIUsage() {
+  const u = getAIUsage();
+  u.count++;
+  localStorage.setItem('hk_ai_usage', JSON.stringify(u));
+}
+
+// ── Render history from aiHistory array ────────────────────
+function renderAIHistory() {
+  const greeting = lang === 'zh'
+    ? '你好！有關北海道行程或旅遊的問題都可以問我。每日 20 次免費額度，用在最有價值的問題上。'
+    : 'Hi! Ask me anything about your Hokkaido trip. 20 free queries per day.';
+  const greetingHtml = `<div class="ai-msg ai-msg-bot">${greeting}</div>`;
+  if (aiHistory.length === 0) return greetingHtml;
+  return greetingHtml + aiHistory.map(h => {
+    if (h.role === 'user') {
+      const safe = h.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div class="ai-msg ai-msg-user">${safe}</div>`;
+    }
+    return `<div class="ai-msg ai-msg-bot">${renderMarkdown(h.text)}</div>`;
+  }).join('');
+}
+
+function renderMarkdown(raw) {
+  const s = raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return s
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^### (.+)$/gm, '<div class="ai-h3">$1</div>')
+    .replace(/^## (.+)$/gm, '<div class="ai-h2">$1</div>')
+    .replace(/^\* (.+)$/gm, '<div class="ai-li">• $1</div>')
+    .replace(/^\d+\. (.+)$/gm, '<div class="ai-li">$&</div>')
+    .replace(/\n/g, '<br>');
+}
 
 function buildTripContext() {
   const state = getState();
@@ -1950,24 +2043,74 @@ function buildTripContext() {
   return `以下是我的北海道 2026 旅遊行程：\n\n${lines}`;
 }
 
-function toggleAI() {
-  aiOpen = !aiOpen;
-  document.getElementById('ai-panel').style.display = aiOpen ? 'flex' : 'none';
-  document.getElementById('ai-fab').style.display   = aiOpen ? 'none' : 'flex';
-  if (aiOpen) setTimeout(() => document.getElementById('ai-input').focus(), 150);
+function goToAI() {
+  if (activeTab !== 0) switchTab(0);
+  setOvSubTab(2);
+  setTimeout(() => document.getElementById('ai-input')?.focus(), 200);
+}
+function toggleAI() { goToAI(); }
+function closeAI()  { setOvSubTab(0); }
+
+// Ask AI about a specific hours conflict
+function askAIConflict(itemId) {
+  const state = getState();
+  let foundItem = null, foundDay = null;
+  for (const day of state) {
+    const it = day.items.find(i => i.id === itemId);
+    if (it) { foundItem = it; foundDay = day; break; }
+  }
+  if (!foundItem) return;
+  const conflict = checkHoursConflict(foundItem, foundDay);
+  const placeName = foundItem.place.zh;
+  const conflictMsg = conflict?.msg || '';
+  const q = `我的行程中安排了「${placeName}」，但顯示「${conflictMsg}」。請問有什麼調整建議或替代方案？`;
+  const onAI = activeTab === 0 && ovSubTab === 2;
+  if (!onAI) goToAI();
+  setTimeout(() => {
+    const inp = document.getElementById('ai-input');
+    if (inp) { inp.value = q; sendAI(); }
+  }, onAI ? 0 : 350);
 }
 
-function closeAI() {
-  aiOpen = false;
-  document.getElementById('ai-panel').style.display = 'none';
-  document.getElementById('ai-fab').style.display   = 'flex';
+// Quick question chips
+function quickAsk(type) {
+  const state = getState();
+  const day = state[activeDayIdx];
+  const dayLabel = day ? `Day ${day.day}（${day.date.zh} ${day.title.zh}）` : '';
+  const qs = {
+    weather:   `${dayLabel} 的天氣預報如何？需要帶什麼衣物或雨具？`,
+    sights:    `${dayLabel} 的景點有什麼特別值得留意的建議或小技巧？`,
+    food:      `${dayLabel} 有哪些不能錯過的美食或餐廳推薦？`,
+    transport: `${dayLabel} 的交通安排有什麼注意事項或省錢貼士？`,
+  };
+  const inp = document.getElementById('ai-input');
+  if (inp) { inp.value = qs[type] || ''; sendAI(); }
 }
 
 async function sendAI() {
+  const usage = getAIUsage();
+  if (usage.count >= 20) {
+    appendAIMsg('model', lang === 'zh' ? '今日 20 次額度已用完，明天再來問我吧！' : 'Daily limit of 20 reached. Come back tomorrow!');
+    return;
+  }
   const input = document.getElementById('ai-input');
-  const msg   = input.value.trim();
+  if (!input) return;
+  const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
+  incrementAIUsage();
+  // refresh usage counter in UI
+  const countEl = document.querySelector('.ai-usage-count');
+  if (countEl) {
+    const rem = 20 - getAIUsage().count;
+    const color = rem <= 5 ? '#dc2626' : rem <= 10 ? '#d97706' : '#6366f1';
+    countEl.textContent = lang === 'zh' ? `剩餘 ${rem}/20 次` : `${rem}/20 left`;
+    countEl.style.color = color;
+    if (rem <= 0) {
+      document.getElementById('ai-input')?.setAttribute('disabled', '');
+      document.getElementById('ai-send')?.setAttribute('disabled', '');
+    }
+  }
 
   appendAIMsg('user', msg);
   appendAIMsg('loading', '');
@@ -2032,9 +2175,12 @@ function appendAIMsg(role, text) {
     div.className = 'ai-msg ai-msg-bot ai-loading';
     div.id = 'ai-loading-msg';
     div.textContent = '...';
-  } else {
-    div.className = `ai-msg ${role === 'user' ? 'ai-msg-user' : 'ai-msg-bot'}`;
+  } else if (role === 'user') {
+    div.className = 'ai-msg ai-msg-user';
     div.textContent = text;
+  } else {
+    div.className = 'ai-msg ai-msg-bot';
+    div.innerHTML = renderMarkdown(text);
   }
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;

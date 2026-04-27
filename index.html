@@ -10,7 +10,7 @@
   <title>北海道 2026</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/style.css?v=54" />
+  <link rel="stylesheet" href="css/style.css?v=58" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -25,7 +25,6 @@
       <section class="page" id="page-itinerary"></section>
       <section class="page" id="page-souvenirs"></section>
       <section class="page" id="page-transport"></section>
-      <section class="page" id="page-checklist"></section>
       <section class="page" id="page-sos"></section>
     </main>
 
@@ -84,24 +83,6 @@
       <div id="transit-sheet"></div>
     </div>
 
-<!-- AI Q&A Panel -->
-    <div id="ai-panel">
-      <div id="ai-header">
-        <span>✨ 北海道助理</span>
-        <button id="ai-close" onclick="closeAI()">✕</button>
-      </div>
-      <div id="ai-messages">
-        <div class="ai-msg ai-msg-bot">你好！有關北海道行程或旅遊的問題都可以問我。</div>
-      </div>
-      <div id="ai-footer">
-        <textarea id="ai-input" placeholder="問我任何問題..." rows="2"></textarea>
-        <button id="ai-send" onclick="sendAI()">送出</button>
-      </div>
-    </div>
-
-    <!-- AI Floating Button -->
-    <button id="ai-fab" onclick="toggleAI()">✨</button>
-
     <!-- Move-to-day bottom sheet -->
     <div id="move-sheet-overlay" style="display:none">
       <div id="move-sheet">
@@ -114,10 +95,10 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/data.js?v=54"></script>
-  <script src="js/state.js?v=54"></script>
-  <script src="js/impact.js?v=54"></script>
-  <script src="js/app.js?v=54"></script>
+  <script src="js/data.js?v=58"></script>
+  <script src="js/state.js?v=58"></script>
+  <script src="js/impact.js?v=58"></script>
+  <script src="js/app.js?v=58"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
