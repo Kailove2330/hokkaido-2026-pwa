@@ -2204,8 +2204,10 @@ function initApp() {
   });
 
   // AI input — Enter to send
-  document.getElementById('ai-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); }
+  document.addEventListener('keydown', e => {
+    if (e.target.id === 'ai-input' && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); sendAI();
+    }
   });
 
   document.querySelectorAll('.page')[0].classList.add('active');
