@@ -1304,6 +1304,121 @@ nav#bottom-nav {
 }
 
 /* ── TRANSIT CONNECTOR ─────────────────────────────────── */
+/* ── TRANSIT MODE SHEET ───────────────────────────────── */
+#transit-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+#transit-sheet {
+  background: var(--card);
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  max-height: 75dvh;
+  overflow-y: auto;
+}
+.ts-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 14px;
+}
+.ts-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ts-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #f4f6f9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ts-option:active { background: #dbeafe; }
+.ts-option.active {
+  background: #eff6ff;
+  border-color: var(--teal);
+}
+.ts-icon  { font-size: 22px; }
+.ts-label { font-size: 12px; font-weight: 700; color: var(--navy); text-align: center; }
+.ts-est   { font-size: 11px; color: var(--muted); }
+.ts-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f4f6f9;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+}
+.ts-custom-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--navy);
+  background: var(--card);
+  max-width: 100px;
+}
+.ts-custom-unit { font-size: 14px; color: var(--muted); }
+.ts-gmap-btn {
+  display: block;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+.ts-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ts-save {
+  flex: 1;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ts-cancel {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* ── TRANSIT CONNECTOR ────────────────────────────────── */
 .tl-transit-connector {
   display: flex;
   align-items: center;
@@ -1320,6 +1435,20 @@ nav#bottom-nav {
   padding: 2px 9px;
   white-space: nowrap;
   letter-spacing: .01em;
+}
+.tl-transit-tappable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  font: inherit;
+  display: inline-block;
+}
+.tl-transit-tappable:active { opacity: 0.65; }
+.tl-transit-overridden {
+  color: var(--teal);
+  border: 1px solid var(--teal);
+  background: #f0fdfa;
+  font-weight: 600;
 }
 .tl-transit-connector.tl-transit-conflict .tl-transit-badge {
   color: #dc2626;

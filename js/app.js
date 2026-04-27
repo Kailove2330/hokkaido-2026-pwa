@@ -102,6 +102,47 @@ function getCategory(item) {
 // ── TRANSIT ESTIMATION + OSRM ──────────────────────────────
 const osrmCache = {}; // 'day-N' → { 'i-j': mins } | null (failed)
 
+// ── TRANSIT MODE OVERRIDES ─────────────────────────────────
+const TRANSIT_MODE_META = {
+  auto:    { icon: '🤖', zh: '自動估算',    en: 'Auto' },
+  walk:    { icon: '🚶', zh: '走路',        en: 'Walk' },
+  car:     { icon: '🚕', zh: '計程車／自駕', en: 'Car/Taxi' },
+  transit: { icon: '🚃', zh: '大眾運輸',    en: 'Transit' },
+  custom:  { icon: '✏️', zh: '自訂分鐘',    en: 'Custom' },
+};
+
+function getTransitModes() {
+  try { return JSON.parse(localStorage.getItem('hk_transit_modes') || '{}'); }
+  catch { return {}; }
+}
+
+function resolveTransit(pairKey, coord1, coord2, osrmMins) {
+  const override = getTransitModes()[pairKey];
+  const km = haversineKm(coord1, coord2);
+  if (override) {
+    switch (override.mode) {
+      case 'walk':    return { mins: Math.max(1, Math.round(km / 4.5 * 60 * 1.2)), mode: 'walk',    approx: true };
+      case 'car':     return osrmMins != null
+                        ? { mins: osrmMins,    mode: 'car', approx: false }
+                        : { mins: Math.max(1, Math.round(km * 1.4 / 25 * 60)), mode: 'car', approx: true };
+      case 'transit': return { mins: Math.max(5, Math.round(km * 1.5 / 30 * 60) + 10), mode: 'transit', approx: true };
+      case 'custom':  return { mins: override.customMins || 30, mode: 'custom', approx: false };
+    }
+  }
+  // Auto: OSRM car if available, else haversine estimate
+  if (osrmMins != null) return { mins: osrmMins, mode: 'car', approx: false };
+  return { ...estimateTransit(coord1, coord2), approx: true };
+}
+
+function estimateByModeKm(km, mode) {
+  switch (mode) {
+    case 'walk':    return Math.max(1, Math.round(km / 4.5 * 60 * 1.2));
+    case 'car':     return Math.max(1, Math.round(km * 1.4 / 25 * 60));
+    case 'transit': return Math.max(5, Math.round(km * 1.5 / 30 * 60) + 10);
+    default: return null;
+  }
+}
+
 async function fetchDayTransits(dayState) {
   const items = dayState.items;
   const pairs = [];
@@ -563,27 +604,26 @@ function renderTimelineItems(dayState, impact) {
       const nextCat  = getCategory(nextItem);
       const skipTransit = cat === 'transport' || nextCat === 'transport';
       if (!skipTransit && item.coord && nextItem.coord) {
-        // Use OSRM real data if cached, else haversine estimate
         const cacheKey = `day-${dayState.day}`;
-        const cached   = osrmCache[cacheKey];
-        const realMins = cached?.[`${itemIdx}-${itemIdx+1}`];
-        const isReal   = realMins != null;
-        const transit  = isReal
-          ? { mins: realMins, mode: 'car' }
-          : estimateTransit(item.coord, nextItem.coord);
+        const osrmMins = osrmCache[cacheKey]?.[`${itemIdx}-${itemIdx+1}`] ?? null;
+        const pairKey  = `d${dayState.day}_${item.id}_${nextItem.id}`;
+        const transit  = resolveTransit(pairKey, item.coord, nextItem.coord, osrmMins);
         if (transit) {
           const tCurr = parseTimeMin(item.time);
           const dur   = parseDurationMin(item.duration);
           const tNext = parseTimeMin(nextItem.time);
           const endWithTransit = (tCurr >= 0 && dur > 0) ? tCurr + dur + transit.mins : -1;
           const hasConflict = endWithTransit > 0 && tNext >= 0 && tNext < endWithTransit;
-          const icon  = transit.mode === 'walk' ? '🚶' : '🚕';
-          const approx = isReal ? '' : (lang === 'zh' ? '約' : '~');
-          const unit  = lang === 'zh' ? '分' : 'min';
-          const label = `${icon} ${approx}${transit.mins}${unit}`;
+          const icon   = TRANSIT_MODE_META[transit.mode]?.icon || '🚕';
+          const approx = transit.approx ? (lang === 'zh' ? '約' : '~') : '';
+          const unit   = lang === 'zh' ? '分' : 'min';
+          const hasOverride = !!getTransitModes()[pairKey];
           transitHTML = `
             <div class="tl-transit-connector${hasConflict ? ' tl-transit-conflict' : ''}">
-              <span class="tl-transit-badge">${label}</span>
+              <span class="tl-transit-badge tl-transit-tappable${hasOverride ? ' tl-transit-overridden' : ''}"
+                    onclick="openTransitSheet('${pairKey}',${item.coord[0]},${item.coord[1]},${nextItem.coord[0]},${nextItem.coord[1]})">
+                ${icon} ${approx}${transit.mins}${unit} ▾
+              </span>
               ${hasConflict ? `<span class="tl-transit-warn">${lang === 'zh' ? '⚠ 時間不足' : '⚠ Not enough time'}</span>` : ''}
             </div>`;
         }
@@ -723,6 +763,103 @@ function confirmDeleteDay(dayIdx) {
     clearDayItems(dayIdx);
     renderItinerary();
   }
+}
+
+// ── TRANSIT MODE SHEET ────────────────────────────────────
+let _tSheet = null; // { pairKey, coord1, coord2 }
+
+function openTransitSheet(pairKey, lat1, lng1, lat2, lng2) {
+  _tSheet = { pairKey, coord1: [lat1, lng1], coord2: [lat2, lng2] };
+  renderTransitSheet();
+}
+
+function renderTransitSheet() {
+  if (!_tSheet) return;
+  const { pairKey, coord1, coord2 } = _tSheet;
+  const modes     = getTransitModes();
+  const current   = modes[pairKey]?.mode || 'auto';
+  const customMins = modes[pairKey]?.customMins || 30;
+  const km        = haversineKm(coord1, coord2);
+  const unit      = lang === 'zh' ? '分' : 'min';
+
+  const options = ['auto', 'walk', 'car', 'transit', 'custom'];
+  let optHtml = options.map(key => {
+    const meta   = TRANSIT_MODE_META[key];
+    const isActive = current === key;
+    let estStr = '';
+    if (key !== 'auto' && key !== 'custom') {
+      const est = estimateByModeKm(km, key);
+      if (est) estStr = `<span class="ts-est">${lang === 'zh' ? '約' : '~'}${est}${unit}</span>`;
+    } else if (key === 'auto') {
+      const autoEst = Math.max(1, Math.round(km < 0.8 ? km / 4.5 * 60 * 1.2 : km * 1.4 / 25 * 60));
+      estStr = `<span class="ts-est">${lang === 'zh' ? '約' : '~'}${autoEst}${unit}</span>`;
+    }
+    return `
+      <button class="ts-option${isActive ? ' active' : ''}" onclick="selectTransitMode('${key}')">
+        <span class="ts-icon">${meta.icon}</span>
+        <span class="ts-label">${meta[lang] || meta.zh}</span>
+        ${estStr}
+      </button>`;
+  }).join('');
+
+  let customRow = '';
+  if (current === 'custom') {
+    customRow = `
+      <div class="ts-custom-row">
+        <input type="number" id="ts-custom-mins" class="ts-custom-input"
+               value="${customMins}" min="1" max="480">
+        <span class="ts-custom-unit">${unit}</span>
+      </div>`;
+  }
+
+  let transitMapLink = '';
+  if (current === 'transit') {
+    const gmUrl = `https://www.google.com/maps/dir/?api=1&origin=${coord1[0]},${coord1[1]}&destination=${coord2[0]},${coord2[1]}&travelmode=transit`;
+    transitMapLink = `<a href="${gmUrl}" target="_blank" rel="noopener" class="ts-gmap-btn">🗺 ${lang === 'zh' ? '查 Google Maps 大眾交通路線' : 'View Transit on Google Maps'}</a>`;
+  }
+
+  document.getElementById('transit-sheet').innerHTML = `
+    <div class="ts-title">${lang === 'zh' ? '選擇移動方式' : 'Select Transit Mode'}</div>
+    <div class="ts-options">${optHtml}</div>
+    ${customRow}
+    ${transitMapLink}
+    <div class="ts-btns">
+      <button class="ts-save" onclick="saveTransitMode()">${lang === 'zh' ? '✓ 確認' : '✓ Apply'}</button>
+      <button class="ts-cancel" onclick="closeTransitSheet()">${lang === 'zh' ? '取消' : 'Cancel'}</button>
+    </div>
+  `;
+  document.getElementById('transit-sheet-overlay').style.display = 'flex';
+}
+
+function selectTransitMode(mode) {
+  if (!_tSheet) return;
+  const modes = getTransitModes();
+  const { pairKey } = _tSheet;
+  if (mode === 'auto') {
+    delete modes[pairKey];
+  } else {
+    modes[pairKey] = { mode, customMins: modes[pairKey]?.customMins || 30 };
+  }
+  localStorage.setItem('hk_transit_modes', JSON.stringify(modes));
+  renderTransitSheet();
+}
+
+function saveTransitMode() {
+  if (!_tSheet) return;
+  const { pairKey } = _tSheet;
+  const modes = getTransitModes();
+  if (modes[pairKey]?.mode === 'custom') {
+    const mins = parseInt(document.getElementById('ts-custom-mins')?.value) || 30;
+    modes[pairKey] = { mode: 'custom', customMins: mins };
+    localStorage.setItem('hk_transit_modes', JSON.stringify(modes));
+  }
+  closeTransitSheet();
+  renderItinerary();
+}
+
+function closeTransitSheet() {
+  document.getElementById('transit-sheet-overlay').style.display = 'none';
+  _tSheet = null;
 }
 
 // ── COPY ITEM / COPY DAY ──────────────────────────────────
