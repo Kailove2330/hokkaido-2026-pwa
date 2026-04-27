@@ -2324,6 +2324,7 @@ nav#bottom-nav {
 #ai-panel {
   position: fixed;
   bottom: 0; left: 0; right: 0;
+  width: 100%; max-width: 100vw;
   height: 68vh; max-height: 540px;
   background: #fff; border-radius: 20px 20px 0 0;
   box-shadow: 0 -4px 24px rgba(0,0,0,.18);
@@ -2331,6 +2332,7 @@ nav#bottom-nav {
   display: none;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
 }
 #ai-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -2344,12 +2346,16 @@ nav#bottom-nav {
   color: #888; cursor: pointer; padding: 0 4px; line-height: 1;
 }
 #ai-messages {
-  flex: 1; overflow-y: auto; padding: 12px 14px;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 12px 14px;
   display: flex; flex-direction: column; gap: 8px;
+  box-sizing: border-box; width: 100%;
 }
 .ai-msg {
-  max-width: 85%; padding: 9px 12px; border-radius: 14px;
-  font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+  max-width: 82%; padding: 9px 12px; border-radius: 14px;
+  font-size: 13px; line-height: 1.55; white-space: pre-wrap;
+  word-break: break-word; overflow-wrap: anywhere;
+  box-sizing: border-box;
 }
 .ai-msg-user {
   align-self: flex-end;
@@ -2367,6 +2373,7 @@ nav#bottom-nav {
   border-top: 1px solid var(--border);
   background: #fafafa;
   flex-shrink: 0;
+  box-sizing: border-box; width: 100%;
 }
 #ai-input {
   flex: 1; border: 1.5px solid var(--border); border-radius: 10px;
