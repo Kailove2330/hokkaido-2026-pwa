@@ -10,7 +10,7 @@
   <title>北海道 2026</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="css/style.css?v=48" />
+  <link rel="stylesheet" href="css/style.css?v=49" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -84,6 +84,36 @@
       <div id="transit-sheet"></div>
     </div>
 
+    <!-- PIN Gate -->
+    <div id="pin-overlay">
+      <div id="pin-box">
+        <div id="pin-logo">🗺</div>
+        <div id="pin-title">北海道 2026</div>
+        <div id="pin-subtitle">請輸入密碼</div>
+        <input id="pin-input" type="password" inputmode="numeric" placeholder="••••••••" autocomplete="off" />
+        <button id="pin-submit" onclick="submitPin()">解鎖</button>
+        <div id="pin-error"></div>
+      </div>
+    </div>
+
+    <!-- AI Q&A Panel -->
+    <div id="ai-panel" style="display:none">
+      <div id="ai-header">
+        <span>✨ 北海道助理</span>
+        <button id="ai-close" onclick="closeAI()">✕</button>
+      </div>
+      <div id="ai-messages">
+        <div class="ai-msg ai-msg-bot">你好！有關北海道行程或旅遊的問題都可以問我。</div>
+      </div>
+      <div id="ai-footer">
+        <textarea id="ai-input" placeholder="問我任何問題..." rows="2"></textarea>
+        <button id="ai-send" onclick="sendAI()">送出</button>
+      </div>
+    </div>
+
+    <!-- AI Floating Button -->
+    <button id="ai-fab" onclick="toggleAI()">✨</button>
+
     <!-- Move-to-day bottom sheet -->
     <div id="move-sheet-overlay" style="display:none">
       <div id="move-sheet">
@@ -96,10 +126,10 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/data.js?v=48"></script>
-  <script src="js/state.js?v=48"></script>
-  <script src="js/impact.js?v=48"></script>
-  <script src="js/app.js?v=48"></script>
+  <script src="js/data.js?v=49"></script>
+  <script src="js/state.js?v=49"></script>
+  <script src="js/impact.js?v=49"></script>
+  <script src="js/app.js?v=49"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

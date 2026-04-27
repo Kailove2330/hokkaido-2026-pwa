@@ -1930,8 +1930,135 @@ function closeDetailSheet() {
   document.getElementById('detail-sheet-overlay').style.display = 'none';
 }
 
+// ── PIN GATE ───────────────────────────────────────────────
+const PIN_HASH    = 'cc0993cb09acb7cfffde863f748567afb13aa44b109f517a9584a966c2b62cc2';
+const PIN_KEY     = 'hk_pin_ok';
+const PIN_EXPIRY  = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function isPinUnlocked() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PIN_KEY) || 'null');
+    return saved && Date.now() - saved.ts < PIN_EXPIRY;
+  } catch { return false; }
+}
+
+function showPinGate() {
+  const overlay = document.getElementById('pin-overlay');
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('pin-input').focus(), 100);
+}
+
+function hidePinGate() {
+  document.getElementById('pin-overlay').style.display = 'none';
+}
+
+async function submitPin() {
+  const val = document.getElementById('pin-input').value.trim();
+  const err  = document.getElementById('pin-error');
+  if (!val) return;
+  const hash = await sha256(val);
+  if (hash === PIN_HASH) {
+    localStorage.setItem(PIN_KEY, JSON.stringify({ ts: Date.now() }));
+    hidePinGate();
+    initApp();
+  } else {
+    err.textContent = '密碼錯誤，請再試';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+  }
+}
+
+// ── GEMINI Q&A ─────────────────────────────────────────────
+const GEMINI_KEY = 'AIzaSyDkudsBInoZWfmEmn1VtNNm33azkKw7kyM';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+
+let aiOpen = false;
+let aiHistory = []; // {role, text}
+
+function buildTripContext() {
+  const state = getState();
+  const lines = state.map(d => {
+    const items = d.items.map(it =>
+      `  ${it.time} ${it.place.zh}${it.duration && it.duration !== '—' ? ' (' + it.duration + ')' : ''}${it.note?.zh ? ' — ' + it.note.zh : ''}`
+    ).join('\n');
+    return `Day ${d.day} (${d.date.zh} ${d.title.zh}):\n${items}`;
+  }).join('\n\n');
+  return `以下是我的北海道 2026 旅遊行程：\n\n${lines}`;
+}
+
+function toggleAI() {
+  aiOpen = !aiOpen;
+  document.getElementById('ai-panel').style.display = aiOpen ? 'flex' : 'none';
+  if (aiOpen) document.getElementById('ai-input').focus();
+}
+
+function closeAI() {
+  aiOpen = false;
+  document.getElementById('ai-panel').style.display = 'none';
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  appendAIMsg('user', msg);
+  appendAIMsg('loading', '');
+
+  const systemPrompt = `你是北海道旅遊助理，熟悉北海道景點、美食、交通、氣候。請用繁體中文回答，簡潔實用。\n\n${buildTripContext()}`;
+
+  const contents = [
+    { role: 'user', parts: [{ text: systemPrompt }] },
+    { role: 'model', parts: [{ text: '了解，我已掌握你的行程，有問題請問我。' }] },
+    ...aiHistory.map(h => ({ role: h.role === 'user' ? 'user' : 'model', parts: [{ text: h.text }] })),
+    { role: 'user', parts: [{ text: msg }] },
+  ];
+
+  try {
+    const res = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents }),
+    });
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '（無回應）';
+    removeLoadingMsg();
+    appendAIMsg('model', reply);
+    aiHistory.push({ role: 'user', text: msg });
+    aiHistory.push({ role: 'model', text: reply });
+  } catch {
+    removeLoadingMsg();
+    appendAIMsg('model', '⚠ 網路錯誤，請確認連線後再試。');
+  }
+}
+
+function appendAIMsg(role, text) {
+  const box = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  if (role === 'loading') {
+    div.className = 'ai-msg ai-msg-bot ai-loading';
+    div.id = 'ai-loading-msg';
+    div.textContent = '...';
+  } else {
+    div.className = `ai-msg ${role === 'user' ? 'ai-msg-user' : 'ai-msg-bot'}`;
+    div.textContent = text;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function removeLoadingMsg() {
+  document.getElementById('ai-loading-msg')?.remove();
+}
+
 // ── INIT ───────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   document.getElementById('lang-toggle').addEventListener('click', () => {
     setLang(lang === 'zh' ? 'en' : 'zh');
   });
@@ -1943,6 +2070,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === e.currentTarget) closeEditSheet();
   });
 
+  // AI input — Enter to send
+  document.getElementById('ai-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); }
+  });
+
   document.querySelectorAll('.page')[0].classList.add('active');
   renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // PIN gate on load
+  document.getElementById('pin-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitPin();
+  });
+
+  if (isPinUnlocked()) {
+    hidePinGate();
+    initApp();
+  } else {
+    showPinGate();
+  }
 });
