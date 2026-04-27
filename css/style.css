@@ -2371,7 +2371,7 @@ main.ai-mode {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 12px 14px;
+  padding: 12px 14px 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
