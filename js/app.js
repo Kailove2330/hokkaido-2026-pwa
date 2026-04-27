@@ -1975,7 +1975,7 @@ async function submitPin() {
 
 // ── GEMINI Q&A ─────────────────────────────────────────────
 const GEMINI_KEY = 'AIzaSyDkudsBInoZWfmEmn1VtNNm33azkKw7kyM';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
 
 let aiOpen = false;
 let aiHistory = []; // {role, text}
@@ -1994,12 +1994,14 @@ function buildTripContext() {
 function toggleAI() {
   aiOpen = !aiOpen;
   document.getElementById('ai-panel').style.display = aiOpen ? 'flex' : 'none';
-  if (aiOpen) document.getElementById('ai-input').focus();
+  document.getElementById('ai-fab').style.display   = aiOpen ? 'none' : 'flex';
+  if (aiOpen) setTimeout(() => document.getElementById('ai-input').focus(), 150);
 }
 
 function closeAI() {
   aiOpen = false;
   document.getElementById('ai-panel').style.display = 'none';
+  document.getElementById('ai-fab').style.display   = 'flex';
 }
 
 async function sendAI() {
