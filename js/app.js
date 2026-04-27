@@ -2026,15 +2026,41 @@ async function sendAI() {
     const res = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents }),
+      body: JSON.stringify({
+        contents,
+        generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_ONLY_HIGH' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_ONLY_HIGH' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
+        ],
+      }),
     });
     const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '（無回應）';
+
+    // API-level error (e.g. wrong model name, quota exceeded)
+    if (data.error) {
+      removeLoadingMsg();
+      appendAIMsg('model', `⚠ API 錯誤：${data.error.message}`);
+      return;
+    }
+
+    const candidate = data.candidates?.[0];
+    const reply = candidate?.content?.parts?.[0]?.text;
+
+    if (!reply) {
+      const reason = candidate?.finishReason || 'UNKNOWN';
+      removeLoadingMsg();
+      appendAIMsg('model', `⚠ 回應被封鎖（${reason}）。請換個方式問，例如：「函館朝市哪些攤位賣帝王蟹比較實惠？」`);
+      return;
+    }
+
     removeLoadingMsg();
     appendAIMsg('model', reply);
     aiHistory.push({ role: 'user', text: msg });
     aiHistory.push({ role: 'model', text: reply });
-  } catch {
+  } catch (e) {
     removeLoadingMsg();
     appendAIMsg('model', '⚠ 網路錯誤，請確認連線後再試。');
   }
