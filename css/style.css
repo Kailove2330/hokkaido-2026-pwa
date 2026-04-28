@@ -1427,6 +1427,29 @@ nav#bottom-nav {
   text-decoration: none;
   margin-bottom: 10px;
 }
+.ts-ai-section {
+  margin-bottom: 10px;
+}
+.ts-ai-loading {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+.ts-ai-result {
+  background: #f0f4ff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #1a2744;
+  line-height: 1.6;
+}
+.ts-ai-err {
+  background: #fff0f0;
+  color: #c00;
+}
 .ts-btns {
   display: flex;
   gap: 8px;

@@ -869,7 +869,18 @@ function confirmDeleteDay(dayIdx) {
 let _tSheet = null; // { pairKey, coord1, coord2 }
 
 function openTransitSheet(pairKey, lat1, lng1, lat2, lng2) {
-  _tSheet = { pairKey, coord1: [lat1, lng1], coord2: [lat2, lng2] };
+  // Look up place names from state using pairKey format: d{day}_{id1}_{id2}
+  const parts = pairKey.split('_');
+  const id1 = parts[1], id2 = parts[2];
+  const st = getState();
+  let fromName = '', toName = '';
+  for (const d of st) {
+    const a = d.items.find(it => it.id === id1);
+    const b = d.items.find(it => it.id === id2);
+    if (a) fromName = a.place?.[lang] || a.place?.zh || '';
+    if (b) toName   = b.place?.[lang] || b.place?.zh || '';
+  }
+  _tSheet = { pairKey, coord1: [lat1, lng1], coord2: [lat2, lng2], fromName, toName };
   renderTransitSheet();
 }
 
@@ -912,23 +923,39 @@ function renderTransitSheet() {
       </div>`;
   }
 
-  let transitMapLink = '';
-  if (current === 'transit') {
-    const gmUrl = `https://www.google.com/maps/dir/?api=1&origin=${coord1[0]},${coord1[1]}&destination=${coord2[0]},${coord2[1]}&travelmode=transit`;
-    transitMapLink = `<a href="${gmUrl}" target="_blank" rel="noopener" class="ts-gmap-btn">🗺 ${lang === 'zh' ? '查 Google Maps 大眾交通路線' : 'View Transit on Google Maps'}</a>`;
-  }
+  // Build Google Maps deep links per mode
+  const { fromName, toName } = _tSheet;
+  const travelModeMap = { walk: 'walking', car: 'driving', transit: 'transit' };
+  const gmMode = travelModeMap[current] || 'driving';
+  const gmUrl = `https://www.google.com/maps/dir/?api=1&origin=${coord1[0]},${coord1[1]}&destination=${coord2[0]},${coord2[1]}&travelmode=${gmMode}`;
+  const gmBtn = current !== 'auto' && current !== 'custom'
+    ? `<a href="${gmUrl}" target="_blank" rel="noopener" class="ts-gmap-btn">🗺 ${lang === 'zh' ? 'Google Maps 導航' : 'Navigate in Google Maps'}</a>`
+    : '';
+
+  // AI advice section (shown for walk/transit/car)
+  const showAI = current !== 'auto' && current !== 'custom';
+  const aiSection = showAI
+    ? `<div class="ts-ai-section" id="ts-ai-box">
+        <div class="ts-ai-loading">${lang === 'zh' ? '⏳ 查詢路線建議中...' : '⏳ Getting route advice...'}</div>
+       </div>`
+    : '';
 
   document.getElementById('transit-sheet').innerHTML = `
     <div class="ts-title">${lang === 'zh' ? '選擇移動方式' : 'Select Transit Mode'}</div>
     <div class="ts-options">${optHtml}</div>
     ${customRow}
-    ${transitMapLink}
+    ${gmBtn}
+    ${aiSection}
     <div class="ts-btns">
       <button class="ts-save" onclick="saveTransitMode()">${lang === 'zh' ? '✓ 確認' : '✓ Apply'}</button>
       <button class="ts-cancel" onclick="closeTransitSheet()">${lang === 'zh' ? '取消' : 'Cancel'}</button>
     </div>
   `;
-  document.getElementById('transit-sheet-overlay').style.display = 'flex';
+
+  // Fetch AI advice if mode selected
+  if (showAI && fromName && toName) fetchMapAdvice(current, coord1, coord2, fromName, toName);
+
+document.getElementById('transit-sheet-overlay').style.display = 'flex';
 }
 
 function selectTransitMode(mode) {
@@ -960,6 +987,23 @@ function saveTransitMode() {
 function closeTransitSheet() {
   document.getElementById('transit-sheet-overlay').style.display = 'none';
   _tSheet = null;
+}
+
+// ── MAP GROUNDING — Transit AI Advice ─────────────────────
+async function fetchMapAdvice(mode, coord1, coord2, fromName, toName) {
+  const box = document.getElementById('ts-ai-box');
+  if (!box) return;
+  try {
+    const res = await fetch('https://hokkaido-map.m220uc.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fromName, toName, fromCoord: coord1, toCoord: coord2, mode, lang })
+    });
+    const data = await res.json();
+    if (box) box.innerHTML = `<div class="ts-ai-result">${renderMarkdown(data.text)}</div>`;
+  } catch (e) {
+    if (box) box.innerHTML = `<div class="ts-ai-result ts-ai-err">${lang === 'zh' ? '無法取得路線建議' : 'Could not get route advice'}</div>`;
+  }
 }
 
 // ── COPY ITEM / COPY DAY ──────────────────────────────────
