@@ -1194,7 +1194,7 @@ function openAllDaysMap() {
       });
       const label = `D${dayState.day} ${stop.place[lang]}`;
       L.marker(stop.coord, { icon }).addTo(leafletMap)
-        .bindTooltip(label, { permanent: false, direction: 'right', className: 'map-label' });
+        .bindTooltip(label, { permanent: true, direction: 'right', className: 'map-label', offset: [8, 0] });
     });
   });
 
