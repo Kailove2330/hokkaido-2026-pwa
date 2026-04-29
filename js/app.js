@@ -2181,15 +2181,33 @@ async function scanReceipt(base64, mimeType) {
     const data = await res.json();
     raw = data.text || '';
 
-    // Extract JSON — try multiple strategies
+    // Extract values — try full JSON first, then field-by-field regex fallback
     let parsed = null;
     try { parsed = JSON.parse(raw.trim()); } catch {}
     if (!parsed) {
       try {
-        const m = raw.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) ||
-                  raw.match(/(\{[\s\S]*?\})/);
+        const m = raw.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || raw.match(/(\{[\s\S]*?\})/);
         if (m) parsed = JSON.parse(m[1] || m[0]);
       } catch {}
+    }
+    // Regex fallback — works even if JSON is truncated
+    if (!parsed || parsed.amount == null) {
+      const amtM   = raw.match(/"(?:amount|twd)"\s*:\s*(\d+)/);
+      const jpyM   = raw.match(/"jpy"\s*:\s*(\d+)/);
+      const currM  = raw.match(/"currency"\s*:\s*"([^"]+)"/);
+      const nameM  = raw.match(/"name"\s*:\s*"([^"]+)"/);
+      const catM   = raw.match(/"category"\s*:\s*"([^"]+)"/);
+      if (amtM || jpyM) {
+        const twd_ = amtM ? parseInt(amtM[1]) : 0;
+        const jpy_ = jpyM ? parseInt(jpyM[1]) : 0;
+        const curr = currM?.[1]?.toUpperCase() || (jpy_ > 0 ? 'JPY' : 'TWD');
+        parsed = {
+          amount: curr === 'JPY' ? jpy_ : twd_,
+          currency: curr,
+          name: nameM?.[1] || '',
+          category: catM?.[1] || '其他',
+        };
+      }
     }
 
     if (parsed && parsed.amount != null) {
