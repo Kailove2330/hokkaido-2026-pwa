@@ -2159,8 +2159,11 @@ async function scanReceipt(base64, mimeType) {
   let raw = '';
   try {
     const prompt = `分析這張收據圖片，只回傳 JSON 不要其他文字：
-{"amount": 數字（只填最終應付總金額的數字）, "currency": "JPY或TWD", "name": "品項或店名（15字內）", "category": "餐飲/購物/交通/景點/住宿/其他選一個"}
-規則：amount 只填數字不加貨幣符號；currency 若是日元/¥/円填JPY，若是台幣/NT$/TWD填TWD。`;
+{"amount": 數字（最終應付總金額）, "currency": "JPY或TWD", "name": "店名（15字內）", "category": "餐飲/購物/交通/景點/住宿/其他選一個", "items": ["品名1 金額", "品名2 金額"]}
+規則：
+- amount 只填總金額數字，不加貨幣符號
+- currency：看收據上的貨幣符號，有¥或円或JPY一律填JPY；有NT$或NTD或TWD或新台幣一律填TWD
+- items：列出主要購買品項（最多8項），格式為"品名 金額"，省略折價券行；沒有明細則填[]`;
 
     const body = {
       vision: true,
@@ -2221,6 +2224,11 @@ async function scanReceipt(base64, mimeType) {
       if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
       const catEl = document.getElementById('exp-cat');
       if (catEl && parsed.category) catEl.value = parsed.category;
+      // Fill items into note field
+      const noteEl = document.getElementById('exp-note');
+      if (noteEl && parsed.items?.length) {
+        noteEl.value = parsed.items.join('、');
+      }
       // Show conversion hint
       const hintEl = document.getElementById('scan-jpy-hint');
       if (hintEl) {
