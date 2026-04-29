@@ -2180,6 +2180,9 @@ async function scanReceipt(base64, mimeType) {
     });
     const data = await res.json();
     raw = data.text || '';
+    if (!raw && (data.finish || data.error)) {
+      throw new Error(`Gemini: finish=${data.finish || ''} error=${JSON.stringify(data.error || '')}`);
+    }
 
     // Extract values — try full JSON first, then field-by-field regex fallback
     let parsed = null;
