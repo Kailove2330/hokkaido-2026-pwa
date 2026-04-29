@@ -2159,8 +2159,8 @@ async function scanReceipt(base64, mimeType) {
   let raw = '';
   try {
     const prompt = `分析這張收據圖片，只回傳 JSON 不要其他文字：
-{"jpy": 日元金額或0, "twd": 台幣金額（若是台幣收據直接填金額；若是日幣則乘0.22）, "name": "品項或店名（15字內）", "category": "餐飲/購物/交通/景點/住宿/其他選一個"}
-規則：只取最終應付總金額。若幣別是TWD/NT$則jpy=0、twd=金額。若幣別是JPY/¥則jpy=金額、twd=金額×0.22。`;
+{"amount": 數字（只填最終應付總金額的數字）, "currency": "JPY或TWD", "name": "品項或店名（15字內）", "category": "餐飲/購物/交通/景點/住宿/其他選一個"}
+規則：amount 只填數字不加貨幣符號；currency 若是日元/¥/円填JPY，若是台幣/NT$/TWD填TWD。`;
 
     const body = {
       vision: true,
@@ -2192,18 +2192,22 @@ async function scanReceipt(base64, mimeType) {
       } catch {}
     }
 
-    if (parsed && (parsed.jpy != null || parsed.twd != null || parsed.amount != null)) {
-      const jpy = Math.round(parsed.jpy || parsed.amount || 0);
-      const twd = parsed.twd ? Math.round(parsed.twd)
-                : jpy ? Math.round(jpy * JPY_TO_TWD)
-                : Math.round((parsed.amount || 0));
+    if (parsed && parsed.amount != null) {
+      const rawAmt = Math.round(parsed.amount || 0);
+      const isJPY = (parsed.currency || '').toUpperCase() === 'JPY';
+      const twd = isJPY ? Math.round(rawAmt * JPY_TO_TWD) : rawAmt;
       if (amtEl)  { amtEl.value  = twd; amtEl.disabled  = false; }
       if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
       const catEl = document.getElementById('exp-cat');
       if (catEl && parsed.category) catEl.value = parsed.category;
-      // Show JPY reference
+      // Show conversion hint
       const hintEl = document.getElementById('scan-jpy-hint');
-      if (hintEl && jpy) { hintEl.textContent = `日元原始金額：¥${jpy.toLocaleString()} → NT$${twd.toLocaleString()}`; hintEl.style.display = 'block'; }
+      if (hintEl) {
+        hintEl.textContent = isJPY
+          ? `¥${rawAmt.toLocaleString()} × 0.22 = NT$${twd.toLocaleString()}`
+          : `NT$${twd.toLocaleString()}（台幣）`;
+        hintEl.style.display = 'block';
+      }
     } else {
       throw new Error(`no amount in: ${raw.slice(0, 200)}`);
     }
