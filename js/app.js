@@ -2122,8 +2122,31 @@ function handleReceiptScan(input) {
   img.src = objectUrl;
 }
 
-// JPY → TWD fixed rate (update before trip if needed)
-const JPY_TO_TWD = 0.22;
+// JPY → TWD rate — live from frankfurter.app, fallback to cache or 0.22
+const JPY_TWD_FALLBACK = 0.22;
+let JPY_TO_TWD = (() => {
+  try {
+    const cached = JSON.parse(localStorage.getItem('hk_jpy_rate') || 'null');
+    if (cached?.rate) return cached.rate;
+  } catch {}
+  return JPY_TWD_FALLBACK;
+})();
+
+async function initJpyRate() {
+  try {
+    const cached = JSON.parse(localStorage.getItem('hk_jpy_rate') || 'null');
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    if (cached?.rate && cached?.ts && Date.now() - cached.ts < oneDayMs) return; // still fresh
+    const res = await fetch('https://api.frankfurter.app/latest?from=JPY&to=TWD');
+    if (!res.ok) return;
+    const data = await res.json();
+    const rate = data?.rates?.TWD;
+    if (!rate) return;
+    JPY_TO_TWD = rate;
+    localStorage.setItem('hk_jpy_rate', JSON.stringify({ rate, ts: Date.now() }));
+  } catch {}
+  // silently fail — offline or API down, keep current value
+}
 
 async function scanReceipt(base64, mimeType) {
   scanLoading = true;
@@ -2560,4 +2583,5 @@ function initApp() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initApp();
+  initJpyRate(); // fetch live JPY→TWD rate in background
 });
