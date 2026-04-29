@@ -1092,15 +1092,10 @@ function renderOverview() {
     `;
   } else {
     // ── AI chat view ──────────────────────────────────────
-    const usage     = getAIUsage();
-    const remaining = 20 - usage.count;
-    const disabled  = remaining <= 0 ? 'disabled' : '';
-    const usageColor = remaining <= 5 ? '#dc2626' : remaining <= 10 ? '#d97706' : '#6366f1';
     html += `
       <div class="ai-in-ov">
         <div class="ai-usage-bar">
           <span>${lang === 'zh' ? '北海道助理' : 'AI Assistant'}</span>
-          <span class="ai-usage-count" style="color:${usageColor}">${lang === 'zh' ? `剩餘 ${remaining}/20 次` : `${remaining}/20 left`}</span>
         </div>
         <div id="ai-messages" class="ai-messages-ov">${renderAIHistory()}</div>
         <div id="ai-footer">
@@ -1111,8 +1106,8 @@ function renderOverview() {
             <button class="ai-chip" onclick="quickAsk('transport')">🚆 ${lang === 'zh' ? '交通' : 'Transit'}</button>
           </div>
           <div id="ai-input-row">
-            <textarea id="ai-input" placeholder="${lang === 'zh' ? '問我任何問題...' : 'Ask me anything...'}" rows="2" ${disabled}></textarea>
-            <button id="ai-send" onclick="sendAI()" ${disabled}>${lang === 'zh' ? '送出' : 'Send'}</button>
+            <textarea id="ai-input" placeholder="${lang === 'zh' ? '問我任何問題...' : 'Ask me anything...'}" rows="2"></textarea>
+            <button id="ai-send" onclick="sendAI()">${lang === 'zh' ? '送出' : 'Send'}</button>
           </div>
         </div>
       </div>
@@ -2369,26 +2364,11 @@ const GEMINI_URL = 'https://hokkaido-gemini.m220uc.workers.dev';
 
 let aiHistory = []; // {role, text}
 
-// ── AI usage counter (20/day) ──────────────────────────────
-function getAIUsage() {
-  try {
-    const s = JSON.parse(localStorage.getItem('hk_ai_usage') || '{}');
-    const today = new Date().toISOString().slice(0, 10);
-    if (s.date !== today) return { date: today, count: 0 };
-    return s;
-  } catch { return { date: new Date().toISOString().slice(0, 10), count: 0 }; }
-}
-function incrementAIUsage() {
-  const u = getAIUsage();
-  u.count++;
-  localStorage.setItem('hk_ai_usage', JSON.stringify(u));
-}
-
 // ── Render history from aiHistory array ────────────────────
 function renderAIHistory() {
   const greeting = lang === 'zh'
-    ? '你好！有關北海道行程或旅遊的問題都可以問我。每日 20 次免費額度，用在最有價值的問題上。'
-    : 'Hi! Ask me anything about your Hokkaido trip. 20 free queries per day.';
+    ? '你好！有關北海道行程或旅遊的問題都可以問我。'
+    : 'Hi! Ask me anything about your Hokkaido trip.';
   const greetingHtml = `<div class="ai-msg ai-msg-bot">${greeting}</div>`;
   if (aiHistory.length === 0) return greetingHtml;
   return greetingHtml + aiHistory.map(h => {
@@ -2470,29 +2450,11 @@ function quickAsk(type) {
 }
 
 async function sendAI() {
-  const usage = getAIUsage();
-  if (usage.count >= 20) {
-    appendAIMsg('model', lang === 'zh' ? '今日 20 次額度已用完，明天再來問我吧！' : 'Daily limit of 20 reached. Come back tomorrow!');
-    return;
-  }
   const input = document.getElementById('ai-input');
   if (!input) return;
   const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
-  incrementAIUsage();
-  // refresh usage counter in UI
-  const countEl = document.querySelector('.ai-usage-count');
-  if (countEl) {
-    const rem = 20 - getAIUsage().count;
-    const color = rem <= 5 ? '#dc2626' : rem <= 10 ? '#d97706' : '#6366f1';
-    countEl.textContent = lang === 'zh' ? `剩餘 ${rem}/20 次` : `${rem}/20 left`;
-    countEl.style.color = color;
-    if (rem <= 0) {
-      document.getElementById('ai-input')?.setAttribute('disabled', '');
-      document.getElementById('ai-send')?.setAttribute('disabled', '');
-    }
-  }
 
   appendAIMsg('user', msg);
   appendAIMsg('loading', '');
