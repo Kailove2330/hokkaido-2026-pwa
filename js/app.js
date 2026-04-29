@@ -2158,9 +2158,9 @@ async function scanReceipt(base64, mimeType) {
 
   let raw = '';
   try {
-    const prompt = `你是收據辨識助手。請分析這張收據圖片，提取資訊後只回傳 JSON（不要 markdown、不要說明文字）：
-{"jpy": 數字（日元總金額，只取最終應付金額）, "twd": 數字（換算台幣，匯率0.22）, "name": "購買地點或主要品項（繁體中文，15字內）", "category": "從這裡選一個：餐飲/購物/交通/景點/住宿/其他"}
-若看不清楚金額，jpy填0。`;
+    const prompt = `分析這張收據圖片，只回傳 JSON 不要其他文字：
+{"jpy": 日元金額或0, "twd": 台幣金額（若是台幣收據直接填金額；若是日幣則乘0.22）, "name": "品項或店名（15字內）", "category": "餐飲/購物/交通/景點/住宿/其他選一個"}
+規則：只取最終應付總金額。若幣別是TWD/NT$則jpy=0、twd=金額。若幣別是JPY/¥則jpy=金額、twd=金額×0.22。`;
 
     const body = {
       vision: true,
@@ -2181,13 +2181,22 @@ async function scanReceipt(base64, mimeType) {
     const data = await res.json();
     raw = data.text || '';
 
-    // Extract JSON — try strict match first, then greedy
-    const match = raw.match(/\{[^{}]*\}/) || raw.match(/\{[\s\S]*\}/);
-    const parsed = match ? JSON.parse(match[0]) : null;
+    // Extract JSON — try multiple strategies
+    let parsed = null;
+    try { parsed = JSON.parse(raw.trim()); } catch {}
+    if (!parsed) {
+      try {
+        const m = raw.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) ||
+                  raw.match(/(\{[\s\S]*?\})/);
+        if (m) parsed = JSON.parse(m[1] || m[0]);
+      } catch {}
+    }
 
-    if (parsed && (parsed.jpy !== undefined || parsed.twd !== undefined)) {
-      const jpy = Math.round(parsed.jpy || 0);
-      const twd = parsed.twd ? Math.round(parsed.twd) : Math.round(jpy * JPY_TO_TWD);
+    if (parsed && (parsed.jpy != null || parsed.twd != null || parsed.amount != null)) {
+      const jpy = Math.round(parsed.jpy || parsed.amount || 0);
+      const twd = parsed.twd ? Math.round(parsed.twd)
+                : jpy ? Math.round(jpy * JPY_TO_TWD)
+                : Math.round((parsed.amount || 0));
       if (amtEl)  { amtEl.value  = twd; amtEl.disabled  = false; }
       if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
       const catEl = document.getElementById('exp-cat');
