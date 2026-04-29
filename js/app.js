@@ -869,9 +869,11 @@ function confirmDeleteDay(dayIdx) {
 let _tSheet = null; // { pairKey, coord1, coord2 }
 
 function openTransitSheet(pairKey, lat1, lng1, lat2, lng2) {
-  // Look up place names from state using pairKey format: d{day}_{id1}_{id2}
-  const parts = pairKey.split('_');
-  const id1 = parts[1], id2 = parts[2];
+  // pairKey format: d{day}_d{day}_{idx}_d{day}_{idx}
+  // item IDs follow pattern d\d+_\d+, so use regex to extract both IDs
+  const match = pairKey.match(/^d\d+_(d\d+_\d+)_(d\d+_\d+)$/);
+  const id1 = match ? match[1] : '';
+  const id2 = match ? match[2] : '';
   const st = getState();
   let fromName = '', toName = '';
   for (const d of st) {
@@ -977,8 +979,11 @@ function saveTransitMode() {
     modes[pairKey] = { mode: 'custom', customMins: mins };
     localStorage.setItem('hk_transit_modes', JSON.stringify(modes));
   }
+  const main = document.querySelector('main');
+  const scrollPos = main ? main.scrollTop : 0;
   closeTransitSheet();
   renderItinerary();
+  if (main) main.scrollTop = scrollPos;
 }
 
 function closeTransitSheet() {
