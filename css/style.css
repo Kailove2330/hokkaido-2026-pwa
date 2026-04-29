@@ -2584,17 +2584,28 @@ main.ai-mode {
 .exp-row-del:active { background: #fee2e2; color: #dc2626; }
 
 /* Add expense button */
-.exp-add-btn {
+.exp-fab-row {
   position: fixed;
   bottom: calc(var(--tab-h) + var(--safe-bottom) + 12px);
   left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; z-index: 10;
+}
+.exp-add-btn {
   background: var(--teal); color: #fff;
-  border: none; border-radius: 50px; padding: 12px 28px;
+  border: none; border-radius: 50px; padding: 12px 24px;
   font-size: 15px; font-weight: 700; cursor: pointer;
   box-shadow: 0 4px 16px rgba(42,122,140,.4);
-  z-index: 10; white-space: nowrap;
+  white-space: nowrap;
 }
 .exp-add-btn:active { opacity: .85; }
+.exp-scan-btn {
+  background: #fff; color: var(--teal);
+  border: 2px solid var(--teal); border-radius: 50px; padding: 12px 20px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(42,122,140,.2);
+  white-space: nowrap;
+}
+.exp-scan-btn:active { opacity: .85; }
 
 /* Extra padding so list items aren't hidden under the fixed button */
 .exp-list { padding-bottom: 72px; }

@@ -2097,8 +2097,85 @@ function renderExpenses() {
     ${catBarHtml ? `<div class="exp-cat-section">${catBarHtml}</div>` : ''}
     ${formHtml}
     <div class="exp-list">${listHtml}</div>
-    ${!expFormOpen ? `<button class="exp-add-btn" onclick="openExpForm()">＋ ${isZh ? '新增支出' : 'Add expense'}</button>` : ''}
+    ${!expFormOpen ? `
+      <div class="exp-fab-row">
+        <button class="exp-add-btn" onclick="openExpForm()">＋ ${isZh ? '新增支出' : 'Add'}</button>
+        <button class="exp-scan-btn" onclick="document.getElementById('receipt-input').click()">📷 ${isZh ? '掃收據' : 'Scan'}</button>
+      </div>
+      <input type="file" id="receipt-input" accept="image/*" capture="environment" style="display:none" onchange="handleReceiptScan(this)">
+    ` : ''}
   `;
+}
+
+// ── RECEIPT SCANNING ───────────────────────────────────────
+let scanLoading = false;
+
+function handleReceiptScan(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  input.value = '';
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+    await scanReceipt(base64, mimeType);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function scanReceipt(base64, mimeType) {
+  scanLoading = true;
+  expFormOpen = true;
+  expEditId = null;
+  renderExpenses();
+
+  // Show scanning state in the form
+  const amtEl = document.getElementById('exp-amount');
+  const nameEl = document.getElementById('exp-name');
+  if (amtEl) { amtEl.placeholder = lang === 'zh' ? '解析中...' : 'Scanning...'; amtEl.disabled = true; }
+  if (nameEl) { nameEl.placeholder = lang === 'zh' ? '解析中...' : 'Scanning...'; nameEl.disabled = true; }
+
+  try {
+    const prompt = lang === 'zh'
+      ? '這是一張日本收據。請提取以下資訊並以JSON回答（只回JSON，不要其他文字）：{"amount": 數字（日元總金額）, "name": "購買項目簡短名稱", "category": "類別（從：餐飲/購物/交通/景點/住宿/其他 選一個）"}'
+      : 'This is a Japanese receipt. Extract info and reply ONLY with JSON: {"amount": number (JPY total), "name": "short item description", "category": "one of: 餐飲/購物/交通/景點/住宿/其他"}';
+
+    const body = {
+      vision: true,
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inlineData: { mimeType, data: base64 } },
+        ],
+      }],
+    };
+
+    const res = await fetch('https://hokkaido-gemini.m220uc.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    const raw = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Parse JSON from response
+    const match = raw.match(/\{[\s\S]*\}/);
+    const parsed = match ? JSON.parse(match[0]) : null;
+
+    if (parsed && parsed.amount) {
+      if (amtEl) { amtEl.value = parsed.amount; amtEl.disabled = false; }
+      if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
+      const catEl = document.getElementById('exp-cat');
+      if (catEl && parsed.category) catEl.value = parsed.category;
+    } else {
+      throw new Error('parse failed');
+    }
+  } catch {
+    if (amtEl) { amtEl.placeholder = '0'; amtEl.disabled = false; }
+    if (nameEl) { nameEl.placeholder = lang === 'zh' ? '例：拉麵' : 'e.g. Ramen'; nameEl.disabled = false; }
+    alert(lang === 'zh' ? '無法識別收據，請手動輸入' : 'Could not read receipt, please enter manually');
+  }
+  scanLoading = false;
 }
 
 // ── PLACE DETAIL SHEET ─────────────────────────────────
