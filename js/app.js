@@ -2114,13 +2114,22 @@ function handleReceiptScan(input) {
   const file = input.files?.[0];
   if (!file) return;
   input.value = '';
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const base64 = e.target.result.split(',')[1];
-    const mimeType = file.type || 'image/jpeg';
-    await scanReceipt(base64, mimeType);
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.onload = async () => {
+    URL.revokeObjectURL(objectUrl);
+    // Resize to max 1024px and convert to JPEG
+    const MAX = 1024;
+    const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+    const canvas = document.createElement('canvas');
+    canvas.width  = Math.round(img.width  * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const base64 = dataUrl.split(',')[1];
+    await scanReceipt(base64, 'image/jpeg');
   };
-  reader.readAsDataURL(file);
+  img.src = objectUrl;
 }
 
 async function scanReceipt(base64, mimeType) {
@@ -2143,6 +2152,7 @@ async function scanReceipt(base64, mimeType) {
     const body = {
       vision: true,
       contents: [{
+        role: 'user',
         parts: [
           { text: prompt },
           { inlineData: { mimeType, data: base64 } },
