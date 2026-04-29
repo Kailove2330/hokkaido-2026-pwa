@@ -2018,7 +2018,7 @@ function renderExpenses() {
       <span class="exp-cat-icon">${c.icon}</span>
       <span class="exp-cat-name">${isZh ? c.id : c.en}</span>
       <div class="exp-cat-bar-wrap"><div class="exp-cat-bar" style="width:${pct}%"></div></div>
-      <span class="exp-cat-amt">¥${catTotals[c.id].toLocaleString()}</span>
+      <span class="exp-cat-amt">NT$${catTotals[c.id].toLocaleString()}</span>
     </div>`;
   }).join('');
 
@@ -2027,9 +2027,16 @@ function renderExpenses() {
   const editing = expEditId ? expenses.find(e => e.id === expEditId) : null;
   const formHtml = expFormOpen ? `
     <div class="exp-form" onclick="event.stopPropagation()">
-      <div class="exp-form-title">${isZh ? (expEditId ? '編輯支出' : '新增支出') : (expEditId ? 'Edit Expense' : 'Add Expense')}</div>
+      <div class="exp-form-title">
+        ${isZh ? (expEditId ? '編輯支出' : '新增支出') : (expEditId ? 'Edit Expense' : 'Add Expense')}
+        ${!expEditId ? `<button class="exp-rescan-btn" onclick="document.getElementById('receipt-input2').click()">📷 重新掃描</button>
+        <input type="file" id="receipt-input2" accept="image/*" capture="environment" style="display:none" onchange="handleReceiptScan(this)">` : ''}
+      </div>
+      <div id="scan-indicator" style="display:none;text-align:center;padding:8px;font-size:13px;color:var(--teal)">⏳ 辨識中，請稍候...</div>
+      <div id="scan-error" style="display:none;background:#fff0f0;border-radius:8px;padding:8px 10px;font-size:12px;color:#c00;margin-bottom:8px"></div>
+      <div id="scan-jpy-hint" style="display:none;background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--teal);margin-bottom:8px"></div>
       <div class="exp-form-row">
-        <label>${isZh ? '金額（円）' : 'Amount (¥)'}</label>
+        <label>${isZh ? '金額（台幣 NT$）' : 'Amount (NT$)'}</label>
         <input id="exp-amount" type="number" min="0" placeholder="0" value="${editing?.amount || ''}">
       </div>
       <div class="exp-form-row">
@@ -2073,7 +2080,7 @@ function renderExpenses() {
                 <span class="exp-row-name">${e.name || (isZh ? catInfo.id : catInfo.en)}${isSouvenir ? ' <span class="exp-src-tag">伴手禮</span>' : ''}</span>
                 ${e.note ? `<span class="exp-row-note">${e.note}</span>` : ''}
               </div>
-              <span class="exp-row-amt">¥${(e.amount || 0).toLocaleString()}</span>
+              <span class="exp-row-amt">NT$${(e.amount || 0).toLocaleString()}</span>
               <button class="exp-row-del" onclick="event.stopPropagation();deleteExpense('${e.id}')">✕</button>
             </div>
           `;
@@ -2082,7 +2089,7 @@ function renderExpenses() {
           <div class="exp-day-group">
             <div class="exp-day-header">
               <span class="exp-day-label">${dateKey}</span>
-              <span class="exp-day-total">¥${dayTotal.toLocaleString()}</span>
+              <span class="exp-day-total">NT$${dayTotal.toLocaleString()}</span>
             </div>
             ${rows}
           </div>
@@ -2091,8 +2098,8 @@ function renderExpenses() {
 
   container.innerHTML = `
     <div class="exp-header">
-      <div class="exp-total-label">${isZh ? '總花費' : 'Total spent'}</div>
-      <div class="exp-total-amount">¥${total.toLocaleString()}</div>
+      <div class="exp-total-label">${isZh ? '總花費（台幣）' : 'Total spent (NT$)'}</div>
+      <div class="exp-total-amount">NT$${total.toLocaleString()}</div>
     </div>
     ${catBarHtml ? `<div class="exp-cat-section">${catBarHtml}</div>` : ''}
     ${formHtml}
@@ -2132,22 +2139,28 @@ function handleReceiptScan(input) {
   img.src = objectUrl;
 }
 
+// JPY → TWD fixed rate (update before trip if needed)
+const JPY_TO_TWD = 0.22;
+
 async function scanReceipt(base64, mimeType) {
   scanLoading = true;
   expFormOpen = true;
   expEditId = null;
   renderExpenses();
 
-  // Show scanning state in the form
-  const amtEl = document.getElementById('exp-amount');
+  // Show scanning indicator
+  const scanIndicator = document.getElementById('scan-indicator');
+  if (scanIndicator) scanIndicator.style.display = 'block';
+  const amtEl  = document.getElementById('exp-amount');
   const nameEl = document.getElementById('exp-name');
-  if (amtEl) { amtEl.placeholder = lang === 'zh' ? '解析中...' : 'Scanning...'; amtEl.disabled = true; }
-  if (nameEl) { nameEl.placeholder = lang === 'zh' ? '解析中...' : 'Scanning...'; nameEl.disabled = true; }
+  if (amtEl)  { amtEl.placeholder  = '辨識中...'; amtEl.disabled  = true; }
+  if (nameEl) { nameEl.placeholder = '辨識中...'; nameEl.disabled = true; }
 
+  let raw = '';
   try {
-    const prompt = lang === 'zh'
-      ? '這是一張日本收據。請提取以下資訊並以JSON回答（只回JSON，不要其他文字）：{"amount": 數字（日元總金額）, "name": "購買項目簡短名稱", "category": "類別（從：餐飲/購物/交通/景點/住宿/其他 選一個）"}'
-      : 'This is a Japanese receipt. Extract info and reply ONLY with JSON: {"amount": number (JPY total), "name": "short item description", "category": "one of: 餐飲/購物/交通/景點/住宿/其他"}';
+    const prompt = `你是收據辨識助手。請分析這張收據圖片，提取資訊後只回傳 JSON（不要 markdown、不要說明文字）：
+{"jpy": 數字（日元總金額，只取最終應付金額）, "twd": 數字（換算台幣，匯率0.22）, "name": "購買地點或主要品項（繁體中文，15字內）", "category": "從這裡選一個：餐飲/購物/交通/景點/住宿/其他"}
+若看不清楚金額，jpy填0。`;
 
     const body = {
       vision: true,
@@ -2166,25 +2179,36 @@ async function scanReceipt(base64, mimeType) {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    const raw = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    raw = data.text || '';
 
-    // Parse JSON from response
-    const match = raw.match(/\{[\s\S]*\}/);
+    // Extract JSON — try strict match first, then greedy
+    const match = raw.match(/\{[^{}]*\}/) || raw.match(/\{[\s\S]*\}/);
     const parsed = match ? JSON.parse(match[0]) : null;
 
-    if (parsed && parsed.amount) {
-      if (amtEl) { amtEl.value = parsed.amount; amtEl.disabled = false; }
+    if (parsed && (parsed.jpy !== undefined || parsed.twd !== undefined)) {
+      const jpy = Math.round(parsed.jpy || 0);
+      const twd = parsed.twd ? Math.round(parsed.twd) : Math.round(jpy * JPY_TO_TWD);
+      if (amtEl)  { amtEl.value  = twd; amtEl.disabled  = false; }
       if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
       const catEl = document.getElementById('exp-cat');
       if (catEl && parsed.category) catEl.value = parsed.category;
+      // Show JPY reference
+      const hintEl = document.getElementById('scan-jpy-hint');
+      if (hintEl && jpy) { hintEl.textContent = `日元原始金額：¥${jpy.toLocaleString()} → NT$${twd.toLocaleString()}`; hintEl.style.display = 'block'; }
     } else {
-      throw new Error('parse failed');
+      throw new Error(`no amount in: ${raw.slice(0, 200)}`);
     }
-  } catch {
-    if (amtEl) { amtEl.placeholder = '0'; amtEl.disabled = false; }
-    if (nameEl) { nameEl.placeholder = lang === 'zh' ? '例：拉麵' : 'e.g. Ramen'; nameEl.disabled = false; }
-    alert(lang === 'zh' ? '無法識別收據，請手動輸入' : 'Could not read receipt, please enter manually');
+  } catch (err) {
+    if (amtEl)  { amtEl.placeholder  = '0'; amtEl.disabled  = false; }
+    if (nameEl) { nameEl.placeholder = '例：拉麵'; nameEl.disabled = false; }
+    // Show error + raw response for debugging
+    const errEl = document.getElementById('scan-error');
+    if (errEl) {
+      errEl.innerHTML = `辨識失敗，請手動輸入或重新掃描<br><small style="color:#aaa">${err.message}</small>`;
+      errEl.style.display = 'block';
+    }
   }
+  if (scanIndicator) scanIndicator.style.display = 'none';
   scanLoading = false;
 }
 
