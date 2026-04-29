@@ -932,11 +932,11 @@ function renderTransitSheet() {
     ? `<a href="${gmUrl}" target="_blank" rel="noopener" class="ts-gmap-btn">🗺 ${lang === 'zh' ? 'Google Maps 導航' : 'Navigate in Google Maps'}</a>`
     : '';
 
-  // AI advice section (shown for walk/transit/car)
+  // AI advice section (shown for walk/transit/car) — manual trigger
   const showAI = current !== 'auto' && current !== 'custom';
-  const aiSection = showAI
+  const aiSection = showAI && fromName && toName
     ? `<div class="ts-ai-section" id="ts-ai-box">
-        <div class="ts-ai-loading">${lang === 'zh' ? '⏳ 查詢路線建議中...' : '⏳ Getting route advice...'}</div>
+        <button class="ts-ai-btn" onclick="triggerMapAdvice()">🤖 ${lang === 'zh' ? '查詢 AI 路線建議' : 'Get AI route advice'}</button>
        </div>`
     : '';
 
@@ -952,10 +952,6 @@ function renderTransitSheet() {
     </div>
   `;
 
-  // Fetch AI advice if mode selected
-  if (showAI && fromName && toName) fetchMapAdvice(current, coord1, coord2, fromName, toName);
-
-document.getElementById('transit-sheet-overlay').style.display = 'flex';
 }
 
 function selectTransitMode(mode) {
@@ -990,19 +986,38 @@ function closeTransitSheet() {
 }
 
 // ── MAP GROUNDING — Transit AI Advice ─────────────────────
+function triggerMapAdvice() {
+  if (!_tSheet) return;
+  const { coord1, coord2, fromName, toName, pairKey } = _tSheet;
+  const modes = getTransitModes();
+  const current = modes[pairKey]?.mode || 'auto';
+  const box = document.getElementById('ts-ai-box');
+  if (box) box.innerHTML = `<div class="ts-ai-loading">${lang === 'zh' ? '⏳ 查詢路線建議中...' : '⏳ Getting advice...'}</div>`;
+  fetchMapAdvice(current, coord1, coord2, fromName, toName);
+}
+
 async function fetchMapAdvice(mode, coord1, coord2, fromName, toName) {
   const box = document.getElementById('ts-ai-box');
   if (!box) return;
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20000);
     const res = await fetch('https://hokkaido-map.m220uc.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fromName, toName, fromCoord: coord1, toCoord: coord2, mode, lang })
+      body: JSON.stringify({ fromName, toName, fromCoord: coord1, toCoord: coord2, mode, lang }),
+      signal: controller.signal,
     });
+    clearTimeout(timer);
     const data = await res.json();
-    if (box) box.innerHTML = `<div class="ts-ai-result">${renderMarkdown(data.text)}</div>`;
+    const text = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const current = document.getElementById('ts-ai-box');
+    if (current) current.innerHTML = text
+      ? `<div class="ts-ai-result">${renderMarkdown(text)}</div>`
+      : `<div class="ts-ai-result ts-ai-err">${lang === 'zh' ? '未取得建議，請稍後再試' : 'No advice returned'}</div>`;
   } catch (e) {
-    if (box) box.innerHTML = `<div class="ts-ai-result ts-ai-err">${lang === 'zh' ? '無法取得路線建議' : 'Could not get route advice'}</div>`;
+    const current = document.getElementById('ts-ai-box');
+    if (current) current.innerHTML = `<div class="ts-ai-result ts-ai-err">${lang === 'zh' ? '查詢逾時，請再試一次' : 'Request timed out, please retry'}</div>`;
   }
 }
 

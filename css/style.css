@@ -1450,6 +1450,13 @@ nav#bottom-nav {
   background: #fff0f0;
   color: #c00;
 }
+.ts-ai-btn {
+  width: 100%; padding: 10px;
+  background: #f0f4ff; border: 1.5px solid #c7d2fe;
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  color: #4338ca; cursor: pointer;
+}
+.ts-ai-btn:active { opacity: .8; }
 .ts-btns {
   display: flex;
   gap: 8px;
