@@ -39,14 +39,13 @@ function renderAll() {
   renderItinerary();
   renderSouvenirs();
   renderTransport();
-  renderSOS();
   renderOverview();
 }
 
 // ── Tabs ───────────────────────────────────────────────────
 let activeTab = 0;
 function renderTabs() {
-  const icons = ['📋','🗓','🛍','🚆','🆘'];
+  const icons = ['📋','🗓','🛍','🚆','💰'];
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = T[lang].tabs.map((label, i) => `
     <button class="tab-btn ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -66,6 +65,7 @@ function switchTab(i) {
     document.querySelector('main')?.classList.remove('ai-mode');
     document.getElementById('page-overview')?.classList.remove('ai-mode');
   }
+  if (i === 4) renderExpenses();
   renderTabs();
   if (i === 0) renderOverview();
 }
@@ -1079,6 +1079,7 @@ function renderOverview() {
       <div class="overview-actions">
         <button class="ov-btn ov-map-btn" onclick="openAllDaysMap()">🗺 ${lang === 'zh' ? '地圖總覽' : 'Full Map'}</button>
         <button class="ov-btn ov-export-btn" onclick="exportTripText()">📋 ${lang === 'zh' ? '輸出文字' : 'Export'}</button>
+        <button class="ov-btn ov-sos-btn" onclick="openSOSModal()">🆘 SOS</button>
       </div>
     `;
     state.forEach((day, idx) => {
@@ -1856,7 +1857,7 @@ function toggleCheckItem(id) {
 function setSosTab(t) { sosTab = t; renderSOS(); }
 
 function renderSOS() {
-  const container = document.getElementById('page-sos');
+  const container = document.getElementById('sos-modal-body');
   const tab0 = lang === 'zh' ? '🆘 緊急' : '🆘 Emergency';
   const tab1 = lang === 'zh' ? '🗣 日文' : '🗣 Phrases';
 
@@ -1903,7 +1904,22 @@ function renderSOS() {
     });
   }
 
-  container.innerHTML = html;
+  if (container) container.innerHTML = html;
+}
+
+function openSOSModal() {
+  renderSOS();
+  document.getElementById('sos-modal').style.display = 'flex';
+}
+function closeSOSModal() {
+  document.getElementById('sos-modal').style.display = 'none';
+}
+
+// ── EXPENSES ───────────────────────────────────────────────
+function renderExpenses() {
+  const container = document.getElementById('page-expenses');
+  if (!container) return;
+  container.innerHTML = `<div class="expenses-placeholder" style="padding:40px 20px;text-align:center;color:#888">💰 記帳功能建置中</div>`;
 }
 
 // ── PLACE DETAIL SHEET ─────────────────────────────────

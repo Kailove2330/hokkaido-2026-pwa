@@ -25,7 +25,7 @@
       <section class="page" id="page-itinerary"></section>
       <section class="page" id="page-souvenirs"></section>
       <section class="page" id="page-transport"></section>
-      <section class="page" id="page-sos"></section>
+      <section class="page" id="page-expenses"></section>
     </main>
 
     <nav id="bottom-nav"></nav>
@@ -89,6 +89,17 @@
         <div id="move-sheet-title" class="move-sheet-title">移到哪一天？</div>
         <div id="move-day-list" class="move-day-list"></div>
         <button id="move-sheet-cancel" class="move-sheet-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- SOS Modal -->
+    <div id="sos-modal" style="display:none" onclick="if(event.target===this)closeSOSModal()">
+      <div id="sos-modal-inner">
+        <div id="sos-modal-header">
+          <span>🆘 ${lang === 'zh' ? '緊急資訊' : 'Emergency'}</span>
+          <button onclick="closeSOSModal()">✕</button>
+        </div>
+        <div id="sos-modal-body"></div>
       </div>
     </div>
   </div>
