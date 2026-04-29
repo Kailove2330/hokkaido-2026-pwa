@@ -2500,5 +2500,120 @@ main.ai-mode {
 
 /* ── Expenses page ─────────────────────────────────────── */
 #page-expenses {
-  padding: 16px;
+  padding: 0 0 80px;
+  overflow-y: auto;
+}
+
+/* Souvenir check circle */
+.sv-check {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #fff; transition: background .15s, border-color .15s;
+  background: #fff; cursor: pointer; margin-right: 4px;
+}
+.sv-check.sv-check-done {
+  background: #22c55e; border-color: #22c55e;
+}
+.sv-bought-meta {
+  display: inline-block; margin-top: 4px;
+  font-size: 12px; color: #22c55e; font-weight: 600;
+}
+
+/* Expense header totals */
+.exp-header {
+  background: var(--navy); color: #fff;
+  padding: 20px 20px 16px; text-align: center;
+}
+.exp-total-label { font-size: 13px; opacity: .75; margin-bottom: 4px; }
+.exp-total-amount { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+
+/* Category breakdown */
+.exp-cat-section {
+  background: #fff; padding: 14px 16px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.exp-cat-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px; font-size: 13px;
+}
+.exp-cat-icon { width: 18px; text-align: center; }
+.exp-cat-name { width: 36px; color: var(--muted); flex-shrink: 0; }
+.exp-cat-bar-wrap { flex: 1; background: #eee; border-radius: 4px; height: 8px; overflow: hidden; }
+.exp-cat-bar { height: 100%; background: var(--teal); border-radius: 4px; min-width: 4px; transition: width .4s; }
+.exp-cat-amt { width: 60px; text-align: right; font-weight: 600; color: var(--text); }
+
+/* Expense list */
+.exp-list { padding: 8px 16px; }
+.exp-empty { padding: 40px 0; text-align: center; color: var(--muted); font-size: 15px; }
+.exp-day-group { margin-bottom: 16px; }
+.exp-day-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 4px; font-size: 12px; font-weight: 700;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.exp-day-total { color: var(--text); }
+.exp-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 8px; border-radius: 10px; cursor: pointer;
+  transition: background .1s;
+}
+.exp-row:active { background: #f0f4ff; }
+.exp-row-icon { font-size: 20px; flex-shrink: 0; }
+.exp-row-info { flex: 1; min-width: 0; }
+.exp-row-name { font-size: 14px; font-weight: 600; display: block; }
+.exp-row-note { font-size: 12px; color: var(--muted); display: block; }
+.exp-src-tag {
+  font-size: 10px; background: #fef3c7; color: #92400e;
+  border-radius: 4px; padding: 1px 4px; font-weight: 600;
+}
+.exp-row-amt { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.exp-row-del {
+  background: none; border: none; font-size: 14px; color: #ccc;
+  cursor: pointer; padding: 4px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.exp-row-del:active { background: #fee2e2; color: #dc2626; }
+
+/* Add expense button */
+.exp-add-btn {
+  position: sticky; bottom: calc(var(--tab-h) + var(--safe-bottom) + 12px);
+  display: block; margin: 0 auto 16px;
+  background: var(--teal); color: #fff;
+  border: none; border-radius: 50px; padding: 12px 28px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(42,122,140,.4);
+}
+.exp-add-btn:active { opacity: .85; }
+
+/* Expense form */
+.exp-form {
+  background: #fff; margin: 12px 16px;
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+.exp-form-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text);
+}
+.exp-form-row {
+  display: flex; flex-direction: column; margin-bottom: 10px;
+}
+.exp-form-row label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.exp-form-row input, .exp-form-row select {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 15px; font-family: inherit; outline: none;
+  background: #fff;
+}
+.exp-form-row input:focus, .exp-form-row select:focus { border-color: var(--teal); }
+.exp-form-btns { display: flex; gap: 8px; margin-top: 12px; }
+.exp-btn-save {
+  flex: 1; background: var(--teal); color: #fff;
+  border: none; border-radius: 8px; padding: 10px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.exp-btn-cancel {
+  background: #f3f4f6; color: var(--muted);
+  border: none; border-radius: 8px; padding: 10px 16px;
+  font-size: 14px; cursor: pointer;
 }

@@ -1420,6 +1420,26 @@ function getSvPurchases() {
   catch { return {}; }
 }
 
+// ── EXPENSE HELPERS ────────────────────────────────────────
+function getExpenses() {
+  try { return JSON.parse(localStorage.getItem('hk_expenses') || '[]'); }
+  catch { return []; }
+}
+function saveExpenses(arr) {
+  localStorage.setItem('hk_expenses', JSON.stringify(arr));
+}
+function addExpense(entry) {
+  const arr = getExpenses();
+  // remove any existing entry with same source id to avoid duplicates
+  const filtered = arr.filter(e => !(e.source === 'souvenir' && e.sourceId === entry.sourceId));
+  filtered.push(entry);
+  saveExpenses(filtered);
+}
+function removeExpenseBySourceId(sourceId) {
+  const arr = getExpenses().filter(e => !(e.source === 'souvenir' && e.sourceId === sourceId));
+  saveExpenses(arr);
+}
+
 function setSvTab(t) {
   souvenirTab = t;
   svSubTab = 0;
@@ -1452,6 +1472,26 @@ function saveSvPurchase(id) {
   const purchases = getSvPurchases();
   purchases[id] = { qty, paid };
   localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
+
+  // Sync to expenses
+  const allItems = [...SOUVENIRS.flatMap(g => g.items), ...DRUGSTORE.flatMap(g => g.items)];
+  const item = allItems.find(i => i.id === id);
+  if (item && paid > 0) {
+    addExpense({
+      id: 'sv_' + id,
+      sourceId: id,
+      source: 'souvenir',
+      category: '購物',
+      name: item.name[lang] || item.name.zh,
+      amount: paid,
+      qty,
+      date: '',
+      note: '',
+    });
+  } else if (item) {
+    removeExpenseBySourceId(id);
+  }
+
   svOpenId = null;
   renderSouvenirs();
 }
@@ -1460,6 +1500,7 @@ function clearSvPurchase(id) {
   const purchases = getSvPurchases();
   delete purchases[id];
   localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
+  removeExpenseBySourceId(id);
   svOpenId = null;
   renderSouvenirs();
 }
@@ -1669,9 +1710,13 @@ function renderSouvenirs() {
     ].filter(Boolean).join('');
     const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
 
-    const statusHtml = isBought
-      ? `<div class="sv-status-bought">✓<br>${p.qty}件${p.paid ? '<br>' + p.paid.toLocaleString() + '円' : ''}</div>`
-      : `<div class="sv-status-add">＋</div>`;
+    const checkHtml = `<div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="event.stopPropagation();openSvCard('${item.id}')">
+      ${isBought ? '✓' : ''}
+    </div>`;
+
+    const paidLabel = isBought && p.paid
+      ? `<span class="sv-bought-meta">${p.qty}件 · ¥${p.paid.toLocaleString()}</span>`
+      : (isBought ? `<span class="sv-bought-meta">${p.qty}件</span>` : '');
 
     const formHtml = isOpen ? `
       <div class="sv-form" onclick="event.stopPropagation()">
@@ -1681,11 +1726,11 @@ function renderSouvenirs() {
         </div>
         <div class="sv-form-row">
           <label class="sv-form-label">${lang === 'zh' ? '花費（円）' : 'Paid (¥)'}</label>
-          <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" value="${p?.paid || ''}">
+          <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" placeholder="0" value="${p?.paid || ''}">
         </div>
         <div class="sv-form-btns">
           <button class="sv-btn-save" onclick="saveSvPurchase('${item.id}')">
-            ${lang === 'zh' ? '記錄' : 'Save'}
+            ${lang === 'zh' ? '✓ 標記已買' : '✓ Mark bought'}
           </button>
           <button class="sv-btn-cancel" onclick="closeSvCard(event)">
             ${lang === 'zh' ? '取消' : 'Cancel'}
@@ -1705,14 +1750,15 @@ function renderSouvenirs() {
       <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
            onclick="openSvCard('${item.id}')">
         <div class="sv-card-body">
+          ${checkHtml}
           ${thumbHtml}
           <div class="sv-card-left">
             <div class="sv-card-name">${item.name[lang]}</div>
             ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
             ${badges ? `<div class="badge-row">${badges}</div>` : ''}
             ${noteHtml}
+            ${paidLabel}
           </div>
-          <div class="sv-card-right">${statusHtml}</div>
         </div>
         ${formHtml}
       </div>
@@ -1916,10 +1962,165 @@ function closeSOSModal() {
 }
 
 // ── EXPENSES ───────────────────────────────────────────────
+// ── EXPENSE CATEGORIES ──────────────────────────────────────
+const EXP_CATS = [
+  { id: '餐飲', icon: '🍽', en: 'Food' },
+  { id: '購物', icon: '🛍', en: 'Shopping' },
+  { id: '交通', icon: '🚆', en: 'Transit' },
+  { id: '景點', icon: '🗺', en: 'Sights' },
+  { id: '住宿', icon: '🏨', en: 'Hotel' },
+  { id: '其他', icon: '📦', en: 'Other' },
+];
+
+let expFormOpen = false;
+let expEditId = null;
+
+function openExpForm(editId) {
+  expFormOpen = true;
+  expEditId = editId || null;
+  renderExpenses();
+  setTimeout(() => document.getElementById('exp-amount')?.focus(), 100);
+}
+function closeExpForm() {
+  expFormOpen = false;
+  expEditId = null;
+  renderExpenses();
+}
+function deleteExpense(id) {
+  const arr = getExpenses().filter(e => e.id !== id);
+  saveExpenses(arr);
+  renderExpenses();
+}
+function saveExpForm() {
+  const amount = parseInt(document.getElementById('exp-amount')?.value) || 0;
+  const name   = document.getElementById('exp-name')?.value.trim() || '';
+  const cat    = document.getElementById('exp-cat')?.value || '其他';
+  const date   = document.getElementById('exp-date')?.value || '';
+  const note   = document.getElementById('exp-note')?.value.trim() || '';
+  if (!amount) return;
+  const arr = getExpenses();
+  if (expEditId) {
+    const idx = arr.findIndex(e => e.id === expEditId);
+    if (idx >= 0) arr[idx] = { ...arr[idx], amount, name, category: cat, date, note };
+  } else {
+    arr.push({ id: 'e_' + Date.now(), source: 'manual', amount, name, category: cat, date, note, qty: 1 });
+  }
+  saveExpenses(arr);
+  closeExpForm();
+}
+
 function renderExpenses() {
   const container = document.getElementById('page-expenses');
   if (!container) return;
-  container.innerHTML = `<div class="expenses-placeholder" style="padding:40px 20px;text-align:center;color:#888">💰 記帳功能建置中</div>`;
+  const expenses = getExpenses();
+  const isZh = lang === 'zh';
+
+  const total = expenses.reduce((s, e) => s + (e.amount || 0), 0);
+  const catTotals = {};
+  EXP_CATS.forEach(c => { catTotals[c.id] = 0; });
+  expenses.forEach(e => {
+    const cat = e.category || '其他';
+    if (catTotals[cat] !== undefined) catTotals[cat] += e.amount || 0;
+    else catTotals['其他'] += e.amount || 0;
+  });
+
+  // Group by date
+  const byDate = {};
+  expenses.forEach(e => {
+    const key = e.date || (isZh ? '未指定日期' : 'No date');
+    if (!byDate[key]) byDate[key] = [];
+    byDate[key].push(e);
+  });
+  const sortedDates = Object.keys(byDate).sort();
+
+  // Category breakdown bar
+  const catBarHtml = EXP_CATS.filter(c => catTotals[c.id] > 0).map(c => {
+    const pct = total ? Math.round(catTotals[c.id] / total * 100) : 0;
+    return `<div class="exp-cat-row">
+      <span class="exp-cat-icon">${c.icon}</span>
+      <span class="exp-cat-name">${isZh ? c.id : c.en}</span>
+      <div class="exp-cat-bar-wrap"><div class="exp-cat-bar" style="width:${pct}%"></div></div>
+      <span class="exp-cat-amt">¥${catTotals[c.id].toLocaleString()}</span>
+    </div>`;
+  }).join('');
+
+  // Form
+  const today = new Date().toISOString().slice(0, 10);
+  const editing = expEditId ? expenses.find(e => e.id === expEditId) : null;
+  const formHtml = expFormOpen ? `
+    <div class="exp-form" onclick="event.stopPropagation()">
+      <div class="exp-form-title">${isZh ? (expEditId ? '編輯支出' : '新增支出') : (expEditId ? 'Edit Expense' : 'Add Expense')}</div>
+      <div class="exp-form-row">
+        <label>${isZh ? '金額（円）' : 'Amount (¥)'}</label>
+        <input id="exp-amount" type="number" min="0" placeholder="0" value="${editing?.amount || ''}">
+      </div>
+      <div class="exp-form-row">
+        <label>${isZh ? '項目名稱' : 'Item name'}</label>
+        <input id="exp-name" type="text" placeholder="${isZh ? '例：拉麵' : 'e.g. Ramen'}" value="${editing?.name || ''}">
+      </div>
+      <div class="exp-form-row">
+        <label>${isZh ? '類別' : 'Category'}</label>
+        <select id="exp-cat">
+          ${EXP_CATS.map(c => `<option value="${c.id}" ${(editing?.category || '其他') === c.id ? 'selected' : ''}>${c.icon} ${isZh ? c.id : c.en}</option>`).join('')}
+        </select>
+      </div>
+      <div class="exp-form-row">
+        <label>${isZh ? '日期' : 'Date'}</label>
+        <input id="exp-date" type="date" value="${editing?.date || today}">
+      </div>
+      <div class="exp-form-row">
+        <label>${isZh ? '備注' : 'Note'}</label>
+        <input id="exp-note" type="text" placeholder="${isZh ? '（選填）' : '(optional)'}" value="${editing?.note || ''}">
+      </div>
+      <div class="exp-form-btns">
+        <button class="exp-btn-save" onclick="saveExpForm()">${isZh ? '儲存' : 'Save'}</button>
+        <button class="exp-btn-cancel" onclick="closeExpForm()">${isZh ? '取消' : 'Cancel'}</button>
+      </div>
+    </div>
+  ` : '';
+
+  // Expense list by date
+  const listHtml = sortedDates.length === 0
+    ? `<div class="exp-empty">${isZh ? '還沒有支出記錄' : 'No expenses yet'}</div>`
+    : sortedDates.map(dateKey => {
+        const dayItems = byDate[dateKey];
+        const dayTotal = dayItems.reduce((s, e) => s + (e.amount || 0), 0);
+        const rows = dayItems.map(e => {
+          const catInfo = EXP_CATS.find(c => c.id === e.category) || EXP_CATS[5];
+          const isSouvenir = e.source === 'souvenir';
+          return `
+            <div class="exp-row" onclick="openExpForm('${e.id}')">
+              <span class="exp-row-icon">${catInfo.icon}</span>
+              <div class="exp-row-info">
+                <span class="exp-row-name">${e.name || (isZh ? catInfo.id : catInfo.en)}${isSouvenir ? ' <span class="exp-src-tag">伴手禮</span>' : ''}</span>
+                ${e.note ? `<span class="exp-row-note">${e.note}</span>` : ''}
+              </div>
+              <span class="exp-row-amt">¥${(e.amount || 0).toLocaleString()}</span>
+              <button class="exp-row-del" onclick="event.stopPropagation();deleteExpense('${e.id}')">✕</button>
+            </div>
+          `;
+        }).join('');
+        return `
+          <div class="exp-day-group">
+            <div class="exp-day-header">
+              <span class="exp-day-label">${dateKey}</span>
+              <span class="exp-day-total">¥${dayTotal.toLocaleString()}</span>
+            </div>
+            ${rows}
+          </div>
+        `;
+      }).join('');
+
+  container.innerHTML = `
+    <div class="exp-header">
+      <div class="exp-total-label">${isZh ? '總花費' : 'Total spent'}</div>
+      <div class="exp-total-amount">¥${total.toLocaleString()}</div>
+    </div>
+    ${catBarHtml ? `<div class="exp-cat-section">${catBarHtml}</div>` : ''}
+    ${formHtml}
+    <div class="exp-list">${listHtml}</div>
+    ${!expFormOpen ? `<button class="exp-add-btn" onclick="openExpForm()">＋ ${isZh ? '新增支出' : 'Add expense'}</button>` : ''}
+  `;
 }
 
 // ── PLACE DETAIL SHEET ─────────────────────────────────
