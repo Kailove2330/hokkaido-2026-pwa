@@ -1928,6 +1928,35 @@ const EXP_CATS = [
 
 let expFormOpen = false;
 let expEditId = null;
+let expCurrency = 'TWD'; // 'TWD' or 'JPY' for manual entry
+
+function toggleExpCurrency() {
+  expCurrency = expCurrency === 'TWD' ? 'JPY' : 'TWD';
+  const isJpy = expCurrency === 'JPY';
+  const label = document.getElementById('exp-currency-label');
+  const btn   = document.getElementById('exp-currency-btn');
+  if (label) label.textContent = isJpy ? '金額（日圓 ¥）' : '金額（台幣 NT$）';
+  if (btn)   btn.textContent   = isJpy ? '¥ JPY' : 'NT$';
+}
+
+function toggleNoteExpand(el) {
+  const list = el.nextElementSibling;
+  if (!list) return;
+  const expanding = list.style.display === 'none';
+  list.style.display = expanding ? 'block' : 'none';
+  el.textContent = el.textContent.replace(expanding ? ' ▼' : ' ▲', expanding ? ' ▲' : ' ▼');
+}
+
+function renderNoteHtml(note) {
+  if (!note) return '';
+  const items = note.split('、').map(s => s.trim()).filter(Boolean);
+  if (items.length <= 1) return `<span class="exp-row-note">${note}</span>`;
+  const lis = items.map(s => `<li>${s}</li>`).join('');
+  return `<div class="exp-row-note-wrap">
+    <span class="exp-note-toggle" onclick="event.stopPropagation();toggleNoteExpand(this)">${items.length} 項明細 ▼</span>
+    <ul class="exp-note-list" style="display:none">${lis}</ul>
+  </div>`;
+}
 
 function openExpForm(editId) {
   expFormOpen = true;
@@ -1938,6 +1967,7 @@ function openExpForm(editId) {
 function closeExpForm() {
   expFormOpen = false;
   expEditId = null;
+  expCurrency = 'TWD';
   renderExpenses();
 }
 function deleteExpense(id) {
@@ -1946,19 +1976,25 @@ function deleteExpense(id) {
   renderExpenses();
 }
 function saveExpForm() {
-  const amount = parseInt(document.getElementById('exp-amount')?.value) || 0;
-  const name   = document.getElementById('exp-name')?.value.trim() || '';
-  const cat    = document.getElementById('exp-cat')?.value || '其他';
-  const date   = document.getElementById('exp-date')?.value || '';
-  const note   = document.getElementById('exp-note')?.value.trim() || '';
-  if (!amount) return;
+  const rawAmt  = parseInt(document.getElementById('exp-amount')?.value) || 0;
+  const isJpyIn = expCurrency === 'JPY';
+  const amount  = isJpyIn ? Math.round(rawAmt * JPY_TO_TWD) : rawAmt;
+  const name    = document.getElementById('exp-name')?.value.trim() || '';
+  const cat     = document.getElementById('exp-cat')?.value || '其他';
+  const date    = document.getElementById('exp-date')?.value || '';
+  const note    = document.getElementById('exp-note')?.value.trim() || '';
+  if (!rawAmt) return;
   const arr = getExpenses();
   if (expEditId) {
     const idx = arr.findIndex(e => e.id === expEditId);
-    if (idx >= 0) arr[idx] = { ...arr[idx], amount, name, category: cat, date, note };
+    if (idx >= 0) {
+      arr[idx] = { ...arr[idx], amount, name, category: cat, date, note };
+      if (isJpyIn) arr[idx].jpy = rawAmt; else delete arr[idx].jpy;
+    }
   } else {
     const entry = { id: 'e_' + Date.now(), source: 'manual', amount, name, category: cat, date, note, qty: 1 };
-    if (lastScanJpy > 0) entry.jpy = lastScanJpy;
+    if (isJpyIn) entry.jpy = rawAmt;
+    else if (lastScanJpy > 0) entry.jpy = lastScanJpy;
     arr.push(entry);
   }
   lastScanJpy = 0;
@@ -2015,8 +2051,11 @@ function renderExpenses() {
       <div id="scan-error" style="display:none;background:#fff0f0;border-radius:8px;padding:8px 10px;font-size:12px;color:#c00;margin-bottom:8px"></div>
       <div id="scan-jpy-hint" style="display:none;background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--teal);margin-bottom:8px"></div>
       <div class="exp-form-row">
-        <label>${isZh ? '金額（台幣 NT$）' : 'Amount (NT$)'}</label>
-        <input id="exp-amount" type="number" min="0" placeholder="0" value="${editing?.amount || ''}">
+        <label id="exp-currency-label">${isZh ? (expCurrency === 'JPY' ? '金額（日圓 ¥）' : '金額（台幣 NT$）') : 'Amount'}</label>
+        <div class="exp-amount-row">
+          <input id="exp-amount" type="number" min="0" placeholder="0" value="${editing?.amount || ''}">
+          <button id="exp-currency-btn" class="exp-currency-btn" onclick="event.stopPropagation();toggleExpCurrency()">${expCurrency === 'JPY' ? '¥ JPY' : 'NT$'}</button>
+        </div>
       </div>
       <div class="exp-form-row">
         <label>${isZh ? '項目名稱' : 'Item name'}</label>
@@ -2057,7 +2096,7 @@ function renderExpenses() {
               <span class="exp-row-icon">${catInfo.icon}</span>
               <div class="exp-row-info">
                 <span class="exp-row-name">${e.name || (isZh ? catInfo.id : catInfo.en)}${isSouvenir ? ' <span class="exp-src-tag">伴手禮</span>' : ''}</span>
-                ${e.note ? `<span class="exp-row-note">${e.note}</span>` : ''}
+                ${renderNoteHtml(e.note)}
               </div>
               <div class="exp-row-amt-col">
                 <span class="exp-row-amt">NT$${(e.amount || 0).toLocaleString()}</span>
