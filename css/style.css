@@ -2585,14 +2585,19 @@ main.ai-mode {
 
 /* Add expense button */
 .exp-add-btn {
-  position: sticky; bottom: calc(var(--tab-h) + var(--safe-bottom) + 12px);
-  display: block; margin: 0 auto 16px;
+  position: fixed;
+  bottom: calc(var(--tab-h) + var(--safe-bottom) + 12px);
+  left: 50%; transform: translateX(-50%);
   background: var(--teal); color: #fff;
   border: none; border-radius: 50px; padding: 12px 28px;
   font-size: 15px; font-weight: 700; cursor: pointer;
   box-shadow: 0 4px 16px rgba(42,122,140,.4);
+  z-index: 10; white-space: nowrap;
 }
 .exp-add-btn:active { opacity: .85; }
+
+/* Extra padding so list items aren't hidden under the fixed button */
+.exp-list { padding-bottom: 72px; }
 
 /* Expense form */
 .exp-form {

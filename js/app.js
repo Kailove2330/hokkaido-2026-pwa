@@ -952,6 +952,7 @@ function renderTransitSheet() {
     </div>
   `;
 
+  document.getElementById('transit-sheet-overlay').style.display = 'flex';
 }
 
 function selectTransitMode(mode) {
