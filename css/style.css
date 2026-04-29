@@ -2575,7 +2575,9 @@ main.ai-mode {
   font-size: 10px; background: #fef3c7; color: #92400e;
   border-radius: 4px; padding: 1px 4px; font-weight: 600;
 }
+.exp-row-amt-col { display: flex; flex-direction: column; align-items: flex-end; }
 .exp-row-amt { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.exp-row-jpy { font-size: 11px; color: #888; white-space: nowrap; }
 .exp-row-del {
   background: none; border: none; font-size: 14px; color: #ccc;
   cursor: pointer; padding: 4px; border-radius: 50%;

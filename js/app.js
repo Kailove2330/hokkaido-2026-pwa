@@ -1451,25 +1451,7 @@ function saveSvPurchase(id) {
   purchases[id] = { qty, paid };
   localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
 
-  // Sync to expenses
-  const allItems = [...SOUVENIRS.flatMap(g => g.items), ...DRUGSTORE.flatMap(g => g.items)];
-  const item = allItems.find(i => i.id === id);
-  if (item && paid > 0) {
-    addExpense({
-      id: 'sv_' + id,
-      sourceId: id,
-      source: 'souvenir',
-      category: '購物',
-      name: item.name[lang] || item.name.zh,
-      amount: paid,
-      qty,
-      date: '',
-      note: '',
-    });
-  } else if (item) {
-    removeExpenseBySourceId(id);
-  }
-
+  // (No expense sync — record purchases manually in 記帳 tab if needed)
   svOpenId = null;
   renderSouvenirs();
 }
@@ -1478,7 +1460,6 @@ function clearSvPurchase(id) {
   const purchases = getSvPurchases();
   delete purchases[id];
   localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
-  removeExpenseBySourceId(id);
   svOpenId = null;
   renderSouvenirs();
 }
@@ -1981,8 +1962,11 @@ function saveExpForm() {
     const idx = arr.findIndex(e => e.id === expEditId);
     if (idx >= 0) arr[idx] = { ...arr[idx], amount, name, category: cat, date, note };
   } else {
-    arr.push({ id: 'e_' + Date.now(), source: 'manual', amount, name, category: cat, date, note, qty: 1 });
+    const entry = { id: 'e_' + Date.now(), source: 'manual', amount, name, category: cat, date, note, qty: 1 };
+    if (lastScanJpy > 0) entry.jpy = lastScanJpy;
+    arr.push(entry);
   }
+  lastScanJpy = 0;
   saveExpenses(arr);
   closeExpForm();
 }
@@ -2080,7 +2064,10 @@ function renderExpenses() {
                 <span class="exp-row-name">${e.name || (isZh ? catInfo.id : catInfo.en)}${isSouvenir ? ' <span class="exp-src-tag">伴手禮</span>' : ''}</span>
                 ${e.note ? `<span class="exp-row-note">${e.note}</span>` : ''}
               </div>
-              <span class="exp-row-amt">NT$${(e.amount || 0).toLocaleString()}</span>
+              <div class="exp-row-amt-col">
+                <span class="exp-row-amt">NT$${(e.amount || 0).toLocaleString()}</span>
+                ${e.jpy ? `<span class="exp-row-jpy">¥${e.jpy.toLocaleString()}</span>` : ''}
+              </div>
               <button class="exp-row-del" onclick="event.stopPropagation();deleteExpense('${e.id}')">✕</button>
             </div>
           `;
@@ -2116,6 +2103,7 @@ function renderExpenses() {
 
 // ── RECEIPT SCANNING ───────────────────────────────────────
 let scanLoading = false;
+let lastScanJpy = 0; // store original JPY for current scan session
 
 function handleReceiptScan(input) {
   const file = input.files?.[0];
@@ -2163,7 +2151,8 @@ async function scanReceipt(base64, mimeType) {
 規則：
 - amount 只填總金額數字，不加貨幣符號
 - currency：看收據上的貨幣符號，有¥或円或JPY一律填JPY；有NT$或NTD或TWD或新台幣一律填TWD
-- items：列出主要購買品項（最多8項），格式為"品名 金額"，省略折價券行；沒有明細則填[]`;
+- items：列出主要購買品項（最多8項），格式為"品名 金額"，省略折價券行；沒有明細則填[]
+- 所有品項名稱若為日文，請翻譯成繁體中文（例：スイサイBCパウ→蘇薏皂洗顏粉）`;
 
     const body = {
       vision: true,
@@ -2220,6 +2209,7 @@ async function scanReceipt(base64, mimeType) {
       const rawAmt = Math.round(parsed.amount || 0);
       const isJPY = (parsed.currency || '').toUpperCase() === 'JPY';
       const twd = isJPY ? Math.round(rawAmt * JPY_TO_TWD) : rawAmt;
+      lastScanJpy = isJPY ? rawAmt : 0;
       if (amtEl)  { amtEl.value  = twd; amtEl.disabled  = false; }
       if (nameEl) { nameEl.value = parsed.name || ''; nameEl.disabled = false; }
       const catEl = document.getElementById('exp-cat');
