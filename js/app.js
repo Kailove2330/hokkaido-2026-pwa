@@ -2150,7 +2150,7 @@ async function scanReceipt(base64, mimeType) {
       }],
     };
 
-    const res = await fetch('https://hokkaido-gemini.m220uc.workers.dev', {
+    const res = await fetch('https://hokkaido-map.m220uc.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
