@@ -489,6 +489,22 @@ function cleanPlaceName(name) {
     .trim();
 }
 
+// DEV: warn about itinerary items missing PLACE_DETAIL
+(function checkMissingPlaceDetail() {
+  if (typeof DAYS === 'undefined' || typeof PLACE_DETAIL === 'undefined') return;
+  const skip = new Set(['transport', 'hotel']);
+  DAYS.forEach(day => {
+    day.items.forEach(item => {
+      const cat = getCategory(item);
+      if (skip.has(cat)) return;
+      const key = cleanPlaceName(item.place?.zh || '');
+      if (key && !PLACE_DETAIL[key]) {
+        console.warn(`[PWA] Missing PLACE_DETAIL for Day ${day.day}: "${key}" (from "${item.place?.zh}")`);
+      }
+    });
+  });
+})();
+
 function buildDayMapUrl(dayIdx) {
   const state = getState();
   const dayState = state[dayIdx];
@@ -2161,7 +2177,7 @@ function handleReceiptScan(input) {
   img.src = objectUrl;
 }
 
-// JPY → TWD rate — live from frankfurter.app, fallback to cache or 0.22
+// JPY → TWD rate — live from open.er-api.com, fallback to cache or 0.22
 const JPY_TWD_FALLBACK = 0.22;
 let JPY_TO_TWD = (() => {
   try {
@@ -2176,7 +2192,7 @@ async function initJpyRate() {
     const cached = JSON.parse(localStorage.getItem('hk_jpy_rate') || 'null');
     const oneDayMs = 24 * 60 * 60 * 1000;
     if (cached?.rate && cached?.ts && Date.now() - cached.ts < oneDayMs) return; // still fresh
-    const res = await fetch('https://api.frankfurter.app/latest?from=JPY&to=TWD');
+    const res = await fetch('https://open.er-api.com/v6/latest/JPY');
     if (!res.ok) return;
     const data = await res.json();
     const rate = data?.rates?.TWD;

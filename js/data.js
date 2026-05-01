@@ -80,7 +80,7 @@ const DAYS = [
       { time: '09:30', place: { zh: 'JR 札幌站出發 → 小樽', en: 'JR Sapporo → Otaru' }, duration: '50min', note: { zh: '至小樽約 750円（IC）', en: 'To Otaru ~¥750 (IC)' }, maps: 'https://maps.google.com/?q=Sapporo+Station', coord: [43.0687, 141.3506], warn: false },
       { time: '10:30', place: { zh: '⭐ 北一硝子 三號館（煤油燈咖啡廳）', en: '⭐ Kitaichi Glass No.3 (Kerosene Lamp Café)' }, duration: '90min', note: { zh: '禁閃光燈/腳架；手作玻璃杯 3,000–8,000円', en: 'No flash/tripod; handmade glass ¥3,000–8,000' }, maps: 'https://maps.google.com/?q=Kitaichi+Glass+No3+Otaru', coord: [43.1844, 140.9939], img: 'images/itinerary/kitaichi.jpg', warn: false },
       { time: '12:30', place: { zh: '🥩【午餐】Cafe BAAL（牛排飯）', en: '🥩 Lunch: Cafe BAAL (Steak Rice)' }, duration: '60min', note: { zh: '小樽車站旁；洋食牛排飯 1,500–2,500円', en: 'Near Otaru Station; western-style steak rice ¥1,500–2,500' }, maps: 'https://maps.google.com/?q=Cafe+BAAL+小樽', coord: [43.1880, 140.9966], warn: false },
-      { time: '14:30', place: { zh: '堺町通 + 小樽音樂盒堂 本館', en: 'Sakaimachi Street + Otaru Music Box Museum' }, duration: '60min', note: { zh: '音樂盒堂本館免費參觀；限定款 3,000円起', en: 'Music Box Museum free entry; limited editions from ¥3,000' }, maps: 'https://maps.google.com/?q=小樽オルゴール堂本館', coord: [43.1909, 140.9953], img: 'images/itinerary/orugoru.jpg', warn: false },
+      { time: '14:30', place: { zh: '小樽音樂盒堂 本館（堺町通）', en: 'Otaru Music Box Museum (Sakaimachi St)' }, duration: '60min', note: { zh: '音樂盒堂本館免費參觀；限定款 3,000円起', en: 'Music Box Museum free entry; limited editions from ¥3,000' }, maps: 'https://maps.google.com/?q=小樽オルゴール堂本館', coord: [43.1909, 140.9953], img: 'images/itinerary/orugoru.jpg', warn: false },
       { time: '15:30', place: { zh: '⭐ LeTAO 小樽總店（二樓內用現做雙層乳酪蛋糕）', en: '⭐ LeTAO Main Store (2F Fresh Double Fromage)' }, duration: '90min', note: { zh: '⚡ 停留 90 分；二樓現做雙層乳酪蛋糕 900円；附飲料套餐 1,400円', en: '⚡ Allow 90 min; 2F fresh Double Fromage ¥900; drink set ¥1,400' }, maps: 'https://maps.google.com/?q=LeTAO+Otaru', coord: [43.1866, 140.9932], img: 'images/itinerary/letao.jpg', warn: true },
       { time: '17:30', place: { zh: '⭐ 小樽運河夜景散步 → JR 返回札幌', en: '⭐ Otaru Canal Night Walk → JR Back to Sapporo' }, duration: '60min', note: { zh: '⚡ 黃金窗口 17:30–18:30（點燈最美）；JR 約 50 分返回', en: '⚡ Golden window 17:30–18:30 (lanterns lit); JR ~50 min back' }, maps: 'https://maps.google.com/?q=Otaru+Canal', coord: [43.1922, 140.9956], img: 'images/itinerary/otaru-canal.jpg', warn: true },
       { time: '18:30', place: { zh: '🍜【晚餐】Sumire 味噌拉麵（薄野店）', en: '🍜 Dinner: Sumire Miso Ramen (Susukino)' }, duration: '60min', note: { zh: '札幌三大味噌拉麵之一；奶油玉米系；1,200–1,500円', en: "One of Sapporo's top 3 miso ramen; butter corn style; ¥1,200–1,500" }, maps: 'https://maps.google.com/?q=すみれ+薄野+札幌', coord: [43.0521, 141.3565], warn: false },
@@ -175,11 +175,11 @@ const DAYS = [
     phase: 2,
     weatherCity: 'Toyako',
     items: [
-      { time: '07:00', place: { zh: '函館朝市早餐（烤蟹腳 + 奶油烤扇貝）', en: 'Hakodate Market Breakfast (Grilled Crab Legs + Butter Scallops)' }, duration: '60min', note: { zh: '⚡ 專攻現烤蟹腳（毛蟹）與奶油烤扇貝（帆立貝バター焼き）各 300–500円；避開生食區', en: '⚡ Target: grilled crab legs + butter scallops ¥300–500 each; avoid raw food' }, maps: 'https://maps.google.com/?q=Hakodate+Morning+Market', coord: [41.7755, 140.7274], warn: true },
+      { time: '07:00', place: { zh: '函館朝市（烤蟹腳 + 奶油烤扇貝）', en: 'Hakodate Morning Market (Crab Legs + Butter Scallops)' }, duration: '60min', note: { zh: '⚡ 專攻現烤蟹腳（毛蟹）與奶油烤扇貝（帆立貝バター焼き）各 300–500円；避開生食區', en: '⚡ Target: grilled crab legs + butter scallops ¥300–500 each; avoid raw food' }, maps: 'https://maps.google.com/?q=Hakodate+Morning+Market', coord: [41.7755, 140.7274], warn: true },
       { time: '08:00', place: { zh: '退房 → JR 函館站置物', en: 'Check-out → Station Lockers' }, duration: '20min', note: { zh: '400–800円/次', en: '¥400–800 per slot' }, maps: 'https://maps.google.com/?q=Hakodate+Station', coord: [41.7739, 140.7265], warn: false },
       { time: '09:48', place: { zh: 'JR 特急北斗號 出發（→ 洞爺站）', en: 'JR Hokuto → Toya Station' }, duration: '114min', note: { zh: '洞爺站下車；車資 ~4,000–5,000円', en: 'Exit at Toya; ~¥4,000–5,000' }, maps: null, warn: false },
       { time: '12:00', place: { zh: '抵達 JR 洞爺站', en: 'Arrive JR Toya Station' }, duration: '15min', note: null, maps: 'https://maps.google.com/?q=Toya+Station', coord: [42.6278, 140.8437], warn: false },
-      { time: '12:15', place: { zh: '⭐【戰術遠征】計程車 → 筒倉展望台 Silo（布丁 + 俯瞰洞爺湖）', en: '⭐ Taxi → Tsutsukura Observatory Silo (Pudding + Lake Panorama)' }, duration: '75min', note: { zh: '⚡ 車站搭計程車前往；買招牌布丁；從 Silo 俯瞰洞爺湖全景', en: '⚡ Taxi from station; buy signature pudding; panoramic Toya Lake view from Silo' }, maps: 'https://maps.google.com/?q=筒倉展望台', coord: [42.6067, 140.8017], warn: true },
+      { time: '12:15', place: { zh: '⭐ 筒倉展望台 Silo（布丁 + 洞爺湖俯瞰）', en: '⭐ Tsutsukura Observatory Silo (Pudding + Lake Panorama)' }, duration: '75min', note: { zh: '⚡ 車站搭計程車前往；買招牌布丁；從 Silo 俯瞰洞爺湖全景', en: '⚡ Taxi from station; buy signature pudding; panoramic Toya Lake view from Silo' }, maps: 'https://maps.google.com/?q=筒倉展望台', coord: [42.6067, 140.8017], warn: true },
       { time: '13:30', place: { zh: '🍵【午餐】岡田屋（白汁粉）', en: '🍵 Lunch: Okadaya (White Sweet Soup)' }, duration: '45min', note: { zh: '白玉白汁粉 600–900円；洞爺湖溫泉街名物', en: 'White mochi sweet soup ¥600–900; Toya onsen street specialty' }, maps: 'https://maps.google.com/?q=岡田屋+洞爺湖', coord: [42.6022, 140.7897], warn: false },
       { time: '14:00', place: { zh: '湖景 TOYA 乃之風渡假酒店 Check-in（進入全面留白）', en: 'Lake View Toya Nonokaze Resort Check-in (Full Rest Mode)' }, duration: '30min', note: { zh: '指定湖景側；湖景露天溫泉風呂', en: 'Request lake-view room; outdoor hot spring with lake view' }, maps: 'https://maps.google.com/?q=Lake+View+Toya+Nonokaze+Resort', coord: [42.5978, 140.7872], img: 'images/itinerary/toya-nonokaze.jpg', warn: false },
       { time: '18:30', place: { zh: '🍽️【晚餐】乃之風自助餐', en: '🍽️ Dinner: Nonokaze Buffet (included)' }, duration: '90min', note: { zh: '含於住宿；螃蟹 / 羊肉 / 海鮮 / 乳製品', en: 'Included in stay; crab, lamb, seafood, dairy' }, maps: null, warn: false },
@@ -615,6 +615,14 @@ const BUDGET = [
 // ── PLACE DETAIL (Approach B: keyed by cleanPlaceName result) ─
 // Keys must match what cleanPlaceName(item.place.zh) returns exactly.
 const PLACE_DETAIL = {
+  '狸小路': {
+    phone: '011-241-5125',
+    hours: { zh: '街道24H開放；各店約 10:00–20:00；MEGA唐吉訶德24H', en: 'Street open 24H; most stores 10:00–20:00; MEGA Don Quijote 24H' },
+    address: { zh: '札幌市中央区南2・3条西1–7丁目', en: 'Minami 2-3-jo Nishi 1-7, Chuo-ku, Sapporo' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: 'MEGA 唐吉訶德（24H 藥妝伴手禮）・各藥妝比價・商店街中段有狸神社可打卡', en: 'MEGA Don Quijote (24H drugstore) · drugstore price comparison · Tanuki shrine mid-street' },
+    link: 'https://tanukikoji.or.jp/',
+  },
   '成吉思汗達摩 5.5 店': {
     phone: '011-521-4804',
     hours: { zh: '每日 17:00–翌03:00', en: 'Daily 17:00–03:00+' },
@@ -642,6 +650,13 @@ const PLACE_DETAIL = {
       en: ['① Take JR to Otaru Station', '② Walk ~12 min along Sakaimachi-dori toward Minami-Otaru (LeTAO is 50m away)'],
     },
     link: 'https://www.kitaichiglass.co.jp/',
+  },
+  '小樽運河夜景散步': {
+    hours: { zh: '全天開放；煤氣燈點燈 18:00–24:00；⚡ 黃金窗口 17:30–18:30 最美', en: 'Open 24H; gas lamps lit 18:00–24:00; ⚡ golden hour 17:30–18:30' },
+    address: { zh: '小樽市港町5（淺草橋至中央橋段）', en: '5 Minatomachi, Otaru (Asakusa Bridge to Chuo Bridge)' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: '淺草橋角度最佳拍照點・煤氣燈步道散步・倉庫群夜間點燈至 22:30', en: 'Best photo angle from Asakusa Bridge · gas lamp walkway stroll · warehouses lit until 22:30' },
+    link: 'https://otaru.cc/',
   },
   '⭐ LeTAO 小樽總店': {
     phone: '0120-468-111',
@@ -701,6 +716,14 @@ const PLACE_DETAIL = {
     },
     link: 'https://www.hokkaidojingu.or.jp/',
   },
+  '大丸': {
+    phone: '050-1780-6000',
+    hours: { zh: '百貨樓層 10:00–20:00；8F 餐廳街 11:00–22:00', en: 'Store floors 10:00–20:00; 8F restaurant area 11:00–22:00' },
+    address: { zh: '札幌市中央区北5条西4丁目（JR 札幌站直結）', en: 'Kita 5-jo Nishi 4-chome, Chuo-ku (directly connected to JR Sapporo)' },
+    rating: { score: '4.5/5', source: 'Google Maps', stars: 5 },
+    recommend: { zh: 'B1F 伴手禮齊全（六花亭・北菓樓・LeTAO）・8F 寶可夢中心・退稅服務', en: 'B1F full souvenir lineup (Rokkatei, Kitakaro, LeTAO) · 8F Pokemon Center · tax-free counter' },
+    link: 'https://www.daimaru.co.jp/sapporo/',
+  },
   'GARAKU 湯咖哩': {
     phone: '011-233-5568',
     hours: { zh: '11:30–22:00（週三公休）', en: '11:30–22:00, closed Wed' },
@@ -733,6 +756,19 @@ const PLACE_DETAIL = {
     recommend: { zh: '中華風炸雞漢堡（チャイニーズチキンバーガー）580円', en: 'Chinese Chicken Burger ¥580' },
     link: 'https://luckypierrot.jp/',
   },
+  // ── Day 6 & 7 ──
+  '函館朝市': {
+    phone: '0138-22-7981',
+    hours: { zh: '05:00–14:00（各店不一；旺季部分攤位至 17:00）', en: '05:00–14:00 (varies by stall; some to 17:00 in peak season)' },
+    address: { zh: '函館市若松町9-19（JR 函館站斜對面）', en: '9-19 Wakamatsu-cho, Hakodate (diagonal from JR station)' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: '毛蟹直售 2,000–5,000円・帆立バター焼き 500円・海鮮丼（いくら・ウニ・蟹）1,500円起', en: 'Horsehair crab ¥2,000–5,000 · butter scallop ¥500 · seafood don from ¥1,500' },
+    access: {
+      zh: ['① JR 函館站出站後左轉，步行約 2 分鐘直達', '⚡ 05:00–08:00 食材最新鮮；09:00 後觀光客激增'],
+      en: ['① Turn left out of JR Hakodate Station, walk ~2 min', '⚡ Freshest 05:00–08:00; crowds surge after 09:00'],
+    },
+    link: 'https://www.hakodate-asaichi.com/',
+  },
   '村上海膽': {
     phone: '0138-22-6086',
     hours: { zh: '09:00–18:00（週三・週四公休）', en: '09:00–18:00, closed Wed & Thu' },
@@ -758,6 +794,14 @@ const PLACE_DETAIL = {
     link: 'https://tabelog.com/hokkaido/A0108/A010801/1003343/',
   },
   // ── Day 2 ──
+  '小樽音樂盒堂 本館': {
+    phone: '0134-22-1108',
+    hours: { zh: '09:00–18:00（旺季延長至 19:00）', en: '09:00–18:00 (peak season until 19:00)' },
+    address: { zh: '小樽市住吉町4-1（堺町通り）', en: '4-1 Sumiyoshi-cho, Otaru (Sakaimachi-dori)' },
+    rating: { score: '4.4/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: '大廳免費參觀・限定款音樂盒 3,000円起・工房手作體驗 2,200円', en: 'Main hall free entry · limited music boxes from ¥3,000 · hands-on workshop ¥2,200' },
+    link: 'https://www.otaru-orgel.co.jp/',
+  },
   'Cafe BAAL': {
     hours: { zh: '11:00–21:00（週三公休）', en: '11:00–21:00, closed Wed' },
     address: { zh: '小樽市稲穂2丁目（近小樽站）', en: 'Near Otaru Station, Inaho 2-chome' },
@@ -766,6 +810,18 @@ const PLACE_DETAIL = {
     link: 'https://tabelog.com/hokkaido/A0106/A010601/1052877/',
   },
   // ── Day 3 ──
+  '中島公園 / 豐平館': {
+    phone: '011-211-1951',
+    hours: { zh: '公園全日開放；豐平館 09:00–17:00（週一公休）', en: 'Park open all day; Hoheikan 09:00–17:00, closed Mon' },
+    address: { zh: '札幌市中央区中島公園1', en: '1 Nakajima Koen, Chuo-ku, Sapporo' },
+    rating: { score: '4.3/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: '豐平館（明治洋樓）300円・湖畔晨間散步免費・鴨子池拍照打卡', en: 'Hoheikan (Meiji Western hall) ¥300 · lakeside stroll free · duck pond photo spot' },
+    access: {
+      zh: ['① 地下鐵南北線至「中島公園」站', '② 步行約 3 分鐘即達公園正門'],
+      en: ['① Subway Namboku Line to "Nakajima Koen" station', '② Walk ~3 min to park main entrance'],
+    },
+    link: 'https://www.s-hoheikan.jp/',
+  },
   'とんかつ 檍': {
     hours: { zh: '11:30–22:00', en: '11:30–22:00' },
     address: { zh: '札幌市中央区南1条西5丁目', en: 'Minami 1-jo W5, Chuo-ku, Sapporo' },
@@ -876,6 +932,19 @@ const PLACE_DETAIL = {
       en: ['① Take JR Limited/Local Express to Noboribetsu Station (~20 min from Toya)', '② Take Donan Bus from station to Noboribetsu Onsen terminal (~10 min, ¥380)', '⚡ ~1–2 buses/hour — check schedule before departing'],
     },
     link: 'https://noboribetsu-spa.jp/',
+  },
+  // ── Day 7 ──
+  '筒倉展望台 Silo': {
+    phone: '0142-87-2221',
+    hours: { zh: '09:00–17:00（依季節調整；冬季可能縮短）', en: '09:00–17:00 (seasonal; may shorten in winter)' },
+    address: { zh: '虻田郡洞爺湖町成香2丁目', en: 'Naruka 2-chome, Toyako-cho, Abuta-gun' },
+    rating: { score: '4.0/5', source: 'Google Maps', stars: 4 },
+    recommend: { zh: '招牌布丁（限量・售完為止）・圓形穀倉建築 2F 俯瞰洞爺湖全景', en: 'Signature pudding (limited stock) · panoramic Toya Lake view from 2F of round silo' },
+    access: {
+      zh: ['① 從洞爺站或溫泉街搭計程車約 15 分（1,500–2,000円）', '⚡ 無公車直達；建議電話確認當日是否營業'],
+      en: ['① Taxi from Toya Station or onsen area ~15 min (¥1,500–2,000)', '⚡ No direct bus; call ahead to confirm they are open'],
+    },
+    link: 'https://maps.google.com/?q=筒倉展望台+洞爺湖',
   },
   // ── Day 9 ──
   '一幻拉麵': {
