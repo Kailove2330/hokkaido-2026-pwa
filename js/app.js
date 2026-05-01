@@ -1783,12 +1783,12 @@ function renderTransport() {
   const container = document.getElementById('page-transport');
 
   const tabs = lang === 'zh'
-    ? ['🚆 JR路線', '🚌 城市', '💴 預算']
-    : ['🚆 JR', '🚌 City', '💴 Budget'];
+    ? ['🚆 城際列車', '🏙 市區移動']
+    : ['🚆 Inter-City', '🏙 Local'];
 
   const introText = lang === 'zh'
-    ? '查詢城市間 JR 票價與時間、各城市當地交通方式、旅遊預算參考。'
-    : 'JR fares & travel times between cities, local transit by city, and budget reference.';
+    ? '各段城際交通的搭乘時間、車費與注意事項；以及各城市的市區移動方式。'
+    : 'Inter-city train details per segment, and local transit tips for each city.';
 
   let html = `
     <div class="tr-intro">${introText}</div>
@@ -1800,21 +1800,13 @@ function renderTransport() {
   `;
 
   if (transportTab === 0) {
-    // Journey overview strip
-    const cities = lang === 'zh'
-      ? ['台北', '札幌', '小樽', '函館', '洞爺湖', '登別', '新千歲', '台北']
-      : ['Taipei', 'Sapporo', 'Otaru', 'Hakodate', 'Lake Toya', 'Noboribetsu', 'New Chitose', 'Taipei'];
-    const stripHtml = cities.map((c, i) =>
-      `<span class="tr-city-chip">${c}</span>${i < cities.length - 1 ? '<span class="tr-chip-arrow">›</span>' : ''}`
-    ).join('');
-    html += `<div class="tr-journey-strip">${stripHtml}</div>`;
-
     TRANSPORT.jr.forEach(r => {
       const parts = r.route[lang].split(/\s*[→>]\s*/);
       const from  = parts[0] || '';
-      const to    = parts[1] || '';
+      const to    = parts.slice(1).join(' → ') || '';
       html += `
         <div class="tr-card">
+          ${r.day ? `<div class="tr-day-tag">📅 ${r.day[lang]}</div>` : ''}
           <div class="tr-route-row">
             <span class="tr-city">${from}</span>
             <span class="tr-arrow-line"><span class="tr-arrow-track"></span><span class="tr-arrow-head">›</span></span>
@@ -1831,8 +1823,8 @@ function renderTransport() {
       `;
     });
 
-  } else if (transportTab === 1) {
-    html += `<div class="section-title">🚌 ${lang === 'zh' ? '各城市交通' : 'Local Transit'}</div>`;
+  } else {
+    html += `<div class="section-title">🚌 ${lang === 'zh' ? '各城市移動方式' : 'Local Transit'}</div>`;
     TRANSPORT.local.forEach(l => {
       html += `
         <div class="tr-local-card">
@@ -1851,13 +1843,6 @@ function renderTransport() {
         </div>
       `;
     });
-
-  } else {
-    html += `<div class="card" style="margin:0 12px"><table class="budget-table">`;
-    BUDGET.forEach(b => {
-      html += `<tr class="${b.total ? 'total-row' : ''}"><td>${b.item[lang]}</td><td>${b.est}</td></tr>`;
-    });
-    html += `</table></div>`;
   }
 
   container.innerHTML = html;

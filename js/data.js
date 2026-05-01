@@ -406,12 +406,12 @@ const COUPONS = [
 // ── TRANSPORT ──────────────────────────────────────────────
 const TRANSPORT = {
   jr: [
-    { route: { zh: '新千歲機場 → 札幌', en: 'New Chitose → Sapporo' }, train: { zh: 'JR 快速機場線', en: 'JR Airport Rapid' }, time: '40分', fare: '1,150円', note: { zh: 'IC 卡可用', en: 'IC card OK' } },
-    { route: { zh: '札幌 → 小樽', en: 'Sapporo → Otaru' }, train: { zh: 'JR 函館本線', en: 'JR Hakodate Main' }, time: '40–50分', fare: '750円', note: { zh: 'IC 卡可用', en: 'IC card OK' } },
-    { route: { zh: '札幌 → 函館', en: 'Sapporo → Hakodate' }, train: { zh: '特急 北斗號', en: 'Limited Exp. Hokuto' }, time: '3.5時間', fare: '~9,000円', note: { zh: '全車指定席，D 席右側海景', en: 'All reserved; D-seat = sea view' } },
-    { route: { zh: '函館 → 洞爺', en: 'Hakodate → Toya' }, train: { zh: '特急 北斗號', en: 'Limited Exp. Hokuto' }, time: '1時間54分', fare: '~4,500円', note: { zh: '洞爺站下車', en: 'Exit at Toya Station' } },
-    { route: { zh: '洞爺 → 登別', en: 'Toya → Noboribetsu' }, train: { zh: 'JR 室蘭本線', en: 'JR Muroran Main' }, time: '約20分', fare: '~800円', note: { zh: '登別站轉巴士至溫泉街', en: 'Transfer to bus at Noboribetsu Station' } },
-    { route: { zh: '洞爺 → 南千歲', en: 'Toya → Minami-Chitose' }, train: { zh: '特急 北斗號', en: 'Limited Exp. Hokuto' }, time: '1時間30分', fare: '~4,500円', note: { zh: '南千歲換快速機場線', en: 'Transfer to Airport Rapid' } },
+    { route: { zh: '新千歲機場 → 札幌', en: 'New Chitose → Sapporo' }, train: { zh: 'JR 快速機場線', en: 'JR Airport Rapid' }, time: '40分', fare: '1,150円', day: { zh: 'Day 1 抵達當天', en: 'Day 1 Arrival' }, note: { zh: 'IC 卡可用', en: 'IC card OK' } },
+    { route: { zh: '札幌 → 小樽', en: 'Sapporo → Otaru' }, train: { zh: 'JR 函館本線', en: 'JR Hakodate Main' }, time: '40–50分', fare: '750円', day: { zh: 'Day 2', en: 'Day 2' }, note: { zh: 'IC 卡可用', en: 'IC card OK' } },
+    { route: { zh: '札幌 → 函館', en: 'Sapporo → Hakodate' }, train: { zh: '特急 北斗號', en: 'Limited Exp. Hokuto' }, time: '3.5時間', fare: '~9,000円', day: { zh: 'Day 5（5/18）', en: 'Day 5 (5/18)' }, note: { zh: '⚡ 全車指定席，需提前劃位；鎖定 D 席右側可覽內浦灣海景；車上可買便當', en: '⚡ All reserved seats — book in advance; D-seat (right side) = sea view; bento available on board' } },
+    { route: { zh: '函館 → 洞爺', en: 'Hakodate → Toya' }, train: { zh: '特急 北斗號', en: 'Limited Exp. Hokuto' }, time: '1時間54分', fare: '~4,500円', day: { zh: 'Day 7（5/20）', en: 'Day 7 (5/20)' }, note: { zh: '⚡ 全車指定席；洞爺站下車，站外搭計程車至湖畔', en: '⚡ All reserved; exit Toya Station, taxi to lakeside hotel' } },
+    { route: { zh: '洞爺 → 登別', en: 'Toya → Noboribetsu' }, train: { zh: 'JR 室蘭本線', en: 'JR Muroran Main' }, time: '約20分', fare: '~800円', day: { zh: 'Day 8（5/21）', en: 'Day 8 (5/21)' }, note: { zh: '登別站下車，轉道南バス至溫泉街（約10分，備硬幣）', en: 'Exit Noboribetsu Station, Donan Bus to onsen town (~10 min, coins needed)' } },
+    { route: { zh: '洞爺／登別 → 新千歲', en: 'Toya/Noboribetsu → New Chitose' }, train: { zh: '特急 北斗號 → 快速機場線', en: 'Limited Exp. Hokuto → Airport Rapid' }, time: '約2時間', fare: '~5,500円', day: { zh: 'Day 9（5/22）回程', en: 'Day 9 (5/22) Departure' }, note: { zh: '洞爺搭北斗→南千歲換快速機場線至新千歲；行李已寄倉，輕裝出發', en: 'Hokuto to Minami-Chitose, transfer to Airport Rapid; luggage already forwarded' } },
   ],
   local: [
     { city: { zh: '札幌', en: 'Sapporo' }, desc: { zh: '地下鉄 3 線（南北・東西・東豊）；Suica 可用；1 日券 830円', en: 'Subway 3 lines; Suica OK; 1-day pass ¥830' } },

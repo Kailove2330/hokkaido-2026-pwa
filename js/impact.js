@@ -69,7 +69,10 @@ function calculateImpact(dayState) {
       const tCurr = parseTimeMin(curr.time);
       const tNext = parseTimeMin(next.time);
       const dur = parseDurationMin(curr.duration);
-      if (tCurr >= 0 && tNext >= 0 && dur > 0) {
+      // Skip: eating/activity nested inside a long transport leg is intentional
+      const currIsTransport = /JR|特急|新幹線|express|shinkansen|搭車|乘車|飛機|航班|flight|巴士|bus|taxi|計程車|電車|tram|船|ferry|宅急便|物流|退房|check.?out|luggage|行李/i
+        .test((curr.place?.zh || '') + (curr.place?.en || ''));
+      if (tCurr >= 0 && tNext >= 0 && dur > 0 && !currIsTransport) {
         const end = tCurr + dur;
         if (tNext < end) {
           impact.conflicts.push({

@@ -2075,6 +2075,18 @@ nav#bottom-nav {
 }
 .sv-del-custom:active { color: #c00; }
 
+/* ── TRANSPORT day tag ─────────────────────────────── */
+.tr-day-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  background: #e8f6f8;
+  border-radius: 5px;
+  padding: 2px 7px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
 /* ── TRANSPORT intro ───────────────────────────────── */
 .tr-intro {
   font-size: 13px;
