@@ -47,7 +47,7 @@ body {
 header {
   background: var(--navy);
   color: #fff;
-  padding: 12px 16px 10px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -710,7 +710,21 @@ nav#bottom-nav {
   color: var(--warn);
   font-weight: 600;
   margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+.conflict-edit-btn {
+  background: var(--warn);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.conflict-edit-btn:active { opacity: .75; }
 
 .hours-warn {
   font-size: 11px;
@@ -2018,6 +2032,60 @@ nav#bottom-nav {
   font-size: 13px;
 }
 
+/* ── SOUVENIR custom add ───────────────────────────── */
+.sv-add-custom {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+.sv-add-input {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  background: #fff;
+}
+.sv-add-btn {
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  width: 38px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sv-add-btn:active { opacity: .75; }
+.sv-custom-tag {
+  font-size: 10px;
+  color: var(--teal);
+  background: #e8f6f8;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.sv-del-custom {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  align-self: center;
+}
+.sv-del-custom:active { color: #c00; }
+
+/* ── TRANSPORT intro ───────────────────────────────── */
+.tr-intro {
+  font-size: 13px;
+  color: var(--muted);
+  background: #f0f4f8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
 /* ── COUPON CARDS ────────────────────────────────────── */
 .coupon-intro {
   text-align: center;
@@ -2234,13 +2302,15 @@ nav#bottom-nav {
   margin-bottom: 12px;
 }
 .ov-btn {
+  flex: 1;
   border: none;
   border-radius: 10px;
-  padding: 8px 14px;
+  padding: 8px 10px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  text-align: center;
 }
 .ov-map-btn  { background: var(--navy); color: #fff; }
 .ov-map-btn:active  { background: #0f172a; }

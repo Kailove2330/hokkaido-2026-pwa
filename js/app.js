@@ -771,7 +771,7 @@ function renderTimelineItems(dayState, impact) {
             ${recommendText ? `<div class="tl-recommend">⭐ ${recommendText}</div>` : ''}
             ${item.duration && item.duration !== '—' ? `<div class="tl-duration">${item.duration}</div>` : ''}
             ${noteHTML ? `<div class="tl-note">${noteHTML}</div>` : ''}
-            ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'}</div>` : ''}
+            ${isConflict ? `<div class="conflict-warn">⏱ ${lang === 'zh' ? '時間可能衝突' : 'Possible conflict'} <button class="conflict-edit-btn" onclick="event.stopPropagation();editItem('${item.id}')">${lang === 'zh' ? '調整時間' : 'Edit time'}</button></div>` : ''}
             ${hoursConflict ? `<div class="hours-warn">${hoursConflict.msg} <button class="hours-ai-btn" onclick="event.stopPropagation();askAIConflict('${item.id}')">✨</button></div>` : ''}
             ${isMoved ? `<div class="moved-tag">${lang === 'zh' ? `從 Day ${item.originalDay} 移入` : `From Day ${item.originalDay}`}</div>` : ''}
             <div class="tl-actions">
@@ -1454,16 +1454,47 @@ function closeSvCard(e) {
 }
 
 function saveSvPurchase(id) {
-  const qtyEl  = document.getElementById('sv-qty-'  + id);
-  const paidEl = document.getElementById('sv-paid-' + id);
-  const qty  = parseInt(qtyEl?.value)  || 1;
-  const paid = parseInt(paidEl?.value) || 0;
   const purchases = getSvPurchases();
-  purchases[id] = { qty, paid };
+  purchases[id] = { bought: true };
   localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
-
-  // (No expense sync — record purchases manually in 記帳 tab if needed)
   svOpenId = null;
+  renderSouvenirs();
+}
+
+function toggleSvPurchase(id) {
+  const purchases = getSvPurchases();
+  if (purchases[id]) {
+    delete purchases[id];
+  } else {
+    purchases[id] = { bought: true };
+  }
+  localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
+  renderSouvenirs();
+}
+
+function addCustomSv() {
+  const input = document.getElementById('sv-custom-input');
+  const name = input?.value?.trim();
+  if (!name) return;
+  const customKey = `hk_sv_custom_${souvenirTab}`;
+  let customItems = [];
+  try { customItems = JSON.parse(localStorage.getItem(customKey) || '[]'); } catch {}
+  customItems.push(name);
+  localStorage.setItem(customKey, JSON.stringify(customItems));
+  renderSouvenirs();
+}
+
+function deleteCustomSv(tab, idx) {
+  const customKey = `hk_sv_custom_${tab}`;
+  let customItems = [];
+  try { customItems = JSON.parse(localStorage.getItem(customKey) || '[]'); } catch {}
+  customItems.splice(idx, 1);
+  localStorage.setItem(customKey, JSON.stringify(customItems));
+  // also clear purchase record for this custom item
+  const cid = `custom_${tab}_${idx}`;
+  const purchases = getSvPurchases();
+  delete purchases[cid];
+  localStorage.setItem('hk_sv_purchases', JSON.stringify(purchases));
   renderSouvenirs();
 }
 
@@ -1623,15 +1654,14 @@ function renderSouvenirs() {
     ...DRUGSTORE.flatMap(g => g.items),
   ];
   const totalBought = allItems.filter(i => purchases[i.id]).length;
-  const totalSpent  = allItems.reduce((s, i) => s + (purchases[i.id]?.paid || 0), 0);
 
   const dataset    = souvenirTab === 0 ? SOUVENIRS : (souvenirTab === 1 ? DRUGSTORE : null);
   const tab0Label  = lang === 'zh' ? '伴手禮' : 'Souvenirs';
   const tab1Label  = lang === 'zh' ? '藥妝' : 'Drugstore';
   const tab2Label  = lang === 'zh' ? '優惠券' : 'Coupons';
   const summaryTxt = lang === 'zh'
-    ? `已購 ${totalBought} 件｜花費 ${totalSpent.toLocaleString()} 円`
-    : `${totalBought} bought | ¥${totalSpent.toLocaleString()} spent`;
+    ? `已勾選 ${totalBought} 件`
+    : `${totalBought} checked`;
 
   // Guard svSubTab against out-of-range after tab switch
   const safeSubTab = dataset ? Math.min(svSubTab, dataset.length - 1) : 0;
@@ -1680,37 +1710,11 @@ function renderSouvenirs() {
     ].filter(Boolean).join('');
     const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
 
-    const checkHtml = `<div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="event.stopPropagation();openSvCard('${item.id}')">
+    const checkHtml = `<div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="event.stopPropagation();toggleSvPurchase('${item.id}')">
       ${isBought ? '✓' : ''}
     </div>`;
 
-    const paidLabel = isBought && p.paid
-      ? `<span class="sv-bought-meta">${p.qty}件 · ¥${p.paid.toLocaleString()}</span>`
-      : (isBought ? `<span class="sv-bought-meta">${p.qty}件</span>` : '');
-
-    const formHtml = isOpen ? `
-      <div class="sv-form" onclick="event.stopPropagation()">
-        <div class="sv-form-row">
-          <label class="sv-form-label">${lang === 'zh' ? '數量' : 'Qty'}</label>
-          <input class="sv-form-input" id="sv-qty-${item.id}" type="number" min="1" value="${p?.qty || 1}">
-        </div>
-        <div class="sv-form-row">
-          <label class="sv-form-label">${lang === 'zh' ? '花費（円）' : 'Paid (¥)'}</label>
-          <input class="sv-form-input" id="sv-paid-${item.id}" type="number" min="0" placeholder="0" value="${p?.paid || ''}">
-        </div>
-        <div class="sv-form-btns">
-          <button class="sv-btn-save" onclick="saveSvPurchase('${item.id}')">
-            ${lang === 'zh' ? '✓ 標記已買' : '✓ Mark bought'}
-          </button>
-          <button class="sv-btn-cancel" onclick="closeSvCard(event)">
-            ${lang === 'zh' ? '取消' : 'Cancel'}
-          </button>
-          ${isBought ? `<button class="sv-btn-clear" onclick="clearSvPurchase('${item.id}')">
-            ${lang === 'zh' ? '清除' : 'Clear'}
-          </button>` : ''}
-        </div>
-      </div>
-    ` : '';
+    const formHtml = '';
 
     const thumbHtml = item.img
       ? `<img class="sv-card-thumb" src="${item.img}" alt="" loading="lazy">`
@@ -1727,13 +1731,43 @@ function renderSouvenirs() {
             ${item.price ? `<div class="sv-card-price">${item.price}</div>` : ''}
             ${badges ? `<div class="badge-row">${badges}</div>` : ''}
             ${noteHtml}
-            ${paidLabel}
           </div>
         </div>
-        ${formHtml}
       </div>
     `;
   });
+
+  // Custom items
+  const customKey = `hk_sv_custom_${souvenirTab}`;
+  let customItems = [];
+  try { customItems = JSON.parse(localStorage.getItem(customKey) || '[]'); } catch {}
+  customItems.forEach((name, idx) => {
+    const cid = `custom_${souvenirTab}_${idx}`;
+    const isBought = !!purchases[cid];
+    html += `
+      <div class="sv-card${isBought ? ' sv-bought' : ''}">
+        <div class="sv-card-body">
+          <div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="toggleSvPurchase('${cid}')">
+            ${isBought ? '✓' : ''}
+          </div>
+          <div class="sv-card-left">
+            <div class="sv-card-name">${name}</div>
+            <span class="sv-custom-tag">${lang === 'zh' ? '自訂' : 'Custom'}</span>
+          </div>
+          <button class="sv-del-custom" onclick="deleteCustomSv(${souvenirTab}, ${idx})">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  // Add custom form
+  html += `
+    <div class="sv-add-custom">
+      <input class="sv-add-input" id="sv-custom-input" type="text"
+        placeholder="${lang === 'zh' ? '新增沒在清單的伴手禮...' : 'Add item not on list...'}">
+      <button class="sv-add-btn" onclick="addCustomSv()">＋</button>
+    </div>
+  `;
 
   html += '</div>';
   container.innerHTML = html;
@@ -1752,7 +1786,12 @@ function renderTransport() {
     ? ['🚆 JR路線', '🚌 城市', '💴 預算']
     : ['🚆 JR', '🚌 City', '💴 Budget'];
 
+  const introText = lang === 'zh'
+    ? '查詢城市間 JR 票價與時間、各城市當地交通方式、旅遊預算參考。'
+    : 'JR fares & travel times between cities, local transit by city, and budget reference.';
+
   let html = `
+    <div class="tr-intro">${introText}</div>
     <div class="sv-tab-bar">
       ${tabs.map((t, i) => `
         <button class="sv-tab ${transportTab === i ? 'active' : ''}" onclick="setTransportTab(${i})">${t}</button>

@@ -41,8 +41,14 @@ function calculateImpact(dayState) {
   };
 
   items.forEach((item, i) => {
-    // Meals
-    const mt = mealType(item);
+    // Meals — emoji-based detection + keyword fallback (handles 🦔【午餐】... style names)
+    let mt = mealType(item);
+    if (!mt || mt === 'any') {
+      const n = (item.place?.zh || '') + (item.place?.en || '');
+      if (/早餐|breakfast/i.test(n))      mt = 'breakfast';
+      else if (/午餐|lunch/i.test(n))     mt = 'lunch';
+      else if (/晚餐|dinner/i.test(n))    mt = 'dinner';
+    }
     if (mt && mt !== 'any') impact.meals[mt] = true;
     else if (mt === 'any') {
       impact.meals.breakfast = true;
