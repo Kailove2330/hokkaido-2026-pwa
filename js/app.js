@@ -374,8 +374,8 @@ function renderItinerary() {
     if (pill) pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, 60);
 
-  // Fetch weather for active day
-  fetchWeather(state[activeDayIdx].weatherCity);
+  // Fetch weather for active day (pass date for forecast vs historical logic)
+  fetchWeather(state[activeDayIdx].weatherCity, getDayDate(state[activeDayIdx]));
 
   // Fetch OSRM transits in background (no-op if cached)
   updateTransitsForDay(activeDayIdx).catch(() => {});
@@ -1513,16 +1513,45 @@ function formatNote(text) {
 
 // ── WEATHER ────────────────────────────────────────────────
 const weatherCache = {};
-const CITY_ZH = { Sapporo: '札幌', Hakodate: '函館', Toyako: '洞爺湖' };
+const CITY_ZH = {
+  Sapporo: '札幌', Otaru: '小樽', Hakodate: '函館',
+  Toyako: '洞爺湖', Noboribetsu: '登別',
+};
+const CITY_COORDS = {
+  Sapporo:     { lat: 43.0642, lon: 141.3469 },
+  Otaru:       { lat: 43.1907, lon: 141.0022 },
+  Hakodate:    { lat: 41.7686, lon: 140.7290 },
+  Toyako:      { lat: 42.6022, lon: 140.7897 },
+  Noboribetsu: { lat: 42.4051, lon: 141.1192 },
+};
+// Historical May climate averages (fallback for any city)
+const CITY_MAY_CLIMATE = {
+  Sapporo:     { high: 18, low: 8,  rain: 55 },
+  Otaru:       { high: 16, low: 7,  rain: 60 },
+  Hakodate:    { high: 16, low: 9,  rain: 65 },
+  Toyako:      { high: 16, low: 6,  rain: 70 },
+  Noboribetsu: { high: 17, low: 8,  rain: 65 },
+};
+
+function wmoToDesc(code) {
+  if (code === 0)              return 'Clear sky';
+  if (code <= 3)               return 'Partly cloudy';
+  if (code <= 48)              return 'Foggy';
+  if (code <= 67)              return 'Rainy';
+  if (code <= 77)              return 'Snowy';
+  if (code <= 82)              return 'Rain showers';
+  if (code <= 86)              return 'Snow showers';
+  return 'Thunderstorm';
+}
 
 function getWeatherEmoji(desc) {
   const d = (desc || '').toLowerCase();
   if (/snow|blizzard/.test(d)) return '❄️';
-  if (/thunder/.test(d)) return '⛈';
+  if (/thunder/.test(d))       return '⛈';
   if (/rain|drizzle|shower/.test(d)) return '🌧';
-  if (/fog|mist/.test(d)) return '🌫';
-  if (/overcast/.test(d)) return '☁️';
-  if (/cloud/.test(d)) return '⛅';
+  if (/fog|mist/.test(d))      return '🌫';
+  if (/overcast/.test(d))      return '☁️';
+  if (/cloud/.test(d))         return '⛅';
   return '☀️';
 }
 
@@ -1551,8 +1580,17 @@ function getSegmentIcon(t) {
   return '🥶';
 }
 
+// Parse '5/14 Thu' → '2026-05-14'
+function getDayDate(dayState) {
+  const m = (dayState?.date?.en || '').match(/^(\d+)\/(\d+)/);
+  if (!m) return null;
+  return `2026-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;
+}
+
 function renderWeatherCard(state) {
-  const city = state?.[activeDayIdx]?.weatherCity || 'Sapporo';
+  const dayState = state?.[activeDayIdx];
+  const city = dayState?.weatherCity || 'Sapporo';
+  const date = getDayDate(dayState);
   const cityLabel = lang === 'zh' ? (CITY_ZH[city] || city) : city;
   const segLabels = lang === 'zh' ? ['早', '午', '晚'] : ['AM', 'Noon', 'PM'];
   return `
@@ -1567,7 +1605,8 @@ function renderWeatherCard(state) {
         <div class="wc2-right">
           <div class="wc2-emoji" id="wc-emoji">🌤</div>
           <div class="wc2-desc" id="wc-desc"></div>
-          <button class="wc2-refresh" onclick="fetchWeather('${city}')">↻</button>
+          <div class="wc2-source" id="wc-source"></div>
+          <button class="wc2-refresh" onclick="fetchWeather('${city}','${date}')">↻</button>
         </div>
       </div>
       <div class="wc2-segments" id="wc-segments" style="display:none">
@@ -1584,30 +1623,80 @@ function renderWeatherCard(state) {
   `;
 }
 
-async function fetchWeather(city) {
-  if (weatherCache[city]) { applyWeather(weatherCache[city]); return; }
+async function fetchWeather(city, date) {
+  const cacheKey = `${city}:${date || 'now'}`;
+  if (weatherCache[cacheKey]) { applyWeather(weatherCache[cacheKey]); return; }
+
+  const coords = CITY_COORDS[city];
+
+  // ── Mode 1: date provided → try Open-Meteo forecast (up to 16 days) ──
+  if (date && coords) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const travel = new Date(date);
+    const daysAhead = Math.round((travel - today) / 86400000);
+
+    if (daysAhead >= 0 && daysAhead <= 15) {
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}`
+          + `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode`
+          + `&timezone=Asia%2FTokyo&start_date=${date}&end_date=${date}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const d = data.daily;
+        if (d?.temperature_2m_max?.[0] != null) {
+          const tmax = Math.round(d.temperature_2m_max[0]);
+          const tmin = Math.round(d.temperature_2m_min[0]);
+          const result = {
+            city, date, source: 'forecast',
+            temp_c: Math.round((tmax + tmin) / 2),
+            temp_max: tmax, temp_min: tmin,
+            rain_prob: d.precipitation_probability_max[0] ?? null,
+            desc: wmoToDesc(d.weathercode[0]),
+          };
+          weatherCache[cacheKey] = result;
+          applyWeather(result);
+          return;
+        }
+      } catch {}
+    }
+
+    // ── Mode 2: beyond 16 days or API fail → historical climate averages ──
+    const climate = CITY_MAY_CLIMATE[city] || CITY_MAY_CLIMATE['Sapporo'];
+    const result = {
+      city, date, source: 'historical',
+      temp_c: Math.round((climate.high + climate.low) / 2),
+      temp_max: climate.high, temp_min: climate.low,
+      rain: climate.rain,
+      desc: 'Partly cloudy',
+    };
+    weatherCache[cacheKey] = result;
+    applyWeather(result);
+    return;
+  }
+
+  // ── Mode 3: no date → current conditions via wttr.in ──
   try {
     const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
     const data = await res.json();
     const cur = data.current_condition[0];
     const hourly = data.weather?.[0]?.hourly || [];
-    const getHourTemp = time => {
-      const h = hourly.find(h => h.time === String(time));
+    const getHourTemp = t => {
+      const h = hourly.find(h => h.time === String(t));
       return h ? parseInt(h.tempC) : null;
     };
     const result = {
-      city,
+      city, source: 'current',
       desc: cur.weatherDesc[0].value,
-      temp_c: cur.temp_C,
+      temp_c: parseInt(cur.temp_C),
       feels: cur.FeelsLikeC,
       humidity: cur.humidity,
       hourly: {
         morning:   getHourTemp(600),
         afternoon: getHourTemp(1200),
         evening:   getHourTemp(1800),
-      }
+      },
     };
-    weatherCache[city] = result;
+    weatherCache[cacheKey] = result;
     applyWeather(result);
   } catch {
     const el = document.getElementById('wc-outfit');
@@ -1616,30 +1705,52 @@ async function fetchWeather(city) {
 }
 
 function applyWeather(w) {
-  // Guard against stale responses: discard if city no longer matches active day
   const currentState = getState();
   const expectedCity = currentState[activeDayIdx]?.weatherCity;
   if (w.city !== expectedCity) return;
 
   const cityLabel = lang === 'zh' ? (CITY_ZH[w.city] || w.city) : w.city;
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('wc-city',   cityLabel);
-  set('wc-emoji',  getWeatherEmoji(w.desc));
-  set('wc-temp',   `${w.temp_c}°C`);
-  set('wc-feels',  lang === 'zh'
-    ? `體感 ${w.feels}°C · 濕度 ${w.humidity}%`
-    : `Feels ${w.feels}°C · ${w.humidity}% humidity`);
-  set('wc-desc',   w.desc);
-  set('wc-outfit', getOutfitSuggestion(w.temp_c));
 
-  if (w.hourly) {
-    const seg = document.getElementById('wc-segments');
-    if (seg) seg.style.display = 'flex';
-    ['morning', 'afternoon', 'evening'].forEach(k => {
-      const t = w.hourly[k];
-      set(`wc-seg-${k}`,      t !== null ? `${t}°` : '—');
-      set(`wc-seg-${k}-icon`, getSegmentIcon(t));
-    });
+  set('wc-city',  cityLabel);
+  set('wc-emoji', getWeatherEmoji(w.desc));
+  set('wc-desc',  w.desc);
+
+  if (w.source === 'forecast') {
+    set('wc-temp',   `${w.temp_min}~${w.temp_max}°C`);
+    const rainTxt = w.rain_prob != null
+      ? (lang === 'zh' ? `☔ 降雨機率 ${w.rain_prob}%` : `☔ Rain ${w.rain_prob}%`)
+      : '';
+    set('wc-feels',  rainTxt);
+    set('wc-outfit', getOutfitSuggestion(w.temp_c));
+    set('wc-source', lang === 'zh' ? '📡 天氣預報' : '📡 Forecast');
+
+  } else if (w.source === 'historical') {
+    set('wc-temp',   `${w.temp_min}~${w.temp_max}°C`);
+    set('wc-feels',  lang === 'zh'
+      ? `五月均值｜月雨量約 ${w.rain}mm`
+      : `May avg | ~${w.rain}mm rain/month`);
+    set('wc-outfit', getOutfitSuggestion(w.temp_c));
+    set('wc-source', lang === 'zh' ? '📊 歷史均值（僅供參考）' : '📊 Historical avg');
+
+  } else {
+    // current
+    set('wc-temp',   `${w.temp_c}°C`);
+    set('wc-feels',  lang === 'zh'
+      ? `體感 ${w.feels}°C · 濕度 ${w.humidity}%`
+      : `Feels ${w.feels}°C · ${w.humidity}% humidity`);
+    set('wc-outfit', getOutfitSuggestion(w.temp_c));
+    set('wc-source', lang === 'zh' ? '🔴 即時天氣' : '🔴 Current');
+
+    if (w.hourly) {
+      const seg = document.getElementById('wc-segments');
+      if (seg) seg.style.display = 'flex';
+      ['morning', 'afternoon', 'evening'].forEach(k => {
+        const t = w.hourly[k];
+        set(`wc-seg-${k}`,      t != null ? `${t}°` : '—');
+        set(`wc-seg-${k}-icon`, getSegmentIcon(t));
+      });
+    }
   }
 }
 
