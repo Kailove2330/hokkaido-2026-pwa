@@ -1,5 +1,5 @@
 // Service Worker — Hokkaido 2026 PWA
-const CACHE_NAME = 'hokkaido-2026-v90';
+const CACHE_NAME = 'hokkaido-2026-v91';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -23,6 +23,12 @@ const STATIC_ASSETS = [
   './images/itinerary/otaru-canal.jpg',
   './images/itinerary/shiroi-koibito.jpg',
   './images/itinerary/toya-nonokaze.jpg',
+  // Coupon images
+  './images/coupons/札幌藥妝優惠折價券.jpg',
+  './images/coupons/Bic camera折價券2026.png',
+  './images/coupons/與7%券共用_Salonia優惠券.jpg',
+  './images/coupons/2026鶴羽藥妝折價券.jpg',
+  './images/coupons/松本清優惠券2026.jpg',
   // Souvenir images
   './images/souvenirs/calbee.jpg',
   './images/souvenirs/kitaichi-glass.jpg',

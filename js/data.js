@@ -368,7 +368,7 @@ const COUPONS = [
     area: { zh: '狸小路商店街 / 全北海道', en: 'Tanukikoji / all Hokkaido' },
     discount: { zh: '免稅 10% + 再享 5% 折扣', en: 'Tax-free 10% + extra 5% off' },
     how: { zh: '結帳時出示護照辦免稅 + 手機出示優惠券讓店員掃條碼', en: 'Show passport for tax-free + scan coupon barcode at checkout' },
-    url: 'https://drive.google.com/drive/folders/1-ZRPcWPNEJj2L0Qh7Nlt9DgFprWWBmpX?usp=drive_link',
+    localImg: './images/coupons/札幌藥妝優惠折價券.jpg',
     tip: { zh: '限 Tax Free 門市有效；需消費滿 5,000円 方可辦免稅', en: 'Valid at Tax Free stores only; min. ¥5,000 purchase for tax exemption' },
   },
   {
@@ -376,9 +376,12 @@ const COUPONS = [
     store: { zh: 'BIC CAMERA 札幌店', en: 'BIC CAMERA Sapporo' },
     icon: '📷',
     area: { zh: '札幌站步行 5 分鐘（JR Tower 旁）', en: '5 min walk from Sapporo Stn (near JR Tower)' },
-    discount: { zh: '外國旅客折扣券（免稅 ＋ 額外折扣）', en: 'Tourist discount (tax-free + extra off)' },
+    discount: { zh: '外國旅客折扣券（免稅 ＋ 額外折扣）＋ Salonia 優惠', en: 'Tourist discount (tax-free + extra off) + Salonia coupon' },
     how: { zh: '結帳時出示護照辦免稅，同時出示折扣券給店員', en: 'Show passport for tax-free + show discount coupon at checkout' },
-    url: 'https://drive.google.com/drive/folders/1hbym9vmuU7fcr_kb1YuQDQbOCUIWlv6r?usp=drive_link',
+    images: [
+      './images/coupons/Bic camera折價券2026.png',
+      './images/coupons/與7%券共用_Salonia優惠券.jpg',
+    ],
     tip: null,
   },
   {
@@ -388,7 +391,7 @@ const COUPONS = [
     area: { zh: '狸小路商店街 / 全北海道', en: 'Tanukikoji / all Hokkaido' },
     discount: { zh: '外國旅客購物優惠券', en: 'Tourist coupon' },
     how: { zh: '手機出示優惠券條碼讓店員掃描', en: 'Show coupon barcode on phone to cashier' },
-    url: 'https://drive.google.com/drive/folders/1AIYdHwvAcsafdC2Flx0DlN6FMU3fjXaV?usp=drive_link',
+    localImg: './images/coupons/2026鶴羽藥妝折價券.jpg',
     tip: null,
   },
   {
@@ -398,7 +401,7 @@ const COUPONS = [
     area: { zh: '狸小路商店街', en: 'Tanukikoji' },
     discount: { zh: '外國旅客購物優惠券', en: 'Tourist coupon' },
     how: { zh: '手機出示優惠券給店員掃條碼', en: 'Show coupon on phone for cashier to scan' },
-    url: 'https://drive.google.com/drive/folders/1QzHpuzHLTxq8s7jBXn20XS9OoMvkFSxi?usp=drive_link',
+    localImg: './images/coupons/松本清優惠券2026.jpg',
     tip: null,
   },
 ];

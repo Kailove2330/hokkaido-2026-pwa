@@ -1373,8 +1373,40 @@ function saveItemEdit() {
 }
 
 // ── COUPON HELPERS ─────────────────────────────────────────
-function openCoupon(url) {
-  window.open(url, '_blank');
+function openCoupon(id) {
+  const c = COUPONS.find(x => x.id === id);
+  if (!c) return;
+  const imgs = c.images || (c.localImg ? [c.localImg] : null);
+  if (imgs) {
+    showCouponImages(imgs);
+  } else {
+    window.open(c.url, '_blank');
+  }
+}
+
+function showCouponImages(imgs) {
+  const existing = document.getElementById('coupon-viewer');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'coupon-viewer';
+  overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:9999;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:48px 0 24px;';
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText = 'position:fixed;top:12px;right:16px;background:rgba(255,255,255,0.25);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;z-index:10000;cursor:pointer;';
+  closeBtn.onclick = () => overlay.remove();
+  overlay.appendChild(closeBtn);
+
+  imgs.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.cssText = 'max-width:100%;width:100%;display:block;margin-bottom:8px;';
+    overlay.appendChild(img);
+  });
+
+  document.body.appendChild(overlay);
 }
 
 function renderCouponsHtml() {
@@ -1396,7 +1428,7 @@ function renderCouponsHtml() {
         <div class="coupon-area">📍 ${c.area[lang]}</div>
         <div class="coupon-how">✦ ${c.how[lang]}</div>
         ${tipHtml}
-        <button class="coupon-btn" onclick="openCoupon('${c.url}')">${btnLabel}</button>
+        <button class="coupon-btn" onclick="openCoupon('${c.id}')">${btnLabel}</button>
       </div>
     `;
   });
@@ -2065,7 +2097,7 @@ function toggleCheckItem(id) {
   if (checkedItems.has(id)) checkedItems.delete(id);
   else checkedItems.add(id);
   saveChecked('hk_checklist', checkedItems);
-  renderChecklist();
+  renderSouvenirs();
 }
 
 // ── SOS ────────────────────────────────────────────────────
