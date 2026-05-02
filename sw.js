@@ -1,5 +1,5 @@
 // Service Worker — Hokkaido 2026 PWA
-const CACHE_NAME = 'hokkaido-2026-v89';
+const CACHE_NAME = 'hokkaido-2026-v90';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,31 @@ const STATIC_ASSETS = [
   './js/impact.js',
   './js/app.js',
   './manifest.json',
+  // Itinerary images
+  './images/itinerary/garaku.jpg',
+  './images/itinerary/goryokaku.jpg',
+  './images/itinerary/hachimanzaka.jpg',
+  './images/itinerary/hakodate-mt.jpg',
+  './images/itinerary/kitaichi.jpg',
+  './images/itinerary/letao.jpg',
+  './images/itinerary/lucky-pierrot.jpg',
+  './images/itinerary/moiwa.jpg',
+  './images/itinerary/noboribetsu.jpg',
+  './images/itinerary/orugoru.jpg',
+  './images/itinerary/otaru-canal.jpg',
+  './images/itinerary/shiroi-koibito.jpg',
+  './images/itinerary/toya-nonokaze.jpg',
+  // Souvenir images
+  './images/souvenirs/calbee.jpg',
+  './images/souvenirs/kitaichi-glass.jpg',
+  './images/souvenirs/kitakaro-baum.jpg',
+  './images/souvenirs/letao-biscuit.jpg',
+  './images/souvenirs/letao-cake.jpg',
+  './images/souvenirs/rokkatei-marusei.jpg',
+  './images/souvenirs/rokkatei-sake.jpg',
+  './images/souvenirs/royce.jpg',
+  './images/souvenirs/shiroi-koibito.jpg',
+  './images/souvenirs/snaffles.jpg',
 ];
 
 self.addEventListener('install', event => {

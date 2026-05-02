@@ -45,7 +45,7 @@ function renderAll() {
 // ── Tabs ───────────────────────────────────────────────────
 let activeTab = 0;
 function renderTabs() {
-  const icons = ['📋','🗓','🛍','🚆','💰'];
+  const icons = ['📋','🗓','✅','🚆','💰'];
   const nav = document.getElementById('bottom-nav');
   nav.innerHTML = T[lang].tabs.map((label, i) => `
     <button class="tab-btn ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">
@@ -1476,11 +1476,32 @@ function addCustomSv() {
   const input = document.getElementById('sv-custom-input');
   const name = input?.value?.trim();
   if (!name) return;
-  const customKey = `hk_sv_custom_${souvenirTab}`;
   let customItems = [];
-  try { customItems = JSON.parse(localStorage.getItem(customKey) || '[]'); } catch {}
+  try { customItems = JSON.parse(localStorage.getItem('hk_sv_custom_1') || '[]'); } catch {}
   customItems.push(name);
-  localStorage.setItem(customKey, JSON.stringify(customItems));
+  localStorage.setItem('hk_sv_custom_1', JSON.stringify(customItems));
+  renderSouvenirs();
+}
+
+function addCustomChecklist() {
+  const input = document.getElementById('cl-custom-input');
+  const text = input?.value?.trim();
+  if (!text) return;
+  let items = [];
+  try { items = JSON.parse(localStorage.getItem('hk_checklist_custom') || '[]'); } catch {}
+  items.push(text);
+  localStorage.setItem('hk_checklist_custom', JSON.stringify(items));
+  renderSouvenirs();
+}
+
+function deleteCustomChecklist(idx) {
+  let items = [];
+  try { items = JSON.parse(localStorage.getItem('hk_checklist_custom') || '[]'); } catch {}
+  const cid = `cl_custom_${idx}`;
+  checkedItems.delete(cid);
+  saveChecked('hk_checklist', checkedItems);
+  items.splice(idx, 1);
+  localStorage.setItem('hk_checklist_custom', JSON.stringify(items));
   renderSouvenirs();
 }
 
@@ -1754,37 +1775,14 @@ function applyWeather(w) {
   }
 }
 
-// ── SOUVENIRS ──────────────────────────────────────────────
+// ── LISTS (清單) ───────────────────────────────────────────
 function renderSouvenirs() {
   const container = document.getElementById('page-souvenirs');
-  const purchases = getSvPurchases();
 
-  // Totals across both tabs
-  const allItems = [
-    ...SOUVENIRS.flatMap(g => g.items),
-    ...DRUGSTORE.flatMap(g => g.items),
-  ];
-  const totalBought = allItems.filter(i => purchases[i.id]).length;
-
-  const dataset    = souvenirTab === 0 ? SOUVENIRS : (souvenirTab === 1 ? DRUGSTORE : null);
-  const tab0Label  = lang === 'zh' ? '伴手禮' : 'Souvenirs';
-  const tab1Label  = lang === 'zh' ? '藥妝' : 'Drugstore';
-  const tab2Label  = lang === 'zh' ? '優惠券' : 'Coupons';
-  const summaryTxt = lang === 'zh'
-    ? `已勾選 ${totalBought} 件`
-    : `${totalBought} checked`;
-
-  // Guard svSubTab against out-of-range after tab switch
-  const safeSubTab = dataset ? Math.min(svSubTab, dataset.length - 1) : 0;
-
-  // Sub-tab bar (only for tabs 0 and 1)
-  const subTabsHtml = dataset ? dataset.map((g, i) => {
-    const groupBought = g.items.filter(item => purchases[item.id]).length;
-    const dot = groupBought > 0 ? `<span class="sv-subtab-dot"></span>` : '';
-    return `<button class="sv-subtab${i === safeSubTab ? ' active' : ''}" onclick="setSvSubTab(${i})">
-      ${g.tab[lang]}${dot}
-    </button>`;
-  }).join('') : '';
+  // Tab bar: 清單 / 伴手禮 / 優惠券
+  const tab0Label = lang === 'zh' ? '行前準備' : 'Checklist';
+  const tab1Label = lang === 'zh' ? '伴手禮'   : 'Souvenirs';
+  const tab2Label = lang === 'zh' ? '優惠券'   : 'Coupons';
 
   let html = `
     <div class="sv-tab-bar">
@@ -1794,48 +1792,112 @@ function renderSouvenirs() {
     </div>
   `;
 
-  // Coupon tab — different layout, render and return early
+  // ── Tab 0: 行前準備 Checklist ──────────────────────────
+  if (souvenirTab === 0) {
+    const total = CHECKLIST.reduce((s, c) => s + c.items.length, 0);
+    const done  = CHECKLIST.reduce((s, c) => s + c.items.filter(i => checkedItems.has(i.id)).length, 0);
+
+    html += `
+      <div class="flight-bar">
+        <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '去程' : 'Out'}</span><span class="flight-detail">CI130 · 5/14 08:35 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'} → 13:35 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'}</span></div>
+        <div class="flight-row"><span class="flight-dir">${lang === 'zh' ? '返程' : 'Ret'}</span><span class="flight-detail">CI131 · 5/22 15:05 ${lang === 'zh' ? '新千歲 T-I' : 'CTS T-I'} → 18:15 ${lang === 'zh' ? '桃園 T2' : 'TPE T2'}</span></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label">
+          <span>${lang === 'zh' ? '準備進度' : 'Prep progress'}</span>
+          <span>${done} / ${total}</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${total ? Math.round(done/total*100) : 0}%"></div></div>
+      </div>
+    `;
+
+    CHECKLIST.forEach(sec => {
+      html += `<div class="check-section"><div class="check-cat">${sec.section[lang]}</div>`;
+      sec.items.forEach(item => {
+        const checked = checkedItems.has(item.id);
+        html += `
+          <div class="check-item ${checked ? 'checked' : ''}" onclick="toggleCheckItem('${item.id}')">
+            <div class="check-box">${checked ? '✓' : ''}</div>
+            <div class="check-text">${item.text[lang]}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+    });
+
+    // Custom checklist items
+    let customCL = [];
+    try { customCL = JSON.parse(localStorage.getItem('hk_checklist_custom') || '[]'); } catch {}
+    if (customCL.length > 0) {
+      html += `<div class="check-section"><div class="check-cat">${lang === 'zh' ? '✏️ 自訂項目' : '✏️ Custom'}</div>`;
+      customCL.forEach((text, idx) => {
+        const cid = `cl_custom_${idx}`;
+        const checked = checkedItems.has(cid);
+        html += `
+          <div class="check-item ${checked ? 'checked' : ''}" onclick="toggleCheckItem('${cid}')">
+            <div class="check-box">${checked ? '✓' : ''}</div>
+            <div class="check-text">${text}</div>
+            <button class="sv-del-custom" onclick="event.stopPropagation();deleteCustomChecklist(${idx})">✕</button>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    html += `
+      <div class="sv-add-custom">
+        <input class="sv-add-input" id="cl-custom-input" type="text"
+          placeholder="${lang === 'zh' ? '新增自訂項目...' : 'Add custom item...'}">
+        <button class="sv-add-btn" onclick="addCustomChecklist()">＋</button>
+      </div>
+    `;
+
+    container.innerHTML = html;
+    return;
+  }
+
+  // ── Tab 2: 優惠券 ─────────────────────────────────────
   if (souvenirTab === 2) {
     html += renderCouponsHtml();
     container.innerHTML = html;
     return;
   }
 
+  // ── Tab 1: 伴手禮（SOUVENIRS + DRUGSTORE 合併）────────
+  const purchases = getSvPurchases();
+  const mergedDataset = [...SOUVENIRS, ...DRUGSTORE];
+  const totalBought = mergedDataset.flatMap(g => g.items).filter(i => purchases[i.id]).length;
+  const safeSubTab = Math.min(svSubTab, mergedDataset.length - 1);
+
+  const subTabsHtml = mergedDataset.map((g, i) => {
+    const groupBought = g.items.filter(item => purchases[item.id]).length;
+    const dot = groupBought > 0 ? `<span class="sv-subtab-dot"></span>` : '';
+    return `<button class="sv-subtab${i === safeSubTab ? ' active' : ''}" onclick="setSvSubTab(${i})">${g.tab[lang]}${dot}</button>`;
+  }).join('');
+
   html += `
     <div class="sv-subtab-bar">${subTabsHtml}</div>
-    <div class="sv-summary">${summaryTxt}</div>
+    <div class="sv-summary">${lang === 'zh' ? `已勾選 ${totalBought} 件` : `${totalBought} checked`}</div>
   `;
 
-  // Only render the selected sub-tab group
-  const group = dataset[safeSubTab];
+  const group = mergedDataset[safeSubTab];
   html += `<div class="sv-group"><div class="sv-group-title">${group.category[lang]}</div>`;
 
   group.items.forEach(item => {
-    const p        = purchases[item.id];
-    const isOpen   = svOpenId === item.id;
-    const isBought = !!p;
-
+    const isBought = !!purchases[item.id];
     const badges = [
       item.cold    ? `<span class="badge badge-cold">❄ ${T[lang].cold}</span>` : '',
       item.airport ? `<span class="badge badge-airport">✈ ${T[lang].limitedAirport}</span>` : '',
     ].filter(Boolean).join('');
     const noteHtml = item.note ? `<div class="sv-card-note">${item.note[lang]}</div>` : '';
-
-    const checkHtml = `<div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="event.stopPropagation();toggleSvPurchase('${item.id}')">
-      ${isBought ? '✓' : ''}
-    </div>`;
-
-    const formHtml = '';
-
-    const thumbHtml = item.img
-      ? `<img class="sv-card-thumb" src="${item.img}" alt="" loading="lazy">`
-      : '';
+    const thumbHtml = item.img ? `<img class="sv-card-thumb" src="${item.img}" alt="" loading="lazy">` : '';
 
     html += `
-      <div class="sv-card${isBought ? ' sv-bought' : ''}${isOpen ? ' sv-open' : ''}"
-           onclick="openSvCard('${item.id}')">
+      <div class="sv-card${isBought ? ' sv-bought' : ''}">
         <div class="sv-card-body">
-          ${checkHtml}
+          <div class="sv-check${isBought ? ' sv-check-done' : ''}" onclick="event.stopPropagation();toggleSvPurchase('${item.id}')">
+            ${isBought ? '✓' : ''}
+          </div>
           ${thumbHtml}
           <div class="sv-card-left">
             <div class="sv-card-name">${item.name[lang]}</div>
@@ -1848,12 +1910,15 @@ function renderSouvenirs() {
     `;
   });
 
-  // Custom items
-  const customKey = `hk_sv_custom_${souvenirTab}`;
+  // Custom souvenir items (read both old key 0 and new key 1 for compatibility)
   let customItems = [];
-  try { customItems = JSON.parse(localStorage.getItem(customKey) || '[]'); } catch {}
-  customItems.forEach((name, idx) => {
-    const cid = `custom_${souvenirTab}_${idx}`;
+  try { customItems = JSON.parse(localStorage.getItem('hk_sv_custom_1') || '[]'); } catch {}
+  let legacyItems = [];
+  try { legacyItems = JSON.parse(localStorage.getItem('hk_sv_custom_0') || '[]'); } catch {}
+  const allCustom = [...customItems, ...legacyItems];
+
+  allCustom.forEach((name, idx) => {
+    const cid = `custom_1_${idx}`;
     const isBought = !!purchases[cid];
     html += `
       <div class="sv-card${isBought ? ' sv-bought' : ''}">
@@ -1865,13 +1930,12 @@ function renderSouvenirs() {
             <div class="sv-card-name">${name}</div>
             <span class="sv-custom-tag">${lang === 'zh' ? '自訂' : 'Custom'}</span>
           </div>
-          <button class="sv-del-custom" onclick="deleteCustomSv(${souvenirTab}, ${idx})">✕</button>
+          <button class="sv-del-custom" onclick="deleteCustomSv(1, ${idx})">✕</button>
         </div>
       </div>
     `;
   });
 
-  // Add custom form
   html += `
     <div class="sv-add-custom">
       <input class="sv-add-input" id="sv-custom-input" type="text"
