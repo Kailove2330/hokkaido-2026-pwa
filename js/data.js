@@ -74,8 +74,7 @@ const DAYS = [
     title: { zh: '小樽漫步', en: 'Otaru Stroll' },
     steps: 12000, phase: 0, weatherCity: 'Sapporo',
     items: [
-      { time: '07:00', place: { zh: '🍳 索拉瑞亞西鐵酒店（飯店早餐）', en: '🍳 Solaria Hotel Breakfast' }, duration: '60min', note: null, maps: null, warn: false },
-      { time: '08:16', place: { zh: '☕ ESPRESSO D WORKS ススキノ店（水分 100% 吐司）', en: '☕ ESPRESSO D WORKS Susukino (100% Moisture Toast)' }, duration: '90min', note: { zh: '名物水分 100% 吐司；建議提早入座', en: 'Famous 100% moisture toast; arrive early for a seat' }, maps: 'https://maps.google.com/?q=Espresso+D+Works+Sapporo', coord: [43.0554, 141.3539], warn: false },
+      { time: '08:16', place: { zh: '🍞【早餐】ESPRESSO D WORKS ススキノ店（水分 100% 吐司）', en: '🍞 Breakfast: ESPRESSO D WORKS Susukino (100% Moisture Toast)' }, duration: '90min', note: { zh: '名物水分 100% 吐司；建議提早入座', en: 'Famous 100% moisture toast; arrive early for a seat' }, maps: 'https://maps.google.com/?q=Espresso+D+Works+Sapporo', coord: [43.0554, 141.3539], warn: false },
       { time: '09:46', place: { zh: 'JR 札幌站 → 小樽（約 50 分）', en: 'JR Sapporo to Otaru (about 50 min)' }, duration: '50min', note: { zh: '車資 750円（IC）', en: '750 yen (IC card)' }, maps: 'https://maps.google.com/?q=Sapporo+Station', coord: [43.0687, 141.3506], warn: false },
       { time: '10:36', place: { zh: '六花亭 小樽運河店', en: 'Rokkatei Otaru Canal Branch' }, duration: '30min', note: { zh: '運河邊景觀；分店限定甜點外帶', en: 'Canal-side view; branch-exclusive take-away sweets' }, maps: 'https://maps.google.com/?q=六花亭+小樽+運河', coord: [43.1904, 141.0014], warn: false },
       { time: '11:28', place: { zh: '🥩【午餐】Cafe BAAL（洋食牛排飯）', en: '🥩 Lunch: Cafe BAAL (Western Steak Rice)' }, duration: '60min', note: { zh: '小樽老牌洋食；1,500–2,500円', en: 'Otaru classic western food 1,500-2,500 yen' }, maps: 'https://maps.google.com/?q=Cafe+BAAL+小樽', coord: [43.1880, 140.9966], warn: false },
@@ -105,7 +104,7 @@ const DAYS = [
       { time: '14:47', place: { zh: '北海道神宮（參拜 + 御守）', en: 'Hokkaido Jingu Shrine (Visit + Omamori)' }, duration: '30min', note: { zh: '北海道最重要神社；買旅行御守', en: "Hokkaido's most important shrine; buy travel omamori" }, maps: 'https://maps.google.com/?q=Hokkaido+Jingu+Shrine', coord: [43.0534, 141.3211], warn: false },
       { time: '15:51', place: { zh: '🍜【午餐】蝦味拉麵 一幻 總本店', en: '🍜 Lunch: Ichigen Shrimp Ramen Main Store' }, duration: '60min', note: { zh: '招牌えびそば；蝦頭高湯；1,200–1,500円', en: 'Signature shrimp head broth ramen; 1,200-1,500 yen' }, maps: 'https://maps.google.com/?q=一幻+ラーメン+札幌+総本店', coord: [43.0576, 141.3528], warn: false },
       { time: '17:43', place: { zh: '⭐ 藻岩山展望台（日落至夜景）', en: '⭐ Mt. Moiwa Observatory (Sunset to Night View)' }, duration: '105min', note: { zh: '⚡ 纜車來回 2,100円；5 月日落約 18:30；山頂帶防風外套', en: '⚡ 2,100 yen RT ropeway; sunset ~18:30 in May; windproof jacket for summit' }, maps: 'https://maps.google.com/?q=Mt+Moiwa+Ropeway+Sapporo', coord: [43.0291, 141.3240], img: 'images/itinerary/moiwa.jpg', warn: true },
-      { time: '20:19', place: { zh: '🥩【慶祝晚餐】牛しゃぶ 牛すき 禪', en: '🥩 Celebration Dinner: Zen Wagyu Shabu & Sukiyaki' }, duration: '90min', note: { zh: '⭐️ 黑毛和牛；⚡ 不吃生食，全熟；需提前預約', en: '⭐️ Kuroge wagyu; ⚡ fully cooked only; advance reservation required' }, maps: 'https://maps.google.com/?q=牛しゃぶ+牛すき+禪+札幌', coord: [43.0559, 141.3543], warn: true },
+      { time: '20:19', place: { zh: '🥩【晚餐】牛しゃぶ 牛すき 禪', en: '🥩 Dinner: Zen Wagyu Shabu & Sukiyaki' }, duration: '90min', note: { zh: '⭐️ 黑毛和牛；⚡ 不吃生食，全熟；需提前預約', en: '⭐️ Kuroge wagyu; ⚡ fully cooked only; advance reservation required' }, maps: 'https://maps.google.com/?q=牛しゃぶ+牛すき+禪+札幌', coord: [43.0559, 141.3543], warn: true },
       { time: '22:10', place: { zh: '札幌京王普雷利亞飯店', en: 'Keio Prelia Hotel Sapporo' }, duration: '60min', note: null, maps: null, warn: false },
     ],
     mealBudget: { zh: '午餐 1,500円 + 晚餐 10,000–15,000円／人', en: 'Lunch 1,500 + dinner 10,000-15,000 yen/person' },
@@ -117,7 +116,7 @@ const DAYS = [
     title: { zh: '歷史巡禮與系統採購', en: 'Historic Tour & Systematic Shopping' },
     steps: 12000, phase: 0, weatherCity: 'Sapporo',
     items: [
-      { time: '07:00', place: { zh: '🍳 京王 Prelia 自助餐（飯店早餐）', en: '🍳 Keio Prelia Buffet (Hotel Breakfast)' }, duration: '90min', note: null, maps: null, warn: false },
+      { time: '07:00', place: { zh: '🍞【早餐】超商解決（路上採買）', en: '🍞 Breakfast: Convenience Store (On the Go)' }, duration: '30min', note: { zh: '今日行程長；超商早餐快速補給；飯店早餐已安排隔天退房前現場預訂', en: 'Long day ahead; grab convenience store breakfast; hotel buffet reserved for tomorrow before checkout' }, maps: null, warn: false },
       { time: '08:57', place: { zh: '豐平館（明治洋樓）', en: 'Hoheikan (Meiji-era Western Hall)' }, duration: '15min', note: { zh: '明治 13 年建造；300円；藍色洋館值得拍照', en: 'Built 1880; 300 yen; beautiful blue Western-style exterior' }, maps: 'https://maps.google.com/?q=豊平館+札幌', coord: [43.0467, 141.3525], warn: false },
       { time: '09:17', place: { zh: '中島公園（湖畔散步）', en: 'Nakajima Park (Lakeside Stroll)' }, duration: '15min', note: { zh: '免費；湖畔空氣清新', en: 'Free; fresh lakeside air' }, maps: 'https://maps.google.com/?q=Nakajima+Park+Sapporo', coord: [43.0442, 141.3539], warn: false },
       { time: '09:52', place: { zh: 'KINOTOYA Daimaru Sapporo（現烤起司塔）', en: 'KINOTOYA Daimaru Sapporo (Fresh Cheese Tart)' }, duration: '15min', note: { zh: '現烤起司塔 250円；外帶行動糧', en: 'Fresh-baked cheese tart 250 yen; great on-the-go' }, maps: 'https://maps.google.com/?q=KINOTOYA+大丸札幌', coord: [43.0681, 141.3505], warn: false },
