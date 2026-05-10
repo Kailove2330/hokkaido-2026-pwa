@@ -2786,3 +2786,19 @@ main.ai-mode {
 .tr-yamato-table tr:last-child { border-bottom: none; }
 .tr-yamato-label { color: var(--muted); padding: 6px 8px 6px 0; width: 45%; vertical-align: top; }
 .tr-yamato-value { font-weight: 600; color: var(--text); padding: 6px 0; word-break: break-all; }
+
+/* ── Daily Tips ────────────────────────────────────────────── */
+.tips-section { margin: 8px 0 4px; }
+.tips-header {
+  font-size: 13px; font-weight: 700; color: #92400e;
+  background: #fef3c7; border-radius: 8px 8px 0 0;
+  padding: 8px 12px; border: 1.5px solid #fbbf24; border-bottom: none;
+}
+.tip-card {
+  background: #fff; border: 1.5px solid #fbbf24; border-top: none;
+  padding: 10px 12px; last-child { border-radius: 0 0 8px 8px; }
+}
+.tip-card:last-child { border-radius: 0 0 8px 8px; }
+.tip-card + .tip-card { border-top: 1px solid #fef3c7; }
+.tip-title { font-size: 13px; font-weight: 700; color: #b45309; margin-bottom: 3px; }
+.tip-body { font-size: 13px; line-height: 1.6; color: var(--text); }

@@ -562,7 +562,7 @@ function renderDaySummaryCard(dayState) {
     <div class="day-summary-card">
       <div class="sum-meals">${mealHtml}</div>
       <div class="sum-footer">
-        <span>👟 ~${dayState.steps.toLocaleString()} ${lang === 'zh' ? '步' : 'steps'}</span>
+        <span>👟 ${dayState.stepsRange ? dayState.stepsRange[lang] : '~' + dayState.steps.toLocaleString() + (lang === 'zh' ? ' 步' : ' steps')} ${dayState.stepsLevel ? { easy: '🟢', medium: '🟠', high: '🔴', extreme: '🔴🔴' }[dayState.stepsLevel] : ''}</span>
         <span>💴 ${dayState.mealBudget[lang]}</span>
       </div>
       ${dayState.shopping ? `<div class="sum-shopping">🛍 ${dayState.shopping[lang]}</div>` : ''}
@@ -614,6 +614,19 @@ function renderActiveDayView(state) {
   // Flight card on Day 1 / last day
   if (activeDayIdx === 0) html += renderFlightCard('outbound');
   if (activeDayIdx === state.length - 1) html += renderFlightCard('return');
+
+  // Daily tips
+  if (dayState.tips && dayState.tips.length > 0) {
+    html += `<div class="tips-section">
+      <div class="tips-header">⚠️ ${lang === 'zh' ? '當日注意事項' : 'Daily Reminders'}</div>
+      ${dayState.tips.map(t => `
+        <div class="tip-card">
+          <div class="tip-title">${t.title[lang]}</div>
+          <div class="tip-body">${t.body[lang]}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
 
   // Edit toolbar
   html += `

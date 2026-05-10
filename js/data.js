@@ -67,6 +67,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '晚餐 3,000–3,500円 + 聖代 1,500円／人', en: 'Dinner 3,000-3,500 + parfait 1,500 yen/person' },
     shopping: { zh: '狸小路藥妝（Sundrug / 大國藥妝）', en: 'Tanukikoji drugstores (Sundrug / Daikoku Drug)' },
+    stepsRange: { zh: '約 7,000–8,000 步', en: 'approx. 7,000–8,000 steps' },
+    stepsLevel: 'easy',
+    tips: [
+      { title: { zh: '機場首要任務', en: 'Airport Priority' }, body: { zh: '出關後第一件事，直奔 B1 的 JR 外籍旅客服務處，拿出小抄把「5日周遊券兌換＋所有指定席」一次劃位搞定。（請特別提醒站務員周遊券 5/18 才啟用）', en: 'Head straight to JR Information Desk at B1 after customs. Exchange rail pass + reserve all seats in one go. Remind agent that activation date is May 18.' } },
+      { title: { zh: '達摩烤肉防排隊', en: 'Daruma Queue Strategy' }, body: { zh: '16:20 左右抵達達摩 5.5 店是黃金時間，能無痛進入第一輪用餐；一旦錯過第一輪，可能要在寒風中罰站 1 小時以上。', en: 'Arrive at Daruma 5.5 around 16:20 for smooth first-seating entry. Miss it and you may wait 1+ hour in the cold.' } },
+      { title: { zh: '溫差預警', en: 'Temperature Drop Warning' }, body: { zh: '晚上逛狸小路與薄野時，氣溫會降到 10°C 左右，出門吃晚餐記得帶上防風外套。', en: 'Evening temperatures drop to ~10°C. Bring a windproof jacket when heading out for dinner.' } },
+    ],
   },
   // Day 2
   {
@@ -89,6 +96,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '午餐 2,000円 + LeTAO 1,400円 + 晚餐 1,500円 + 聖代 1,200円／人', en: 'Lunch 2,000 + LeTAO 1,400 + dinner 1,500 + parfait 1,200 yen/person' },
     shopping: { zh: 'LeTAO 起司餅乾 · Double Fromage；北一硝子玻璃杯；音樂盒堂限定款', en: 'LeTAO biscuits · Double Fromage; Kitaichi glass; Music Box limited edition' },
+    stepsRange: { zh: '約 13,000–15,000 步', en: 'approx. 13,000–15,000 steps' },
+    stepsLevel: 'medium',
+    tips: [
+      { title: { zh: '海港防風', en: 'Harbour Wind Chill' }, body: { zh: '小樽在海邊，海風吹來非常刺骨，請務必採取「洋蔥式穿搭」，防風外套必備。', en: 'Otaru is by the sea — sea wind is biting. Layer up with an onion-style outfit; windproof jacket essential.' } },
+      { title: { zh: '鞋子選擇', en: 'Footwear Advice' }, body: { zh: '今天有一整天都在戶外步行（堺町通很長），請穿著避震效果最好的休閒鞋或運動鞋。', en: 'Full day of outdoor walking on cobblestones (Sakaimachi-dori is long). Wear your most cushioned sneakers.' } },
+      { title: { zh: '名店攔截', en: 'Key Purchase Tip' }, body: { zh: '記得在六花亭小樽運河店把「萊姆葡萄夾心餅」買齊，減輕 Day 4 的購物壓力。', en: 'Stock up on Rokkatei\'s Marusei Butter Sandwich at the Otaru Canal branch to lighten the Day 4 shopping load.' } },
+    ],
   },
   // Day 3
   {
@@ -109,6 +123,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '午餐 1,500円 + 晚餐 10,000–15,000円／人', en: 'Lunch 1,500 + dinner 10,000-15,000 yen/person' },
     shopping: { zh: '白色戀人工廠限定 + 訂製磁鐵；神宮御守；六花亭神宮茶屋限定', en: 'Shiroi Koibito factory box + custom magnet; Hokkaido Jingu omamori' },
+    stepsRange: { zh: '約 14,000–16,000 步', en: 'approx. 14,000–16,000 steps' },
+    stepsLevel: 'high',
+    tips: [
+      { title: { zh: '行李轉移', en: 'Luggage Transfer' }, body: { zh: '早上要換飯店到「京王普雷利亞」，出門前確認東西都有收好。', en: 'Moving to Keio Prelia Hotel today — double-check everything is packed before leaving.' } },
+      { title: { zh: '體力保留', en: 'Pace Yourself' }, body: { zh: '下午的圓山公園與北海道神宮腹地極大，走累了就在「神宮茶屋」坐下來吃個福餅休息。', en: 'Maruyama Park and Hokkaido Jingu are vast. Rest at Jingu Chaya with a snack when your legs get tired.' } },
+      { title: { zh: '夜景禦寒魔王關', en: 'Summit Cold Warning' }, body: { zh: '晚上搭纜車上「藻岩山」，山頂風極大、極冷（體感約 5°C）。請穿上最厚的外套，並戴上薄圍巾或帽子防風，以免吹到頭痛。', en: 'Mt. Moiwa summit at night — extremely windy and cold (~5°C feels-like). Wear your thickest coat + scarf or hat to avoid windchill headaches.' } },
+    ],
   },
   // Day 4
   {
@@ -133,6 +154,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '午餐 2,000円 + 晚餐 10,000–15,000円／人', en: 'Lunch 2,000 + dinner 10,000-15,000 yen/person' },
     shopping: { zh: 'UNIQLO；大丸 B1（六花亭 / 北菓樓 / 柳月）；千秋庵銅鑼燒', en: 'UNIQLO; Daimaru B1 (Rokkatei / Kitakaro / Yanagitsuji); Senshuya dorayaki' },
+    stepsRange: { zh: '約 12,000–14,000 步', en: 'approx. 12,000–14,000 steps' },
+    stepsLevel: 'medium',
+    tips: [
+      { title: { zh: '百貨結界', en: 'Department Store Hours' }, body: { zh: '日本百貨公司（如大丸）都是 10:00 才開門，早上去中島公園散步抓好時間，不用太早去車站等。', en: 'Daimaru opens at 10:00 — use the time before for Nakajima Park. No need to wait at the station early.' } },
+      { title: { zh: '湯咖哩戰術', en: 'GARAKU Queue Strategy' }, body: { zh: 'GARAKU 非常熱門，建議 11:00–11:30 之間就先去抽整理券，再去逛一下附近的街，時間到再回來吃。', en: 'GARAKU is very popular. Get a numbered ticket at 11:00–11:30, explore nearby, then return when called.' } },
+      { title: { zh: '終極物流任務', en: 'Luggage Packing Mission' }, body: { zh: '晚上回飯店後，請將不帶去道南的戰利品與衣物裝入大行李箱，準備明天一早寄去機場。', en: 'After returning to hotel tonight, pack all non-essential items into the large suitcase for tomorrow\'s Yamato forwarding.' } },
+    ],
   },
   // Day 5
   {
@@ -154,6 +182,13 @@ const DAYS = [
     ],
     mealBudget: { zh: 'Plan A：奧芝 2,000円 + 鹽拉麵 1,000円／Plan B：豚丼便當 900円 + 奧芝 2,000円', en: 'Plan A: Okushiba ¥2,000 + Ramen ¥1,000 / Plan B: Bento ¥900 + Okushiba ¥2,000' },
     shopping: { zh: '大丸 B1；shiro 美妝；3COINS 旅途小物', en: 'Daimaru B1; shiro cosmetics; 3COINS travel accessories' },
+    stepsRange: { zh: '約 6,000–8,000 步', en: 'approx. 6,000–8,000 steps' },
+    stepsLevel: 'easy',
+    tips: [
+      { title: { zh: '宅急便截止', en: 'Yamato Deadline' }, body: { zh: '早上 09:00 前，務必在京王飯店櫃檯辦好「機場宅急便」。記得拿好粉紅色收據！', en: 'Yamato airport forwarding must be done at hotel front desk by 09:00. Keep the pink receipt!' } },
+      { title: { zh: '最美鐵道便當', en: 'Train Bento Tip' }, body: { zh: '（Plan B）中午去買「十勝豚丼 いっぴん」外帶，帶上 13:26 的北斗號，一邊吃一邊欣賞海景。', en: '(Plan B) Buy Tokachi Butadon bento for the 13:26 Hokuto — eat on board while enjoying sea views.' } },
+      { title: { zh: '海景座位', en: 'Scenic Seat Reminder' }, body: { zh: '上車後尋找您的 D席（右側座位），準備好相機，一邊吃豚丼一邊欣賞內浦灣絕美海景。', en: 'Find your D-seat (right side). Camera ready for Uchiura Bay panorama.' } },
+    ],
   },
   // Day 6
   {
@@ -175,6 +210,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '朝市 500–800円 + 午餐 4,000–6,000円 + Plan A 晚餐 大門橫丁 1,500円 / Plan B 晚餐 あじさい 1,000円', en: 'Market 500-800 + lunch 4,000-6,000 + Plan A dinner Daimon ¥1,500 / Plan B Ajisai ¥1,000' },
     shopping: { zh: "SNAFFLE'S 起司歐姆蕾蛋糕（需冷藏）；Seria 百元雜貨（16:31）", en: "SNAFFLE'S Cheese Omelette Catchcakes (refrigerate); Seria 100-yen goods (16:31)" },
+    stepsRange: { zh: '約 15,000–18,000 步', en: 'approx. 15,000–18,000 steps' },
+    stepsLevel: 'extreme',
+    tips: [
+      { title: { zh: '腳力大考驗', en: 'Stamina Warning' }, body: { zh: '五稜郭公園非常大，下午去元町區的「八幡坂」又是一條長上坡，今天是整趟旅程最操勞的一天，請適時找咖啡廳坐下休息。', en: 'Goryokaku is huge; Hachiman-zaka is a long uphill. This is the most physically demanding day — rest at a café when needed.' } },
+      { title: { zh: '百萬夜景第二戰', en: 'Summit Cold Warning' }, body: { zh: '傍晚上函館山觀景台，請複製 Day 3 的禦寒裝備。出發前確認官網風速未達 15m/s（停駛標準）。', en: 'Head to Mt. Hakodate observatory in the evening. Same cold-weather gear as Day 3. Check official wind speed before heading up (halts at 15m/s).' } },
+      { title: { zh: '舒緩雙腿', en: 'Foot Recovery' }, body: { zh: '晚上回飯店強烈建議泡個熱水澡，或貼上休足時間。', en: 'Hot bath or foot relief patches strongly recommended after returning to hotel tonight.' } },
+    ],
   },
   // Day 7
   {
@@ -195,6 +237,12 @@ const DAYS = [
     ],
     mealBudget: { zh: '朝市 500円 + 岡田屋 700円；晚餐含住宿', en: 'Market 500 + Okadaya 700 yen; dinner included' },
     shopping: null,
+    stepsRange: { zh: '約 6,000–8,000 步', en: 'approx. 6,000–8,000 steps' },
+    stepsLevel: 'easy',
+    tips: [
+      { title: { zh: '巴士不能用周遊券', en: 'Donan Bus Not Covered' }, body: { zh: '中午抵達 JR 洞爺站後，轉乘的【道南巴士】不包含在 JR Pass 內。請準備好零錢（上車抽整理券）或 IC 卡。', en: 'After arriving at Toya Station, the Donan Bus to Nonokaze is NOT covered by JR Pass. Prepare cash coins or IC card.' } },
+      { title: { zh: '湖畔煙火禦寒', en: 'Fireworks Warmth Tip' }, body: { zh: '晚上在乃之風飯店外看洞爺湖煙火時，湖邊風大，記得穿件輕羽絨外套再出去。', en: 'Lake wind can be strong during the 20:45 fireworks. Bring a light down jacket before stepping outside.' } },
+    ],
   },
   // Day 8
   {
@@ -218,6 +266,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '早 + 晚含住宿；登別小食 600円；JR 來回 ~2,000円', en: 'Breakfast & dinner included; snacks 600 yen; JR RT approx 2,000 yen' },
     shopping: { zh: '登別溫泉饅頭；鬼形紀念品', en: 'Noboribetsu onsen manju; demon-themed souvenirs' },
+    stepsRange: { zh: '約 10,000–12,000 步', en: 'approx. 10,000–12,000 steps' },
+    stepsLevel: 'medium',
+    tips: [
+      { title: { zh: '交通轉乘確認', en: 'Transit Connections' }, body: { zh: '今天會頻繁在「公車 → JR → 公車」間切換，下 JR 登別站後轉搭公車去地獄谷（一樣要自費）。全部班次都已標示在行程中，請留意 warn 紅框提示。', en: 'Today involves frequent Bus → JR → Bus transfers. After arriving at Noboribetsu Station, the bus to Jigokudani is cash-only. All connections are marked in the itinerary — watch for red warning markers.' } },
+      { title: { zh: '洋蔥穿搭發揮', en: 'Layer Up' }, body: { zh: '從地獄谷走到大湯沼天然足湯有一段上坡的木棧道，走一走會流汗，但停下來吹風會冷。建議穿薄長袖搭配好穿脫的外套。', en: 'The wooden trail from Jigokudani to the natural footbath involves an uphill — you\'ll sweat, then get cold when you stop. Easy-on/off jacket recommended.' } },
+      { title: { zh: '擦腳毛巾', en: 'Bring a Towel' }, body: { zh: '記得從飯店帶一條小毛巾在隨身包包裡，泡完天然足湯後可以擦腳。', en: 'Pack a small towel from the hotel — you\'ll need it to dry your feet after the natural footbath.' } },
+    ],
   },
   // Day 9
   {
@@ -236,6 +291,13 @@ const DAYS = [
     ],
     mealBudget: { zh: '午餐 1,200円；早餐含住宿', en: 'Lunch 1,200 yen; breakfast included' },
     shopping: { zh: 'Calbee 薯條三兄弟（安檢後）；ROYCE 生巧；KINOTOYA 起司塔；LeTAO Double Fromage', en: 'Jaga Pokkuru (post-security); ROYCE nama choco; KINOTOYA cheese tart; LeTAO Double Fromage' },
+    stepsRange: { zh: '約 5,000–7,000 步', en: 'approx. 5,000–7,000 steps' },
+    stepsLevel: 'easy',
+    tips: [
+      { title: { zh: '優雅搭車', en: 'Comfortable Departure' }, body: { zh: '08:45–09:00 請飯店幫忙叫計程車直達 JR 洞爺站，免去拖著隨身行李擠公車的痛苦。', en: 'Ask the hotel to call a taxi at 08:45–09:00 directly to Toya Station — avoid struggling with bags on the bus.' } },
+      { title: { zh: '領取大件行李', en: 'Yamato Pickup (Critical)' }, body: { zh: '11:06 抵達新千歲機場站後，先去國內線航廈 1F/2F 的黑貓（ヤマト運輸）櫃檯，憑 Day 5 的粉紅收據領回大件行李，再推著推車去國際線航廈辦理登機。', en: 'After arriving at New Chitose 11:06, go to Domestic Terminal 1F/2F Yamato counter. Show pink receipt from Day 5 to collect bags, then walk to international terminal for check-in.' } },
+      { title: { zh: '機場最後衝刺', en: 'Airport Final Shopping' }, body: { zh: '機場超級好逛，請預留充足時間採買六花亭、Royce\' 等需要冷藏的伴手禮（安檢後的限定商品記得先掃一圈）。', en: 'New Chitose Airport is excellent for souvenir shopping. Allow time for cold-pack items (Rokkatei, Royce\'). Check post-security exclusives before boarding.' } },
+    ],
   },
 ];
 
