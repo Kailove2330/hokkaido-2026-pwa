@@ -10,6 +10,7 @@ let svSubTab = 0;
 let svOpenId = null;
 let transportTab = 0;
 let sosTab = 0;
+let planChoice = localStorage.getItem('hk_plan') || 'B'; // 'A' or 'B'
 let pendingCascade = null; // { dayIdx, fromItemIdx, deltaMins }
 let ovSubTab = 0; // 0 = 行程總覽, 1 = 備注
 
@@ -592,6 +593,21 @@ function renderActiveDayView(state) {
     </div>
   `;
 
+  // Plan A/B toggle (Day 5 & Day 6 only)
+  if (dayState.day === 5 || dayState.day === 6) {
+    const planLabel = lang === 'zh'
+      ? { A: 'Plan A（奧芝午餐路線）', B: 'Plan B（便當火車路線）' }
+      : { A: 'Plan A (Okushiba Lunch)', B: 'Plan B (Bento on Train)' };
+    html += `
+      <div class="plan-toggle-bar">
+        <span class="plan-toggle-label">${lang === 'zh' ? '📋 晚餐方案' : '📋 Dinner Plan'}:</span>
+        <button class="plan-btn ${planChoice === 'A' ? 'active' : ''}" onclick="setPlanChoice('A')">A</button>
+        <button class="plan-btn ${planChoice === 'B' ? 'active' : ''}" onclick="setPlanChoice('B')">B</button>
+        <span class="plan-desc">${planLabel[planChoice]}</span>
+      </div>
+    `;
+  }
+
   // Day summary (meals / steps / budget)
   html += renderDaySummaryCard(dayState);
 
@@ -678,7 +694,7 @@ function renderFlightCard(dir) {
 
 // ── Timeline Items ─────────────────────────────────────────
 function renderTimelineItems(dayState, impact) {
-  const items = dayState.items;
+  const items = dayState.items.filter(item => !item.plan || item.plan === planChoice);
   const conflictIdxs = new Set(impact.conflicts.flatMap(c => [c.idxA, c.idxB]));
   let html = '';
 
@@ -1986,20 +2002,21 @@ function setTransportTab(t) {
   renderTransport();
 }
 
+function setPlanChoice(p) {
+  planChoice = p;
+  localStorage.setItem('hk_plan', p);
+  renderItinerary();
+}
+
 function renderTransport() {
   const container = document.getElementById('page-transport');
 
   const tabs = lang === 'zh'
-    ? ['🚆 城際列車', '🏙 市區移動']
-    : ['🚆 Inter-City', '🏙 Local'];
-
-  const introText = lang === 'zh'
-    ? '各段城際交通的搭乘時間、車費與注意事項；以及各城市的市區移動方式。'
-    : 'Inter-city train details per segment, and local transit tips for each city.';
+    ? ['🚆 城際列車', '🎫 JR 劃位 SOP', '📦 宅急便', '🏙 市區移動']
+    : ['🚆 Inter-City', '🎫 JR SOP', '📦 Yamato', '🏙 Local'];
 
   let html = `
-    <div class="tr-intro">${introText}</div>
-    <div class="sv-tab-bar">
+    <div class="sv-tab-bar" style="flex-wrap:wrap;gap:4px;">
       ${tabs.map((t, i) => `
         <button class="sv-tab ${transportTab === i ? 'active' : ''}" onclick="setTransportTab(${i})">${t}</button>
       `).join('')}
@@ -2007,6 +2024,7 @@ function renderTransport() {
   `;
 
   if (transportTab === 0) {
+    // ── 城際列車 ──
     TRANSPORT.jr.forEach(r => {
       const parts = r.route[lang].split(/\s*[→>]\s*/);
       const from  = parts[0] || '';
@@ -2030,7 +2048,73 @@ function renderTransport() {
       `;
     });
 
+  } else if (transportTab === 1) {
+    // ── JR 周遊券 SOP ──
+    const s = TRANSPORT.jrSOP;
+    html += `
+      <div class="tr-sop-card warn-card">
+        <div class="tr-sop-title">📍 ${lang === 'zh' ? '地點' : 'Location'}</div>
+        <div class="tr-sop-body">${s.location[lang]}</div>
+      </div>
+      <div class="tr-sop-card warn-card" style="border-color:#e53e3e;background:#fff5f5;">
+        <div class="tr-sop-body" style="color:#c53030;font-weight:600;">${s.activationWarn[lang]}</div>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">📋 ${lang === 'zh' ? '英文劃位範本（截圖出示給站務員）' : 'English Reservation Script (show to agent)'}</div>
+        <pre class="tr-sop-pre">${s.englishScript}</pre>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">🌊 ${lang === 'zh' ? 'D 席海景提醒' : 'D-Seat Sea View Tip'}</div>
+        <div class="tr-sop-body">${s.seatTip[lang]}</div>
+      </div>
+      <div class="tr-sop-card warn-card" style="border-color:#d97706;background:#fffbeb;">
+        <div class="tr-sop-title" style="color:#b45309;">🚌 ${lang === 'zh' ? '道南バス注意事項' : 'Donan Bus Warning'}</div>
+        <div class="tr-sop-body" style="white-space:pre-line;">${s.donanWarn[lang]}</div>
+      </div>
+    `;
+
+  } else if (transportTab === 2) {
+    // ── 宅急便指南 ──
+    const y = TRANSPORT.yamato;
+    html += `
+      <div class="tr-sop-card warn-card">
+        <div class="tr-sop-title">⏰ ${lang === 'zh' ? '寄件時機' : 'Timing'}</div>
+        <div class="tr-sop-body" style="white-space:pre-line;">${y.timing[lang]}</div>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">🗣 ${lang === 'zh' ? '給飯店櫃台看的日文範本' : 'Japanese Script for Hotel Front Desk'}</div>
+        <pre class="tr-sop-pre">${y.japaneseScript}</pre>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">📝 ${lang === 'zh' ? '託運單填寫對照表' : 'Waybill Fill-in Guide'}</div>
+        <table class="tr-yamato-table">
+          ${y.formFields.map(f => `
+            <tr>
+              <td class="tr-yamato-label">${f.label[lang]}</td>
+              <td class="tr-yamato-value">${f.value}</td>
+            </tr>
+          `).join('')}
+        </table>
+      </div>
+      <div class="tr-sop-card warn-card" style="border-color:#e53e3e;background:#fff5f5;">
+        <div class="tr-sop-body" style="color:#c53030;font-weight:600;">${y.receiptWarn[lang]}</div>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">📦 ${lang === 'zh' ? 'Day 9 機場領行李 SOP' : 'Day 9 Airport Pickup SOP'}</div>
+        <div class="tr-sop-body" style="white-space:pre-line;">${y.pickupSOP[lang]}</div>
+      </div>
+      <div class="tr-sop-card">
+        <div class="tr-sop-title">💴 ${lang === 'zh' ? '費用參考' : 'Cost Reference'}</div>
+        <div class="tr-sop-body">${y.cost[lang]}</div>
+      </div>
+      <div class="tr-sop-card warn-card" style="border-color:#d97706;background:#fffbeb;">
+        <div class="tr-sop-title" style="color:#b45309;">⚠️ ${lang === 'zh' ? '禁放物品（需隨身）' : 'Prohibited Items (Must Carry-on)'}</div>
+        <div class="tr-sop-body" style="white-space:pre-line;">${y.prohibited[lang]}</div>
+      </div>
+    `;
+
   } else {
+    // ── 市區移動 ──
     html += `<div class="section-title">🚌 ${lang === 'zh' ? '各城市移動方式' : 'Local Transit'}</div>`;
     TRANSPORT.local.forEach(l => {
       html += `

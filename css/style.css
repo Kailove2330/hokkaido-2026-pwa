@@ -2748,3 +2748,41 @@ main.ai-mode {
   border: none; border-radius: 8px; padding: 10px 16px;
   font-size: 14px; cursor: pointer;
 }
+
+/* ── Plan A/B Toggle ───────────────────────────────────────── */
+.plan-toggle-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #f0fdf4; border: 1.5px solid #86efac;
+  border-radius: 10px; padding: 8px 12px; margin: 8px 0;
+  flex-wrap: wrap;
+}
+.plan-toggle-label { font-size: 13px; color: #166534; font-weight: 600; }
+.plan-btn {
+  background: #fff; border: 2px solid #86efac; border-radius: 6px;
+  padding: 4px 14px; font-size: 14px; font-weight: 700;
+  cursor: pointer; color: #166534; transition: all .15s;
+}
+.plan-btn.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+.plan-desc { font-size: 12px; color: #15803d; }
+
+/* ── Transport SOP Cards ───────────────────────────────────── */
+.tr-sop-card {
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+}
+.tr-sop-card.warn-card { border-color: #fbbf24; background: #fffbeb; }
+.tr-sop-title { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+.tr-sop-body { font-size: 14px; line-height: 1.6; color: var(--text); }
+.tr-sop-pre {
+  font-family: 'SF Mono', 'Menlo', monospace; font-size: 13px;
+  background: #1e293b; color: #e2e8f0;
+  border-radius: 8px; padding: 14px; margin: 0;
+  white-space: pre-wrap; word-break: break-word; line-height: 1.7;
+}
+
+/* ── Yamato Fill-in Table ──────────────────────────────────── */
+.tr-yamato-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tr-yamato-table tr { border-bottom: 1px solid #f0f0f0; }
+.tr-yamato-table tr:last-child { border-bottom: none; }
+.tr-yamato-label { color: var(--muted); padding: 6px 8px 6px 0; width: 45%; vertical-align: top; }
+.tr-yamato-value { font-weight: 600; color: var(--text); padding: 6px 0; word-break: break-all; }
