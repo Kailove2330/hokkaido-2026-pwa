@@ -309,6 +309,7 @@ const SOUVENIRS = [
     items: [
       { id: 's1', name: { zh: 'LeTAO 起司夾心餅乾（色內通系列）', en: 'LeTAO Cheese Biscuits (Irouchi-dori)' }, price: '500–800円', cold: false, airport: false, img: 'images/souvenirs/letao-biscuit.jpg', note: { zh: '小樽本店種類最齊', en: 'Best selection at Otaru main store' } },
       { id: 's2', name: { zh: 'LeTAO THÉNOIR 大吉嶺紅茶巧克力夾心', en: 'LeTAO THÉNOIR Darjeeling Chocolate' }, price: '—', cold: false, airport: false, note: { zh: '小樽本店限定', en: 'Otaru main store exclusive' } },
+      { id: 's19', name: { zh: 'LeTAO 紅茶巧克力餅乾', en: 'LeTAO Tea Chocolate Biscuits' }, price: '~600円', cold: false, airport: false, note: { zh: '大吉嶺紅茶×黑巧克力薄片餅；小樽/大丸均有', en: 'Darjeeling tea × dark chocolate thin biscuit; Otaru & Daimaru' } },
       { id: 's3', name: { zh: '北一硝子 手作玻璃杯', en: 'Kitaichi Glass Handmade Cup' }, price: '3,000–8,000円', cold: false, airport: false, img: 'images/souvenirs/kitaichi-glass.jpg', note: { zh: '請店家加強包裝', en: 'Ask for extra wrapping' } },
     ]
   },
@@ -317,6 +318,7 @@ const SOUVENIRS = [
     tab: { zh: '白色戀人', en: 'Shiroi Koibito' },
     items: [
       { id: 's4', name: { zh: '白色戀人 工廠限定包裝 + 訂製磁鐵', en: 'Shiroi Koibito Factory Box + Custom Magnet' }, price: '2,200–3,500円 + 1,500円', cold: false, airport: false, img: 'images/souvenirs/shiroi-koibito.jpg', note: { zh: '訂製磁鐵為現場限定', en: 'Custom magnet is on-site exclusive' } },
+      { id: 's20', name: { zh: 'ISHIYA 美冬（巧克力千層酥）', en: 'ISHIYA Bifuu (Chocolate Millefeuille)' }, price: '~280円/個', cold: false, airport: false, note: { zh: '牛奶×焦糖×栗子三口味；公園 ISHIYA 店 / 新千歲均有售', en: 'Milk / Caramel / Chestnut; available at park ISHIYA store & airport' } },
     ]
   },
   {
@@ -329,6 +331,10 @@ const SOUVENIRS = [
       { id: 's8', name: { zh: '北菓樓 開拓米果（枝幸帆立貝口味）', en: 'Kitakaro Kaitaku Rice Crackers (Scallop)' }, price: '—', cold: false, airport: false, note: null },
       { id: 's8b', name: { zh: '柳月 三方六年輪蛋糕', en: 'Yanagitsuji Sanporo-Roku Baumkuchen' }, price: '~1,800円', cold: false, airport: false, note: { zh: '白樺樹紋雙色巧克力外層；來自帶廣；已切片方便享用', en: 'White birch-patterned baumkuchen from Obihiro; pre-sliced, easy to share' } },
       { id: 's8c', name: { zh: '札幌農學校 牛奶餅乾', en: 'Sapporo Nogakko Milk Biscuits' }, price: '~800円', cold: false, airport: false, note: { zh: '北海道大學共同研發；純粹北海道鮮乳奶香；適合送給孩子', en: "Co-developed with Hokkaido Univ.; pure milky flavor — great kids' gift" } },
+      { id: 's21', name: { zh: '北菓樓 夢不思議泡芙', en: 'Kitakaro Yume Fushigi Cream Puff' }, price: '~300円/個', cold: false, airport: false, img: 'https://www.kitakaro.com/client_info/KITAKARO/view/userweb/ext/cream_puff/img/cream_puff_img04.jpg', note: { zh: '手掌大酥皮泡芙；現場買立刻吃最酥脆；小樽本店 / 大丸 B1 均有', en: 'Palm-sized crispy choux; eat on-site for best texture; Otaru & Daimaru B1' } },
+      { id: 's22', name: { zh: 'MORIMOTO ハスカップジュエリー（藍靛果巧克力）', en: 'MORIMOTO Haskap Jewelry (Haskap Choc Sandwich)' }, price: '~300円/個，6入~1,600円', cold: false, airport: false, img: 'https://morimoto-shinya.jp/cdn/shop/files/haskappj1.jpg?v=1706524464', note: { zh: '1978年創始名物；北海道特產藍靛果酸甜×奶油×巧克力；千歲機場有售', en: 'Born 1978; tart Hokkaido haskap jam + buttercream + chocolate; also at Chitose airport' } },
+      { id: 's23', name: { zh: '千秋庵 生ノースマン（紅豆×生奶油）', en: 'Senshuan Nama Northman (Anko × Fresh Cream)' }, price: '~260円/個', cold: true, airport: false, img: 'https://senshuan.co.jp/wordpress/wp-content/uploads/2023/10/8aab5256f84ae7f04e80d2245ebc4163-1.png', note: { zh: '2022年新作；軟酥皮×甜度低紅豆×生奶油；僅札幌東急店與新千歲販售；需早去', en: '2022 launch; soft pie + low-sweet anko + fresh cream; Sapporo Tokyu & Chitose only — go early' } },
+      { id: 's24', name: { zh: '[SNOW] CHEESE スノーチーズ（起司巧克力錐）', en: '[SNOW] CHEESE (Cheese Chocolate Cone)' }, price: '8入~1,296円', cold: false, airport: false, img: 'https://giftrip-hokkaido.jp/wp-content/uploads/2023/06/SNOW-WHITE-CHEESE.jpg', note: { zh: '大丸札幌 & 新千歲限定；起司×生食感巧克力×酥脆錐形餅；每日大排隊', en: 'Daimaru Sapporo & Chitose only; raw-texture cheese choc + crispy cone; daily long queue' } },
       { id: 's9', name: { zh: '北海道神宮 御守', en: 'Hokkaido Jingu Omamori' }, price: '~500円', cold: false, airport: false, note: null },
     ]
   },
@@ -337,6 +343,7 @@ const SOUVENIRS = [
     tab: { zh: '函館', en: 'Hakodate' },
     items: [
       { id: 's10', name: { zh: "SNAFFLE'S 起司歐姆蕾蛋糕 Catchcakes", en: "SNAFFLE'S Cheese Omelette Catchcakes" }, price: '1,296円 / 6入', cold: true, airport: false, img: 'images/souvenirs/snaffles.jpg', note: { zh: '需冷藏，3 天賞味期限', en: 'Refrigerate, 3-day shelf life' } },
+      { id: 's25', name: { zh: 'Petite Merveille 一口起司蛋糕', en: 'Petite Merveille Bite-size Cheesecake' }, price: '160円/個，8入~1,400円', cold: true, airport: false, img: 'https://farm2.staticflickr.com/1812/28150740077_51c6869172_c.jpg', note: { zh: '連7年金賞；金森倉庫旁；原味/焦糖/南瓜等口味；需冷藏，2天賞味', en: '7 consecutive gold awards; near Kanemori; original/caramel/pumpkin; refrigerate, 2-day shelf life' } },
     ]
   },
   {
@@ -351,6 +358,8 @@ const SOUVENIRS = [
       { id: 's16', name: { zh: 'LeTAO まあある ブランシェール', en: 'LeTAO Maaru Blanchere' }, price: '—', cold: false, airport: true, note: { zh: '機場 LeTAO 限定隱藏版白巧克力堅果脆餅', en: 'Airport LeTAO exclusive — white choc nut crisp' } },
       { id: 's17', name: { zh: 'Yoshimi Oh! 燒玉米（Yakibi）', en: 'Yoshimi Oh! Roasted Corn' }, price: '700円', cold: false, airport: false, note: null },
       { id: 's18', name: { zh: 'KINOTOYA 起司塔（現烤）', en: 'KINOTOYA Cheese Tart (Fresh Baked)' }, price: '—', cold: false, airport: true, note: { zh: '機場店現烤；國內線 2F 名產區；送禮自用皆宜', en: 'Fresh baked at airport; domestic terminal 2F souvenir area; great for gifts' } },
+      { id: 's26', name: { zh: 'HORI 夕張哈密瓜果凍', en: 'HORI Yubari Melon Pure Jelly' }, price: '6入~800円', cold: false, airport: true, img: 'https://hokkaido-omiyage.shop/cdn/shop/products/petitgold_1024x1024.jpg?v=1623653159', note: { zh: '夕張哈密瓜果肉直製；冷藏後吃或冷凍成冰沙口感；常溫保存6個月', en: 'Real Yubari melon pulp; best chilled or frozen for sorbet texture; room-temp shelf life 6 months' } },
+      { id: 's27', name: { zh: "ROYCE' 巧克力洋芋片", en: "ROYCE' Potato Chip Chocolate" }, price: '~600円', cold: true, airport: true, img: 'https://www.royce.com/images/pc/english/product/potatochip/original_m.jpg', note: { zh: '薯片×生巧克力單面塗層；Original / Caramel / Fromage Blanc 三款；需冷藏', en: 'Potato chip one-side coated in nama choco; Original / Caramel / Fromage Blanc; refrigerate' } },
     ]
   },
 ];
