@@ -2960,6 +2960,11 @@ function initApp() {
     }
   });
 
+  // Auto-jump to today's day
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayIdx = state.findIndex(d => getDayDate(d) === todayStr);
+  if (todayIdx !== -1) activeDayIdx = todayIdx;
+
   document.querySelectorAll('.page')[0].classList.add('active');
   renderAll();
 }
